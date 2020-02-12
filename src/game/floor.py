@@ -12,8 +12,8 @@ class Floor(pyglet.sprite.Sprite):
     
     title = image.load('images/TitleScreen.png')
 
-    def __init__(self):
+    def __init__(self, windowW, windowH):
         super().__init__(img=Floor.title)
-        self.x = 750 - (self.width / 2)
-        self.y = 500 - (self.height / 2)
+        self.x = (windowW / 2) - (self.width / 2)
+        self.y = (windowH / 2) - (self.height / 2)
         

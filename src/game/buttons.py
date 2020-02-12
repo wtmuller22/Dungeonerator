@@ -14,11 +14,13 @@ class Buttons():
     current_idx = 0
 
     def __init__(self, backgroundX, backgroundY, backgroundW, backgroundH):
-        quit_button = Button(name="Quit", xCoord=(backgroundX + (backgroundW / 2)), yCoord=(backgroundY + (backgroundH / 2)))
-        quit_button.select()
-        another_button = Button(name="Another", xCoord=quit_button.x, yCoord=quit_button.y - 55)
+        new_button = Button(name="New Game", xCoord=(backgroundX + (backgroundW / 2)), yCoord=(backgroundY + (backgroundH / 2)))
+        new_button.select()
+        load_button = Button(name="Load Game", xCoord=new_button.x, yCoord=new_button.y - 55)
+        quit_button = Button(name="Quit", xCoord=load_button.x, yCoord=load_button.y - 55)
+        Buttons.list.append(new_button)
+        Buttons.list.append(load_button)
         Buttons.list.append(quit_button)
-        Buttons.list.append(another_button)
         
     def next(self):
         Buttons.list[Buttons.current_idx].deselect()

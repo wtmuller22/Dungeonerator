@@ -1,6 +1,6 @@
 import pyglet
 from game.floor import Floor
-from game.buttons import Buttons
+from game.menu import Menu
 from game.game_state import State
 from pyglet.window import key
 '''
@@ -13,22 +13,23 @@ Project runner for Dungeonerator.
 
 window = pyglet.window.Window(fullscreen=True)
 state = State.Menu
-background = Floor()
-menu_buttons = Buttons(backgroundX=background.x, backgroundY=background.y, backgroundW=background.width, backgroundH=background.height)
+background = Floor(windowW=window.width, windowH=window.height)
+menu = Menu(backgroundX=background.x, backgroundY=background.y, backgroundW=background.width, backgroundH=background.height)
+
 
 def main():
     pyglet.app.run()
     
 def select_button():
-    selected = menu_buttons.current_idx
-    if (selected == 0):
+    selected = menu.get_current_idx()
+    if (selected == 2):
         pyglet.app.exit()
 
 @window.event
 def on_draw():
     window.clear()
     background.draw()
-    menu_buttons.draw()
+    menu.draw()
     
 @window.event
 def on_key_press(symbol, modifiers):
@@ -36,9 +37,9 @@ def on_key_press(symbol, modifiers):
         if symbol == key.W:
             select_button()
         elif (symbol == key.DOWN or symbol == key.RIGHT):
-            menu_buttons.next()
+            menu.next()
         elif (symbol == key.UP or symbol == key.LEFT):
-            menu_buttons.previous()
+            menu.previous()
 
 if __name__ == '__main__':
     main()
