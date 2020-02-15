@@ -38,9 +38,9 @@ def select_button():
 def menu_to_game():
     global current_state 
     global current_room
+    current_room = room_map.change_to_room(number=0, level=0)
     current_state = State.Game
     background.switch_image()
-    current_room = room_map.change_to_room(number=0)
     #pyglet.clock.schedule_interval(update, 1/60.0)
     
 def game_to_menu():
@@ -64,36 +64,49 @@ def change_player_room():
         elif (player_facing == Direction.SOUTH):
             num_rooms_per_side = (player1.level * 2) + 1
             player1.room_number = (num_rooms_per_side**2) - 1
+            player1.y = player1.y + 960
     elif (room_location == Direction.NE):
         if (player_facing == Direction.WEST):
             player1.room_number = player1.room_number - 1
+            player1.x = player1.x + 960
         elif (player_facing == Direction.SOUTH):
             player1.room_number = player1.room_number + 1
+            player1.y = player1.y + 960
     elif (room_location == Direction.SE):
         if (player_facing == Direction.NORTH):
             player1.room_number = player1.room_number - 1
+            player1.y = player1.y - 960
         elif (player_facing == Direction.WEST):
             player1.room_number = player1.room_number + 1
+            player1.x = player1.x + 960
     elif (room_location == Direction.SW):
         if (player_facing == Direction.EAST):
             player1.room_number = player1.room_number - 1
+            player1.x = player1.x - 960
         elif (player_facing == Direction.NORTH):
             player1.room_number = player1.room_number + 1
+            player1.y = player1.y - 960
     elif (room_location == Direction.NORTH):
         if (player_facing == Direction.EAST):
             player1.room_number = player1.room_number + 1
+            player1.x = player1.x - 960
         elif (player_facing == Direction.WEST):
             player1.room_number = player1.room_number - 1
+            player1.x = player1.x + 960
     elif (room_location == Direction.EAST):
         if (player_facing == Direction.NORTH):
             player1.room_number = player1.room_number - 1
+            player1.y = player1.y - 960
         elif (player_facing == Direction.SOUTH):
             player1.room_number = player1.room_number + 1
+            player1.y = player1.y + 960
     elif (room_location == Direction.SOUTH):
         if (player_facing == Direction.EAST):
             player1.room_number = player1.room_number - 1
+            player1.x = player1.x - 960
         elif (player_facing == Direction.WEST):
             player1.room_number = player1.room_number + 1
+            player1.x = player1.x + 960
     else:
         if (player_facing == Direction.NORTH):
             num_rooms_per_side = (player1.level * 2) + 1
@@ -101,9 +114,142 @@ def change_player_room():
                 player1.room_number = (((player1.level - 1) * 2) + 1)**2
             else:
                 player1.room_number = player1.room_number + 1
+            player1.y = player1.y - 960
         elif (player_facing == Direction.SOUTH):
             player1.room_number = player1.room_number - 1
-    current_room = room_map.change_to_room(number=player1.room_number)
+            player1.y = player1.y + 960
+    current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
+    
+def change_player_level():
+    global current_room
+    global player1
+    room_location = current_room.location
+    player_facing = player1.facing
+    if ((room_location == Direction.NW or room_location == Direction.NORTH or room_location == Direction.NE) and (player_facing == Direction.NORTH)):
+        result = room_map.level_prepared(level=(player1.level + 1))
+        door = None
+        if (not result):
+            room_map.prepare_level(level_num=(player1.level + 1))
+            door = Door(direct=Direction.SOUTH, backgroundX=startX, backgroundY=startY)
+            door.make_golden()
+        player1.room_number = player1.room_number + (8 * player1.level) + 1
+        player1.level = player1.level + 1
+        current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
+        player1.y = player1.y - 960
+        if (not door is None):
+            current_room.entities.append(door)
+    elif ((room_location == Direction.NW or room_location == Direction.WEST or room_location == Direction.SW) and (player_facing == Direction.WEST)):
+        result = room_map.level_prepared(level=(player1.level + 1))
+        door = None
+        if (not result):
+            room_map.prepare_level(level_num=(player1.level + 1))
+            door = Door(direct=Direction.EAST, backgroundX=startX, backgroundY=startY)
+            door.make_golden()
+        player1.room_number = player1.room_number + (8 * player1.level) + 7
+        player1.level = player1.level + 1
+        current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
+        player1.x = player1.x + 960
+        if (not door is None):
+            current_room.entities.append(door)
+    elif ((room_location == Direction.SW or room_location == Direction.SOUTH or room_location == Direction.SE) and (player_facing == Direction.SOUTH)):
+        result = room_map.level_prepared(level=(player1.level + 1))
+        door = None
+        if (not result):
+            room_map.prepare_level(level_num=(player1.level + 1))
+            door = Door(direct=Direction.NORTH, backgroundX=startX, backgroundY=startY)
+            door.make_golden()
+        player1.room_number = player1.room_number + (8 * player1.level) + 5
+        player1.level = player1.level + 1
+        current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
+        player1.y = player1.y + 960
+        if (not door is None):
+            current_room.entities.append(door)
+    elif ((room_location == Direction.NE or room_location == Direction.EAST or room_location == Direction.SE) and (player_facing == Direction.EAST)):
+        result = room_map.level_prepared(level=(player1.level + 1))
+        door = None
+        if (not result):
+            room_map.prepare_level(level_num=(player1.level + 1))
+            door = Door(direct=Direction.WEST, backgroundX=startX, backgroundY=startY)
+            door.make_golden()
+        player1.room_number = player1.room_number + (8 * player1.level) + 3
+        player1.level = player1.level + 1
+        current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
+        player1.x = player1.x - 960
+        if (not door is None):
+            current_room.entities.append(door)
+    elif ((room_location == Direction.NORTH) and (player_facing == Direction.SOUTH)):
+        player1.level = player1.level - 1
+        player1.room_number = player1.room_number - ((8 * player1.level) + 1)
+        current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
+        player1.y = player1.y + 960
+    elif ((room_location == Direction.EAST) and (player_facing == Direction.WEST)):
+        player1.level = player1.level - 1
+        player1.room_number = player1.room_number - ((8 * player1.level) + 3)
+        current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
+        player1.x = player1.x + 960
+    elif ((room_location == Direction.SOUTH) and (player_facing == Direction.NORTH)):
+        player1.level = player1.level - 1
+        player1.room_number = player1.room_number - ((8 * player1.level) + 5)
+        current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
+        player1.y = player1.y - 960
+    elif ((room_location == Direction.WEST) and (player_facing == Direction.EAST)):
+        player1.level = player1.level - 1
+        player1.room_number = player1.room_number - ((8 * player1.level) + 7)
+        current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
+        player1.x = player1.x - 960
+    else:
+        if (player_facing == Direction.NORTH):
+            result = room_map.level_prepared(level=(player1.level + 1))
+            door = None
+            if (not result):
+                room_map.prepare_level(level_num=(player1.level + 1))
+                door = Door(direct=Direction.SOUTH, backgroundX=startX, backgroundY=startY)
+                door.make_golden()
+            player1.room_number = player1.room_number + 2
+            player1.level = player1.level + 1
+            current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
+            player1.y = player1.y - 960
+            if (not door is None):
+                current_room.entities.append(door)
+        elif (player_facing == Direction.EAST):
+            result = room_map.level_prepared(level=(player1.level + 1))
+            door = None
+            if (not result):
+                room_map.prepare_level(level_num=(player1.level + 1))
+                door = Door(direct=Direction.WEST, backgroundX=startX, backgroundY=startY)
+                door.make_golden()
+            player1.room_number = player1.room_number + 4
+            player1.level = player1.level + 1
+            current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
+            player1.x = player1.x - 960
+            if (not door is None):
+                current_room.entities.append(door)
+        elif (player_facing == Direction.SOUTH):
+            result = room_map.level_prepared(level=(player1.level + 1))
+            door = None
+            if (not result):
+                room_map.prepare_level(level_num=(player1.level + 1))
+                door = Door(direct=Direction.NORTH, backgroundX=startX, backgroundY=startY)
+                door.make_golden()
+            player1.room_number = player1.room_number + 6
+            player1.level = player1.level + 1
+            current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
+            player1.y = player1.y + 960
+            if (not door is None):
+                current_room.entities.append(door)
+        else:
+            result = room_map.level_prepared(level=(player1.level + 1))
+            door = None
+            if (not result):
+                room_map.prepare_level(level_num=(player1.level + 1))
+                door = Door(direct=Direction.EAST, backgroundX=startX, backgroundY=startY)
+                door.make_golden()
+            player1.room_number = player1.room_number + 8
+            player1.level = player1.level + 1
+            current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
+            player1.x = player1.x + 960
+            if (not door is None):
+                current_room.entities.append(door)
     
 def start_moving_player(dt):
     valid = check_player_legal_movement()
@@ -146,12 +292,36 @@ def check_player_legal_movement() -> bool:
         return result
     elif (player1.facing == Direction.EAST):
         result = player1.x < startX + background.width - 40
+        if (not result):
+            door = current_room.intersecting_door(playerX=player1.x, playerY=player1.y)
+            if (not door is None):
+                is_golden = door.is_level_up()
+                if (not is_golden):
+                    change_player_room()
+                else:
+                    change_player_level()
         return result
     elif (player1.facing == Direction.NORTH):
         result = player1.y < startY + background.height - 40
+        if (not result):
+            door = current_room.intersecting_door(playerX=player1.x, playerY=player1.y)
+            if (not door is None):
+                is_golden = door.is_level_up()
+                if (not is_golden):
+                    change_player_room()
+                else:
+                    change_player_level()
         return result
     else:
         result = player1.y > 0
+        if (not result):
+            door = current_room.intersecting_door(playerX=player1.x, playerY=player1.y)
+            if (not door is None):
+                is_golden = door.is_level_up()
+                if (not is_golden):
+                    change_player_room()
+                else:
+                    change_player_level()
         return result
     
 def wait_until_player_in_box(dt):

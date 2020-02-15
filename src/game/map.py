@@ -17,7 +17,7 @@ class Map():
         self.startY = backgroundY
         self.room_dict = {}
         self.corner_numbers = {}
-        starting_room = Room(direc=None)
+        starting_room = Room(direc=None, backgroundX=self.startX, backgroundY=self.startY)
         num = random.randint(0, 3)
         if (num == 0):
             level_up = Door(direct=Direction.NORTH, backgroundX=self.startX, backgroundY=self.startY)
@@ -48,7 +48,7 @@ class Map():
         corners = [curr_NW_number, curr_NW_number + (num_rooms_per_side_current - 1), curr_NW_number + (2 * (num_rooms_per_side_current - 1)), curr_NW_number + (3 * (num_rooms_per_side_current - 1))]
         self.corner_numbers[level_num] = corners
         rand_room_direct = self.get_room_direction(number=rand_room_num, level=level_num)
-        room_to_add = Room(direc=rand_room_direct)
+        room_to_add = Room(direc=rand_room_direct, backgroundX=self.startX, backgroundY=self.startY)
         room_to_add.make_level_up()
         self.room_dict[rand_room_num] = room_to_add
         
@@ -75,7 +75,7 @@ class Map():
         result = self.room_dict.get(number)
         if (result is None):
             room_direct = self.get_room_direction(number, level)
-            room_to_add = Room(direc=room_direct)
+            room_to_add = Room(direc=room_direct, backgroundX=self.startX, backgroundY=self.startY)
             self.room_dict[number] = room_to_add
         return self.room_dict.get(number)
     
