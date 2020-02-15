@@ -5,6 +5,7 @@ from game.game_state import State
 from game.door import Door
 from game.cardinal_direction import Direction
 from game.player import Player
+from game.map import Map
 from pyglet.window import key
 '''
 Created on Feb 11, 2020
@@ -20,11 +21,9 @@ background = Floor(windowW=window.width, windowH=window.height)
 startX = background.x
 startY = background.y
 menu = Menu(backgroundX=startX, backgroundY=startY, backgroundW=background.width, backgroundH=background.height)
-door_west = Door(Direction.WEST, backgroundX=startX, backgroundY=startY)
-door_north = Door(Direction.NORTH, backgroundX=startX, backgroundY=startY)
-door_east = Door(Direction.EAST, backgroundX=startX, backgroundY=startY)
-door_south = Door(Direction.SOUTH, backgroundX=startX, backgroundY=startY)
 player1 = Player(given_name='player1', backgroundX=startX, backgroundY=startY)
+room_map = Map(backgroundX=startX, backgroundY=startY)
+current_room = None
 
 def main():
     pyglet.app.run()
@@ -38,17 +37,73 @@ def select_button():
         
 def menu_to_game():
     global current_state 
+    global current_room
     current_state = State.Game
     background.switch_image()
+    current_room = room_map.change_to_room(number=0)
     #pyglet.clock.schedule_interval(update, 1/60.0)
     
 def game_to_menu():
     global current_state
+    global current_room
     current_state = State.Game
     background.switch_image()
+    current_room = None
     #pyglet.clock.unschedule(update)
     
 #def update(dt):
+
+def change_player_room():
+    global current_room
+    room_location = current_room.location
+    player_facing = player1.facing
+    if (room_location == Direction.NW):
+        if (player_facing == Direction.EAST):
+            player1.room_number = player1.room_number + 1
+            player1.x = player1.x - 960
+        elif (player_facing == Direction.SOUTH):
+            num_rooms_per_side = (player1.level * 2) + 1
+            player1.room_number = (num_rooms_per_side**2) - 1
+    elif (room_location == Direction.NE):
+        if (player_facing == Direction.WEST):
+            player1.room_number = player1.room_number - 1
+        elif (player_facing == Direction.SOUTH):
+            player1.room_number = player1.room_number + 1
+    elif (room_location == Direction.SE):
+        if (player_facing == Direction.NORTH):
+            player1.room_number = player1.room_number - 1
+        elif (player_facing == Direction.WEST):
+            player1.room_number = player1.room_number + 1
+    elif (room_location == Direction.SW):
+        if (player_facing == Direction.EAST):
+            player1.room_number = player1.room_number - 1
+        elif (player_facing == Direction.NORTH):
+            player1.room_number = player1.room_number + 1
+    elif (room_location == Direction.NORTH):
+        if (player_facing == Direction.EAST):
+            player1.room_number = player1.room_number + 1
+        elif (player_facing == Direction.WEST):
+            player1.room_number = player1.room_number - 1
+    elif (room_location == Direction.EAST):
+        if (player_facing == Direction.NORTH):
+            player1.room_number = player1.room_number - 1
+        elif (player_facing == Direction.SOUTH):
+            player1.room_number = player1.room_number + 1
+    elif (room_location == Direction.SOUTH):
+        if (player_facing == Direction.EAST):
+            player1.room_number = player1.room_number - 1
+        elif (player_facing == Direction.WEST):
+            player1.room_number = player1.room_number + 1
+    else:
+        if (player_facing == Direction.NORTH):
+            num_rooms_per_side = (player1.level * 2) + 1
+            if (player1.room_number == ((num_rooms_per_side**2) - 1)):
+                player1.room_number = (((player1.level - 1) * 2) + 1)**2
+            else:
+                player1.room_number = player1.room_number + 1
+        elif (player_facing == Direction.SOUTH):
+            player1.room_number = player1.room_number - 1
+    current_room = room_map.change_to_room(number=player1.room_number)
     
 def start_moving_player(dt):
     valid = check_player_legal_movement()
@@ -79,13 +134,25 @@ def moving_bounds_check(dt):
     
 def check_player_legal_movement() -> bool:
     if (player1.facing == Direction.WEST):
-        return player1.x > startX
+        result = player1.x > startX
+        if (not result):
+            door = current_room.intersecting_door(playerX=player1.x, playerY=player1.y)
+            if (not door is None):
+                is_golden = door.is_level_up()
+                if (not is_golden):
+                    change_player_room()
+                else:
+                    change_player_level()
+        return result
     elif (player1.facing == Direction.EAST):
-        return player1.x < startX + background.width - 40
+        result = player1.x < startX + background.width - 40
+        return result
     elif (player1.facing == Direction.NORTH):
-        return player1.y < startY + background.height - 40
+        result = player1.y < startY + background.height - 40
+        return result
     else:
-        return player1.y > 0
+        result = player1.y > 0
+        return result
     
 def wait_until_player_in_box(dt):
     if (player1.facing == Direction.WEST):
@@ -142,10 +209,7 @@ def on_draw():
     if (current_state == State.Menu):
         menu.draw()
     if (current_state == State.Game):
-        door_west.draw()
-        door_north.draw()
-        door_east.draw()
-        door_south.draw()
+        current_room.draw()
         player1.draw()
     
 @window.event

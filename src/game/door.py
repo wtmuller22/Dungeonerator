@@ -39,3 +39,13 @@ class Door(Sprite):
         
     def is_level_up(self) -> bool:
         return self.is_gold
+    
+    def check_intersection(self, playerX, playerY) -> bool:
+        if (self.rotation == 90):
+            return (playerX == self.x) and (playerY == (self.y - 40))
+        elif (self.rotation == 180):
+            return ((playerX == (self.x - 40)) and (playerY == (self.y - 40)))
+        elif (self.rotation == 270):
+            return ((playerX == (self.x - 40)) and (playerY == self.y))
+        else:
+            return ((playerX == self.x) and (playerY == self.y))
