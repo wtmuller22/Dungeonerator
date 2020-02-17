@@ -30,9 +30,9 @@ class Player(Sprite):
         self.nextBoxCoord = 0
         self.level = 0
         self.room_number = 0
-        self.health = 100
+        self.life = Life(backX=backgroundX, backY=backgroundY)
         self.defense = 0
-        self.speed = 120
+        self.speed = 240
         self.visibility = 0
         self.player_inventory = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
         self.inventory_rows = 2
@@ -92,3 +92,81 @@ class Player(Sprite):
             self.image = Player.east_standing_img
         self.is_moving = False
         
+    #Returns if dead
+    def change_life(self, change) -> bool:
+        self.life.change_health(amount=change)
+        return self.life.life_array[0].life == 0
+    
+    def increase_life_max(self):
+        self.life.add_heart()
+        
+    def draw(self):
+        Sprite.draw(self)
+        self.life.draw()
+        
+class Life():
+    
+    def __init__(self, backX, backY):
+        self.life_array = []
+        self.startX = backX
+        self.startY = backY
+        for i in range(5):
+            self.add_heart()
+        
+    def add_heart(self):
+        to_add = Heart(backgroundX=self.startX, backgroundY=self.startY)
+        num_hearts = len(self.life_array)
+        to_add.x = to_add.x - (20 * num_hearts)
+        to_add.decrease_scale(20)
+        self.life_array.append(to_add)
+        self.change_health(20)
+        
+    def change_health(self, amount):
+        if (amount < 0):
+            amount = -amount
+            for i in range(len(self.life_array)):
+                inverse = len(self.life_array) - (i + 1)
+                curr_heart = self.life_array[inverse]
+                amount = curr_heart.decrease_scale(change=amount)
+        elif (amount > 0):
+            for i in range(len(self.life_array)):
+                curr_heart = self.life_array[i]
+                amount = curr_heart.increase_scale(change=amount)
+                
+    def draw(self):
+        for heart in self.life_array:
+            heart.draw()
+        
+class Heart(Sprite):
+        
+    heart_img = image.load('images/Heart.png')
+    heart_img.anchor_x = heart_img.width // 2
+    heart_img.anchor_y = heart_img.height // 2
+        
+    def __init__(self, backgroundX, backgroundY):
+        super().__init__(img=Heart.heart_img)
+        self.x = backgroundX + 970
+        self.y = backgroundY + 970
+        self.life = 20
+        
+    def decrease_scale(self, change) -> int:
+        if (change >= self.life):
+            remainder = change - self.life
+            self.life = 0
+            self.scale = 0
+            return remainder
+        else:
+            self.life = self.life - change
+            self.scale = (self.life / 20)
+            return 0
+        
+    def increase_scale(self, change) -> int:
+        remainder = 20 - self.life
+        if (change <= remainder):
+            self.life = self.life + change
+            self.scale = (self.life / 20)
+            return 0
+        else:
+            self.life = 20
+            self.scale = 1
+            return change - remainder

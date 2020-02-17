@@ -50,6 +50,7 @@ class Map():
         rand_room_direct = self.get_room_direction(number=rand_room_num, level=level_num)
         room_to_add = Room(direc=rand_room_direct, backgroundX=self.startX, backgroundY=self.startY)
         room_to_add.make_level_up()
+        room_to_add.add_entities()
         self.room_dict[rand_room_num] = room_to_add
         
     def get_room_direction(self, number, level) -> Direction:
@@ -76,6 +77,7 @@ class Map():
         if (result is None):
             room_direct = self.get_room_direction(number, level)
             room_to_add = Room(direc=room_direct, backgroundX=self.startX, backgroundY=self.startY)
+            room_to_add.add_entities()
             self.room_dict[number] = room_to_add
         return self.room_dict.get(number)
     

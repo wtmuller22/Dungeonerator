@@ -6,6 +6,7 @@ from game.door import Door
 from game.cardinal_direction import Direction
 from game.player import Player
 from game.map import Map
+from game.level import Level
 from pyglet.window import key
 '''
 Created on Feb 11, 2020
@@ -24,6 +25,7 @@ menu = Menu(backgroundX=startX, backgroundY=startY, backgroundW=background.width
 player1 = Player(given_name='player1', backgroundX=startX, backgroundY=startY)
 room_map = Map(backgroundX=startX, backgroundY=startY)
 current_room = None
+displayed_level = Level(backgroundX=startX, backgroundY=startY)
 
 def main():
     pyglet.app.run()
@@ -123,6 +125,7 @@ def change_player_room():
 def change_player_level():
     global current_room
     global player1
+    global displayed_level
     room_location = current_room.location
     player_facing = player1.facing
     if ((room_location == Direction.NW or room_location == Direction.NORTH or room_location == Direction.NE) and (player_facing == Direction.NORTH)):
@@ -180,21 +183,29 @@ def change_player_level():
     elif ((room_location == Direction.NORTH) and (player_facing == Direction.SOUTH)):
         player1.level = player1.level - 1
         player1.room_number = player1.room_number - ((8 * player1.level) + 1)
+        if (player1.level == 0):
+            player1.room_number = 0
         current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
         player1.y = player1.y + 960
     elif ((room_location == Direction.EAST) and (player_facing == Direction.WEST)):
         player1.level = player1.level - 1
         player1.room_number = player1.room_number - ((8 * player1.level) + 3)
+        if (player1.level == 0):
+            player1.room_number = 0
         current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
         player1.x = player1.x + 960
     elif ((room_location == Direction.SOUTH) and (player_facing == Direction.NORTH)):
         player1.level = player1.level - 1
         player1.room_number = player1.room_number - ((8 * player1.level) + 5)
+        if (player1.level == 0):
+            player1.room_number = 0
         current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
         player1.y = player1.y - 960
     elif ((room_location == Direction.WEST) and (player_facing == Direction.EAST)):
         player1.level = player1.level - 1
         player1.room_number = player1.room_number - ((8 * player1.level) + 7)
+        if (player1.level == 0):
+            player1.room_number = 0
         current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
         player1.x = player1.x - 960
     else:
@@ -250,8 +261,10 @@ def change_player_level():
             player1.x = player1.x + 960
             if (not door is None):
                 current_room.entities.append(door)
+    displayed_level.update_level(new_level=player1.level)
     
 def start_moving_player(dt):
+    set_next_box_coords()
     valid = check_player_legal_movement()
     if (valid):
         player1.start_moving()
@@ -259,19 +272,36 @@ def start_moving_player(dt):
         
 def set_player_last_valid():
     if (player1.facing == Direction.WEST):
-        remainder = 40 - ((player1.x - startX) % 40)
-        player1.x = player1.x + remainder
+        if (player1.x <= startX):
+            remainder = 40 - ((player1.x - startX) % 40)
+            player1.x = player1.x + remainder
+        else:
+            if (player1.x != player1.nextBoxCoord):
+                player1.x = player1.nextBoxCoord + 40
     elif (player1.facing == Direction.EAST):
-        remainder = (player1.x - startX) % 40
-        player1.x = player1.x - remainder
+        if (player1.x < startX + background.width - 40):
+            remainder = (player1.x - startX) % 40
+            player1.x = player1.x - remainder
+        else:
+            if (player1.x != player1.nextBoxCoord):
+                player1.x = player1.nextBoxCoord - 40
     elif (player1.facing == Direction.NORTH):
-        remainder = (player1.y - startY) % 40
-        player1.y = player1.y - remainder
+        if (player1.y < startY + background.height - 40):
+            remainder = (player1.y - startY) % 40
+            player1.y = player1.y - remainder
+        else:
+            if (player1.y != player1.nextBoxCoord):
+                player1.y = player1.nextBoxCoord - 40
     else:
-        remainder = 40 - ((player1.y - startY) % 40)
-        player1.y = player1.y + remainder
+        if (player1.y > 0):
+            remainder = 40 - ((player1.y - startY) % 40)
+            player1.y = player1.y + remainder
+        else:
+            if (player1.y != player1.nextBoxCoord):
+                player1.y = player1.nextBoxCoord + 40
         
 def moving_bounds_check(dt):
+    set_next_box_coords()
     valid = check_player_legal_movement()
     if (not valid):
         player1.stop_moving()
@@ -281,6 +311,10 @@ def moving_bounds_check(dt):
 def check_player_legal_movement() -> bool:
     if (player1.facing == Direction.WEST):
         result = player1.x > startX
+        check_x = player1.nextBoxCoord
+        if (check_x == player1.x):
+            check_x = check_x - 40
+        is_monster = current_room.is_monster(aX=(check_x), aY=(player1.y))
         if (not result):
             door = current_room.intersecting_door(playerX=player1.x, playerY=player1.y)
             if (not door is None):
@@ -289,9 +323,13 @@ def check_player_legal_movement() -> bool:
                     change_player_room()
                 else:
                     change_player_level()
-        return result
+        return result and (not is_monster)
     elif (player1.facing == Direction.EAST):
         result = player1.x < startX + background.width - 40
+        check_x = player1.nextBoxCoord
+        if (check_x == player1.x):
+            check_x = check_x + 40
+        is_monster = current_room.is_monster(aX=(check_x), aY=(player1.y))
         if (not result):
             door = current_room.intersecting_door(playerX=player1.x, playerY=player1.y)
             if (not door is None):
@@ -300,9 +338,13 @@ def check_player_legal_movement() -> bool:
                     change_player_room()
                 else:
                     change_player_level()
-        return result
+        return result and (not is_monster)
     elif (player1.facing == Direction.NORTH):
         result = player1.y < startY + background.height - 40
+        check_y = player1.nextBoxCoord
+        if (check_y == player1.y):
+            check_y = check_y + 40
+        is_monster = current_room.is_monster(aX=(player1.x), aY=(check_y))
         if (not result):
             door = current_room.intersecting_door(playerX=player1.x, playerY=player1.y)
             if (not door is None):
@@ -311,9 +353,13 @@ def check_player_legal_movement() -> bool:
                     change_player_room()
                 else:
                     change_player_level()
-        return result
+        return result and (not is_monster)
     else:
         result = player1.y > 0
+        check_y = player1.nextBoxCoord
+        if (check_y == player1.y):
+            check_y = check_y - 40
+        is_monster = current_room.is_monster(aX=(player1.x), aY=(check_y))
         if (not result):
             door = current_room.intersecting_door(playerX=player1.x, playerY=player1.y)
             if (not door is None):
@@ -322,7 +368,7 @@ def check_player_legal_movement() -> bool:
                     change_player_room()
                 else:
                     change_player_level()
-        return result
+        return result and (not is_monster)
     
 def wait_until_player_in_box(dt):
     if (player1.facing == Direction.WEST):
@@ -381,6 +427,7 @@ def on_draw():
     if (current_state == State.Game):
         current_room.draw()
         player1.draw()
+        displayed_level.draw()
     
 @window.event
 def on_key_press(symbol, modifiers):
@@ -422,6 +469,7 @@ def on_key_release(symbol, modifiers):
         if ((symbol == key.UP and player1.facing == Direction.NORTH) or (symbol == key.RIGHT and player1.facing == Direction.EAST) or (symbol == key.DOWN and player1.facing == Direction.SOUTH) or (symbol == key.LEFT and player1.facing == Direction.WEST)):
             pyglet.clock.unschedule(start_moving_player)
             if (player1.is_moving):
+                pyglet.clock.unschedule(moving_bounds_check)
                 set_next_box_coords()
                 pyglet.clock.schedule_interval(wait_until_player_in_box, 1/100.0)
         if ((symbol == key.UP and player1.queued_direction == Direction.NORTH) or (symbol == key.RIGHT and player1.queued_direction == Direction.EAST) or (symbol == key.DOWN and player1.queued_direction == Direction.SOUTH) or (symbol == key.LEFT and player1.queued_direction == Direction.WEST)):

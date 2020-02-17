@@ -1,6 +1,8 @@
 from game.cardinal_direction import Direction
 from game.door import Door
 import random
+from pyglet.sprite import Sprite
+from pyglet import image
 '''
 Created on Feb 11, 2020
 
@@ -116,3 +118,105 @@ class Room():
                 if (result):
                     return entity
         return None
+    
+    def is_entity(self, aX, aY) -> bool:
+        for entity in self.entities:
+            if (not type(entity) is Door):
+                result = (entity.x == aX and entity.y == aY)
+                if (result):
+                    return True
+        if (not self.intersecting_door(playerX=aX, playerY=aY) is None):
+            return True
+        return False
+    
+    def is_monster(self, aX, aY) -> bool:
+        for entity in self.entities:
+            if (type(entity) is Monster):
+                result = (entity.x == aX and entity.y == aY)
+                if (result):
+                    return True
+        return False
+    
+    def add_entities(self):
+        rand_num = random.randint(0, 9)
+        if (rand_num > 1):
+            to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
+            self.entities.append(to_add)
+        if (rand_num > 5):
+            to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
+            self.entities.append(to_add)
+        if (rand_num > 8):
+            to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
+            self.entities.append(to_add)
+            
+'''
+Created on Feb 11, 2020
+
+@author: Wyatt Muller
+
+A dungeon monster to attack player.
+'''
+
+class Monster(Sprite):
+    
+    bat_east_standing = image.load('images/BatEastStanding.png')
+    bat_north_standing = image.load('images/BatNorthStanding.png')
+    bat_south_standing = image.load('images/BatSouthStanding.png')
+    bat_west_standing = image.load('images/BatWestStanding.png')
+    bat_east_moving = image.load_animation('images/BatEast.gif', None, None)
+    bat_north_moving = image.load_animation('images/BatNorth.gif', None, None)
+    bat_south_moving = image.load_animation('images/BatSouth.gif', None, None)
+    bat_west_moving = image.load_animation('images/BatWest.gif', None, None)
+
+    def __init__(self, backgroundX, backgroundY, this_room):
+        super().__init__(img=Monster.bat_south_standing)
+        self.startX = backgroundX
+        self.startY = backgroundY
+        self.curr_room = this_room
+        self.standing_img_east = None
+        self.standing_img_north = None
+        self.standing_img_south = None
+        self.standing_img_west = None
+        self.moving_img_east = None
+        self.moving_img_north = None
+        self.moving_img_south = None
+        self.moving_img_west = None
+        self.health = None
+        self.speed = None
+        self.attack = None
+        self.pick_random_monster()
+        self.pick_random_location()
+        
+    def pick_random_monster(self):
+        rand_num = random.randint(0, 0)
+        if (rand_num == 0):
+            self.standing_img_south = Monster.bat_south_standing
+            self.moving_img_south = Monster.bat_south_moving
+            self.standing_img_east = Monster.bat_east_standing
+            self.moving_img_east = Monster.bat_east_moving
+            self.standing_img_north = Monster.bat_north_standing
+            self.moving_img_north = Monster.bat_north_moving
+            self.standing_img_west = Monster.bat_west_standing
+            self.moving_img_west = Monster.bat_west_moving
+            self.health = 10
+            self.speed = 240
+            self.attack = 5
+        self.image = self.standing_img_south
+            
+    def pick_random_location(self):
+            rand_x = (random.randint(0, 24) * 40) + self.startX
+            rand_y = (random.randint(0, 24) * 40) + self.startY
+            while (self.curr_room.is_entity(aX=rand_x, aY=rand_y)):
+                rand_x = (random.randint(0, 24) * 40) + self.startX
+                rand_y = (random.randint(0, 24) * 40) + self.startY
+            self.x = rand_x
+            self.y = rand_y
+            
+    def remove_self(self):
+        self.delete()
+        self.curr_room.entities.remove(self)
+        
+    def take_damage(self, damage):
+        self.health = self.health - damage
+        if (self.health <= 0):
+            self.remove_self()
