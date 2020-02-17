@@ -7,6 +7,7 @@ from game.cardinal_direction import Direction
 from game.player import Player
 from game.map import Map
 from game.level import Level
+from game.gameover import GameOver
 from pyglet.window import key
 '''
 Created on Feb 11, 2020
@@ -26,6 +27,8 @@ player1 = Player(given_name='player1', backgroundX=startX, backgroundY=startY)
 room_map = Map(backgroundX=startX, backgroundY=startY)
 current_room = None
 displayed_level = Level(backgroundX=startX, backgroundY=startY)
+game_over = GameOver(backgroundX=startX, backgroundY=startY)
+player_is_alive = True
 
 def main():
     pyglet.app.run()
@@ -43,7 +46,7 @@ def menu_to_game():
     current_room = room_map.change_to_room(number=0, level=0)
     current_state = State.Game
     background.switch_image()
-    #pyglet.clock.schedule_interval(update, 1/60.0)
+    pyglet.clock.schedule_interval(update, 1/60.0)
     
 def game_to_menu():
     global current_state
@@ -51,9 +54,36 @@ def game_to_menu():
     current_state = State.Game
     background.switch_image()
     current_room = None
-    #pyglet.clock.unschedule(update)
+    pyglet.clock.unschedule(update)
     
-#def update(dt):
+def player_died():
+    global player_is_alive
+    player_is_alive = False
+    player1.fade()
+    game_over.color = (140, 0, 0, 255)   
+    pyglet.clock.unschedule(update) 
+    
+def update(dt):
+    if (not current_room is None):
+        if (player1.is_moving):
+            if (player1.facing == Direction.NORTH or player1.facing == Direction.SOUTH):
+                total_damage = current_room.update(dt, playerX=player1.x, playerY=player1.nextBoxCoord)
+                if (total_damage > 0):
+                    is_dead = player1.change_life(-1 * total_damage)
+                    if (is_dead):
+                        player_died()
+            else:
+                total_damage = current_room.update(dt, playerX=player1.nextBoxCoord, playerY=player1.y)
+                if (total_damage > 0):
+                    is_dead = player1.change_life(-1 * total_damage)
+                    if (is_dead):
+                        player_died()
+        else:
+            total_damage = current_room.update(dt, playerX=player1.x, playerY=player1.y)
+            if (total_damage > 0):
+                    is_dead = player1.change_life(-1 * total_damage)
+                    if (is_dead):
+                        player_died()
 
 def change_player_room():
     global current_room
@@ -428,6 +458,7 @@ def on_draw():
         current_room.draw()
         player1.draw()
         displayed_level.draw()
+        game_over.draw()
     
 @window.event
 def on_key_press(symbol, modifiers):
@@ -438,7 +469,7 @@ def on_key_press(symbol, modifiers):
             menu.next()
         elif (symbol == key.UP or symbol == key.LEFT):
             menu.previous()
-    elif current_state == State.Game:
+    elif current_state == State.Game and player_is_alive:
         if (not player1.is_moving):
             player1.queued_direction = None
             if symbol == key.UP:
@@ -465,7 +496,7 @@ def on_key_press(symbol, modifiers):
             
 @window.event
 def on_key_release(symbol, modifiers):
-    if (current_state == State.Game):
+    if (current_state == State.Game and player_is_alive):
         if ((symbol == key.UP and player1.facing == Direction.NORTH) or (symbol == key.RIGHT and player1.facing == Direction.EAST) or (symbol == key.DOWN and player1.facing == Direction.SOUTH) or (symbol == key.LEFT and player1.facing == Direction.WEST)):
             pyglet.clock.unschedule(start_moving_player)
             if (player1.is_moving):

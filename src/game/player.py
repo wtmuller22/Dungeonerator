@@ -103,6 +103,16 @@ class Player(Sprite):
     def draw(self):
         Sprite.draw(self)
         self.life.draw()
+    
+    def fade(self):
+        clock.schedule_interval(self.decrease_opacity, 1/60)
+        
+    def decrease_opacity(self, dt):
+        if (self.opacity >= 2):
+            self.opacity = self.opacity - 2
+        else:
+            self.opacity = 0
+            clock.unschedule(self.decrease_opacity)
         
 class Life():
     

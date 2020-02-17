@@ -1,8 +1,9 @@
 from game.cardinal_direction import Direction
 from game.door import Door
-import random
+import random, math
 from pyglet.sprite import Sprite
 from pyglet import image
+from pyglet import clock
 '''
 Created on Feb 11, 2020
 
@@ -149,6 +150,13 @@ class Room():
             to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
             self.entities.append(to_add)
             
+    def update(self, dt, playerX, playerY) -> int:
+        total_damage = 0
+        for entity in self.entities:
+            if (type(entity) is Monster):
+                total_damage = total_damage + entity.update(dt, player_x=playerX, player_y=playerY)
+        return total_damage
+            
 '''
 Created on Feb 11, 2020
 
@@ -172,6 +180,7 @@ class Monster(Sprite):
         super().__init__(img=Monster.bat_south_standing)
         self.startX = backgroundX
         self.startY = backgroundY
+        self.next_coord = None
         self.curr_room = this_room
         self.standing_img_east = None
         self.standing_img_north = None
@@ -184,6 +193,8 @@ class Monster(Sprite):
         self.health = None
         self.speed = None
         self.attack = None
+        self.sight = None
+        self.is_moving = False
         self.pick_random_monster()
         self.pick_random_location()
         
@@ -201,6 +212,7 @@ class Monster(Sprite):
             self.health = 10
             self.speed = 240
             self.attack = 5
+            self.sight = 4
         self.image = self.standing_img_south
             
     def pick_random_location(self):
@@ -220,3 +232,96 @@ class Monster(Sprite):
         self.health = self.health - damage
         if (self.health <= 0):
             self.remove_self()
+            
+    def move_east(self, dt):
+        if (self.x < self.next_coord):
+            self.x = self.x + (self.speed * dt)
+        else:
+            self.x = self.next_coord
+            clock.unschedule(self.move_east)
+            self.is_moving = False
+            self.image = self.standing_img_east
+
+    def move_west(self, dt):
+        if (self.x > self.next_coord):
+            self.x = self.x - (self.speed * dt)
+        else:
+            self.x = self.next_coord
+            clock.unschedule(self.move_west)
+            self.is_moving = False
+            self.image = self.standing_img_west
+
+    def move_south(self, dt):
+        if (self.y > self.next_coord):
+            self.y = self.y - (self.speed * dt)
+        else:
+            self.y = self.next_coord
+            clock.unschedule(self.move_south)
+            self.is_moving = False
+            self.image = self.standing_img_south
+
+    def move_north(self, dt):
+        if (self.y < self.next_coord):
+            self.y = self.y + (self.speed * dt)
+        else:
+            self.y = self.next_coord
+            clock.unschedule(self.move_north)
+            self.is_moving = False
+            self.image = self.standing_img_north
+            
+    def move_block(self, playerX, playerY):
+        dif_x = self.x - playerX
+        dif_y = self.y - playerY
+        if (math.fabs(dif_x) >= math.fabs(dif_y)):
+            if (dif_x < 0):
+                self.next_coord = self.x + 40
+                self.image = self.moving_img_east
+                clock.schedule_interval(self.move_east, 1/60.0)
+            else:
+                self.next_coord = self.x - 40
+                self.image = self.moving_img_west
+                clock.schedule_interval(self.move_west, 1/60.0)
+        else:
+            if (dif_y < 0):
+                self.next_coord = self.y + 40
+                self.image = self.moving_img_north
+                clock.schedule_interval(self.move_north, 1/60.0)
+            else:
+                self.next_coord = self.y - 40
+                self.image = self.moving_img_south
+                clock.schedule_interval(self.move_south, 1/60.0)
+                
+    def return_to_standing(self, dt):
+        if (self.image == self.moving_img_east):
+            self.image = self.standing_img_east
+        elif (self.image == self.moving_img_west):
+            self.image = self.standing_img_west
+        elif (self.image == self.moving_img_north):
+            self.image = self.standing_img_north
+        else:
+            self.image = self.standing_img_south
+            
+    def set_attacking_img(self):
+        if (self.image == self.standing_img_east):
+            self.image = self.moving_img_east
+        elif (self.image == self.standing_img_west):
+            self.image = self.moving_img_west
+        elif (self.image == self.standing_img_north):
+            self.image = self.moving_img_north
+        else:
+            self.image = self.moving_img_south
+
+    def update(self, dt, player_x, player_y) -> int:
+        dif_x = math.fabs(self.x - player_x) / 40
+        dif_y = math.fabs(self.y - player_y) / 40
+        distance = dif_x + dif_y
+        if ((distance <= self.sight) and (not self.is_moving) and (distance > 1)):
+            self.is_moving = True
+            self.move_block(playerX=player_x, playerY=player_y)
+            return 0
+        elif (distance <= 1):
+            self.set_attacking_img()
+            clock.schedule_once(self.return_to_standing, 0.5)
+            return self.attack
+        else:
+            return 0
