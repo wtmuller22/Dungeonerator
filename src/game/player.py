@@ -1,7 +1,9 @@
 from pyglet.sprite import Sprite
 from pyglet import image
 from pyglet import clock
+from pyglet.text import Label
 from game.cardinal_direction import Direction
+from game.item_type import Type
 '''
 Created on Feb 11, 2020
 
@@ -34,18 +36,19 @@ class Player(Sprite):
         self.defense = 0
         self.speed = 240
         self.visibility = 0
-        self.player_inventory = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
-        self.inventory_rows = 2
+        self.player_inventory = Inventory(backX=backgroundX, backY=backgroundY)
         self.facing = Direction.SOUTH
         self.is_moving = False
         self.queued_direction = None
+        self.selected_weapon = None
+        self.selected_helmet = None
+        self.selected_chestpiece = None
+        self.selected_leggings = None
+        self.selected_footwear = None
+        self.selected_torch = None
         
-    def add_to_inventory(self, to_add):
-        for i in range(Player.inventory_rows):
-            for j in range(5):
-                if (Player.player_inventory[i][j] == 0):
-                    Player.player_inventory[i][j] = to_add
-                    return
+    def add_to_inventory(self, to_add) -> bool:
+        return self.player_inventory.add(obj=to_add)
                 
     def update(self, dt):
         if (self.facing == Direction.SOUTH):
@@ -113,6 +116,47 @@ class Player(Sprite):
         else:
             self.opacity = 0
             clock.unschedule(self.decrease_opacity)
+            
+    def draw_inventory(self):
+        self.player_inventory.draw()
+
+    def change_highlight(self, direc):
+        self.player_inventory.update_highlight(direction=direc)
+
+    def toggle_select_highlight(self):
+        current_slot = self.player_inventory.get_curr_slot()
+        slot_type = current_slot.get_item_type()
+        if (not slot_type is None):
+            if (slot_type == Type.Weapon):
+                if (not self.selected_weapon is None):
+                    self.selected_weapon.toggle_select()
+                self.selected_weapon = current_slot
+                self.selected_weapon.toggle_select()
+            elif (slot_type == Type.Helmet):
+                if (not self.selected_helmet is None):
+                    self.selected_helmet.toggle_select()
+                self.selected_helmet = current_slot
+                self.selected_helmet.toggle_select()
+            elif (slot_type == Type.Chestpiece):
+                if (not self.selected_chestpiece is None):
+                    self.selected_chestpiece.toggle_select()
+                self.selected_chestpiece = current_slot
+                self.selected_chestpiece.toggle_select()
+            elif (slot_type == Type.Leggings):
+                if (not self.selected_leggings is None):
+                    self.selected_leggings.toggle_select()
+                self.selected_leggings = current_slot
+                self.selected_leggings.toggle_select()
+            elif (slot_type == Type.Footwear):
+                if (not self.selected_footwear is None):
+                    self.selected_footwear.toggle_select()
+                self.selected_footwear = current_slot
+                self.selected_footwear.toggle_select()
+            else:
+                if (not self.selected_torch is None):
+                    self.selected_torch.toggle_select()
+                self.selected_torch = current_slot
+                self.selected_torch.toggle_select()
         
 class Life():
     
@@ -180,3 +224,120 @@ class Heart(Sprite):
             self.life = 20
             self.scale = 1
             return change - remainder
+        
+class Inventory():
+    
+    def __init__(self, backX, backY):
+        self.array = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+        self.title = Label("Inventory",
+                              font_name='Times New Roman',
+                              font_size=56,
+                              x=backX + 500,
+                              y=backY + 750,
+                              color=(135, 135, 135, 128),
+                              align='center',
+                              anchor_x='center',
+                              anchor_y='center')
+        self.startX = backX
+        self.startY = backY
+        self.fill_with_slots()
+        self.highlighted_x = 0
+        self.highlighted_y = 0
+        self.array[self.highlighted_y][self.highlighted_x].toggle_highlight()
+        
+    def fill_with_slots(self):
+        for i in range(len(self.array)):
+            for j in range(len(self.array[i])):
+                self.array[i][j] = Slot(aX=(self.startX + 200 + (j * 120)), aY=(self.startY + 380 - (i * 120)))
+        
+    def add(self, obj) -> bool:
+        for i in range(len(self.array)):
+            for j in range(len(self.array[i])):
+                if (self.array[i][j].item is None):
+                    self.array[i][j].item = obj
+                    return True
+        return False
+    
+    def update_highlight(self, direction):
+        if (direction == Direction.NORTH):
+            if (self.highlighted_y > 0):
+                self.array[self.highlighted_y][self.highlighted_x].toggle_highlight()
+                self.highlighted_y = self.highlighted_y - 1
+                self.array[self.highlighted_y][self.highlighted_x].toggle_highlight()
+        elif (direction == Direction.EAST):
+            if (self.highlighted_x < 4):
+                self.array[self.highlighted_y][self.highlighted_x].toggle_highlight()
+                self.highlighted_x = self.highlighted_x + 1
+                self.array[self.highlighted_y][self.highlighted_x].toggle_highlight()
+        elif (direction == Direction.SOUTH):
+            if (self.highlighted_y < (len(self.array) - 1)):
+                self.array[self.highlighted_y][self.highlighted_x].toggle_highlight()
+                self.highlighted_y = self.highlighted_y + 1
+                self.array[self.highlighted_y][self.highlighted_x].toggle_highlight()
+        else:
+            if (self.highlighted_x > 0):
+                self.array[self.highlighted_y][self.highlighted_x].toggle_highlight()
+                self.highlighted_x = self.highlighted_x - 1
+                self.array[self.highlighted_y][self.highlighted_x].toggle_highlight()
+                
+    def get_curr_slot(self):
+        return self.array[self.highlighted_y][self.highlighted_x]
+        
+    def draw(self):
+        self.title.draw()
+        for row in self.array:
+            for slot in row:
+                slot.draw()
+        
+class Slot(Sprite):
+    
+    empty = image.load('images/EmptySlot.png')
+    selected = image.load('images/SelectedSlot.png')
+    highlighted = image.load('images/HighlightedSlot.png')
+    highlighted_selected = image.load('images/HighlightedSelectedSlot.png')
+    
+    def __init__(self, aX, aY):
+        super().__init__(img=Slot.empty)
+        self.x = aX
+        self.y = aY
+        self.opacity = 192
+        self.item = None
+        self.is_selected = False
+        self.is_highlighted = False
+        
+    def toggle_select(self):
+        self.is_selected = not self.is_selected
+        if (self.is_selected):
+            self.image = Slot.highlighted_selected
+        else:
+            if (self.is_highlighted):
+                self.image = Slot.highlighted
+            else:
+                self.image = Slot.empty
+            
+    def toggle_highlight(self):
+        self.is_highlighted = not self.is_highlighted
+        if (self.is_highlighted):
+            if (self.is_selected):
+                self.image = Slot.highlighted_selected
+            else:
+                self.image = Slot.highlighted
+        else:
+            if (self.is_selected):
+                self.image = Slot.selected
+            else:
+                self.image = Slot.empty
+                
+    def break_item(self):
+        self.item = None
+        self.toggle_select()
+        
+    def get_item_type(self) -> Type:
+        if (self.item is None):
+            return None
+            
+    def draw(self):
+        Sprite.draw(self)
+        if (not self.item is None):
+            self.item.draw()
+        

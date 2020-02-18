@@ -195,6 +195,8 @@ class Monster(Sprite):
         self.attack = None
         self.sight = None
         self.is_moving = False
+        self.is_attacking = False
+        self.facing = Direction.SOUTH
         self.pick_random_monster()
         self.pick_random_location()
         
@@ -274,42 +276,61 @@ class Monster(Sprite):
         dif_y = self.y - playerY
         if (math.fabs(dif_x) >= math.fabs(dif_y)):
             if (dif_x < 0):
+                self.facing = Direction.EAST
                 self.next_coord = self.x + 40
                 self.image = self.moving_img_east
                 clock.schedule_interval(self.move_east, 1/60.0)
             else:
+                self.facing = Direction.WEST
                 self.next_coord = self.x - 40
                 self.image = self.moving_img_west
                 clock.schedule_interval(self.move_west, 1/60.0)
         else:
             if (dif_y < 0):
+                self.facing = Direction.NORTH
                 self.next_coord = self.y + 40
                 self.image = self.moving_img_north
                 clock.schedule_interval(self.move_north, 1/60.0)
             else:
+                self.facing = Direction.SOUTH
                 self.next_coord = self.y - 40
                 self.image = self.moving_img_south
                 clock.schedule_interval(self.move_south, 1/60.0)
                 
     def return_to_standing(self, dt):
-        if (self.image == self.moving_img_east):
+        if (self.facing == Direction.EAST):
             self.image = self.standing_img_east
-        elif (self.image == self.moving_img_west):
+        elif (self.facing == Direction.WEST):
             self.image = self.standing_img_west
-        elif (self.image == self.moving_img_north):
+        elif (self.facing == Direction.NORTH):
             self.image = self.standing_img_north
         else:
             self.image = self.standing_img_south
             
     def set_attacking_img(self):
-        if (self.image == self.standing_img_east):
+        if (self.facing == Direction.EAST):
             self.image = self.moving_img_east
-        elif (self.image == self.standing_img_west):
+        elif (self.facing == Direction.WEST):
             self.image = self.moving_img_west
-        elif (self.image == self.standing_img_north):
+        elif (self.facing == Direction.NORTH):
             self.image = self.moving_img_north
         else:
             self.image = self.moving_img_south
+            
+    def face_player(self, playerX, playerY):
+        dif_x = self.x - playerX
+        dif_y = self.y - playerY
+        if (dif_x > 0):
+            self.facing = Direction.EAST
+        elif (dif_x < 0):
+            self.facing = Direction.WEST
+        elif (dif_y > 0):
+            self.facing = Direction.SOUTH
+        else:
+            self.facing = Direction.NORTH
+            
+    def done_attacking(self, dt):
+        self.is_attacking = False
 
     def update(self, dt, player_x, player_y) -> int:
         dif_x = math.fabs(self.x - player_x) / 40
@@ -319,9 +340,12 @@ class Monster(Sprite):
             self.is_moving = True
             self.move_block(playerX=player_x, playerY=player_y)
             return 0
-        elif (distance <= 1):
+        elif (distance <= 1 and (not self.is_attacking)):
+            self.face_player(playerX=player_x, playerY=player_y)
+            self.is_attacking = True
             self.set_attacking_img()
             clock.schedule_once(self.return_to_standing, 0.5)
+            clock.schedule_once(self.done_attacking, 0.75)
             return self.attack
         else:
             return 0

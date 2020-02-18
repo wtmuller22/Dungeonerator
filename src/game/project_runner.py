@@ -48,13 +48,21 @@ def menu_to_game():
     background.switch_image()
     pyglet.clock.schedule_interval(update, 1/60.0)
     
-def game_to_menu():
+def inventory_to_menu():
     global current_state
     global current_room
-    current_state = State.Game
+    current_state = State.Menu
     background.switch_image()
     current_room = None
     pyglet.clock.unschedule(update)
+    
+def game_to_inventory():
+    global current_state
+    current_state = State.Inventory
+    
+def inventory_to_game():
+    global current_state
+    current_state = State.Game
     
 def player_died():
     global player_is_alive
@@ -454,11 +462,13 @@ def on_draw():
     background.draw()
     if (current_state == State.Menu):
         menu.draw()
-    if (current_state == State.Game):
+    if (current_state == State.Game or current_state == State.Inventory):
         current_room.draw()
         player1.draw()
         displayed_level.draw()
         game_over.draw()
+    if (current_state == State.Inventory):
+        player1.draw_inventory()
     
 @window.event
 def on_key_press(symbol, modifiers):
@@ -493,6 +503,27 @@ def on_key_press(symbol, modifiers):
                 player1.queued_direction = Direction.WEST
             elif symbol == key.DOWN:
                 player1.queued_direction = Direction.SOUTH
+        if symbol == key.E:
+            player1.queued_direction = None
+            pyglet.clock.unschedule(start_moving_player)
+            if (player1.is_moving):
+                pyglet.clock.unschedule(moving_bounds_check)
+                set_next_box_coords()
+                pyglet.clock.schedule_interval(wait_until_player_in_box, 1/100.0)
+            game_to_inventory()
+    elif current_state == State.Inventory and player_is_alive:
+        if symbol == key.UP:
+            player1.change_highlight(direc=Direction.NORTH)
+        elif symbol == key.RIGHT:
+            player1.change_highlight(direc=Direction.EAST)
+        elif symbol == key.DOWN:
+            player1.change_highlight(direc=Direction.SOUTH)
+        elif symbol == key.LEFT:
+            player1.change_highlight(direc=Direction.WEST)
+        elif symbol == key.W:
+            player1.toggle_select_highlight()
+        elif symbol == key.E:
+            inventory_to_game()
             
 @window.event
 def on_key_release(symbol, modifiers):
