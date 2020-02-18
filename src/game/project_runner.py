@@ -47,6 +47,7 @@ def menu_to_game():
     current_state = State.Game
     background.switch_image()
     pyglet.clock.schedule_interval(update, 1/60.0)
+    pyglet.clock.schedule_interval(check_ground, 1/60.0)
     
 def inventory_to_menu():
     global current_state
@@ -55,6 +56,7 @@ def inventory_to_menu():
     background.switch_image()
     current_room = None
     pyglet.clock.unschedule(update)
+    pyglet.clock.unschedule(check_ground)
     
 def game_to_inventory():
     global current_state
@@ -70,6 +72,15 @@ def player_died():
     player1.fade()
     game_over.color = (140, 0, 0, 255)   
     pyglet.clock.unschedule(update) 
+    
+def check_ground(dt):
+    if (not current_room is None):
+        result = current_room.intersecting_item(playerX=player1.x, playerY=player1.y)
+        if (not result is None):
+            ground_type = result.item_enum
+            add_result = player1.add_to_inventory(to_add=ground_type)
+            if (add_result):
+                result.remove_self()
     
 def update(dt):
     if (not current_room is None):
@@ -455,6 +466,29 @@ def set_next_box_coords():
         player1.nextBoxCoord = player1.y + (40 - ((player1.y - startY) % 40))
     else:
         player1.nextBoxCoord = player1.y - ((player1.y - startY) % 40)
+        
+def player_attack():
+    if player1.attack > 0:
+        if player1.facing == Direction.NORTH:
+            check_y = player1.nextBoxCoord
+            if (check_y == player1.y):
+                check_y = check_y + 40
+            current_room.player_attack(damage=player1.attack, playerX=player1.x, playerY=check_y)
+        elif player1.facing == Direction.EAST:
+            check_x = player1.nextBoxCoord
+            if (check_x == player1.x):
+                check_x = check_x + 40
+            current_room.player_attack(damage=player1.attack, playerX=check_x, playerY=player1.y)
+        elif player1.facing == Direction.SOUTH:
+            check_y = player1.nextBoxCoord
+            if (check_y == player1.y):
+                check_y = check_y - 40
+            current_room.player_attack(damage=player1.attack, playerX=player1.x, playerY=check_y)
+        else:
+            check_x = player1.nextBoxCoord
+            if (check_x == player1.x):
+                check_x = check_x - 40
+            current_room.player_attack(damage=player1.attack, playerX=check_x, playerY=player1.y)
 
 @window.event
 def on_draw():
@@ -467,7 +501,7 @@ def on_draw():
         player1.draw()
         displayed_level.draw()
         game_over.draw()
-    if (current_state == State.Inventory):
+    if (current_state == State.Inventory and player_is_alive):
         player1.draw_inventory()
     
 @window.event
@@ -511,6 +545,8 @@ def on_key_press(symbol, modifiers):
                 set_next_box_coords()
                 pyglet.clock.schedule_interval(wait_until_player_in_box, 1/100.0)
             game_to_inventory()
+        if symbol == key.W:
+            player_attack()
     elif current_state == State.Inventory and player_is_alive:
         if symbol == key.UP:
             player1.change_highlight(direc=Direction.NORTH)

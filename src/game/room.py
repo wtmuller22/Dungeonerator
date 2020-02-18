@@ -1,4 +1,5 @@
 from game.cardinal_direction import Direction
+from game.item_type import Type
 from game.door import Door
 import random, math
 from pyglet.sprite import Sprite
@@ -138,6 +139,14 @@ class Room():
                     return True
         return False
     
+    def intersecting_item(self, playerX, playerY):
+        for entity in self.entities:
+            if (type(entity) is Item):
+                result = (math.floor(math.fabs(entity.x - playerX)) == 0 and math.floor(math.fabs(entity.y - playerY)) == 0)
+                if (result):
+                    return entity
+        return None
+    
     def add_entities(self):
         rand_num = random.randint(0, 9)
         if (rand_num > 1):
@@ -149,6 +158,16 @@ class Room():
         if (rand_num > 8):
             to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
             self.entities.append(to_add)
+        rand_num = random.randint(1, 100)
+        if (rand_num > 66):
+            to_add = Item(backX=self.startX, backY=self.startY, this_room=self)
+            self.entities.append(to_add)
+        if (rand_num > 86):
+            to_add = Item(backX=self.startX, backY=self.startY, this_room=self)
+            self.entities.append(to_add)
+        if (rand_num > 96):
+            to_add = Item(backX=self.startX, backY=self.startY, this_room=self)
+            self.entities.append(to_add)
             
     def update(self, dt, playerX, playerY) -> int:
         total_damage = 0
@@ -156,6 +175,13 @@ class Room():
             if (type(entity) is Monster):
                 total_damage = total_damage + entity.update(dt, player_x=playerX, player_y=playerY)
         return total_damage
+    
+    def player_attack(self, damage, playerX, playerY):
+        for entity in self.entities:
+            if (type(entity) is Monster):
+                result = math.floor(math.fabs(entity.x - playerX)) == 0 and math.floor(math.fabs(entity.y - playerY)) == 0
+                if (result):
+                    entity.take_damage(dmg=damage)
             
 '''
 Created on Feb 11, 2020
@@ -196,6 +222,7 @@ class Monster(Sprite):
         self.sight = None
         self.is_moving = False
         self.is_attacking = False
+        self.is_dead = False
         self.facing = Direction.SOUTH
         self.pick_random_monster()
         self.pick_random_location()
@@ -230,10 +257,10 @@ class Monster(Sprite):
         self.delete()
         self.curr_room.entities.remove(self)
         
-    def take_damage(self, damage):
-        self.health = self.health - damage
+    def take_damage(self, dmg):
+        self.health = self.health - dmg
         if (self.health <= 0):
-            self.remove_self()
+            self.is_dead = True
             
     def move_east(self, dt):
         if (self.x < self.next_coord):
@@ -339,6 +366,10 @@ class Monster(Sprite):
         if ((distance <= self.sight) and (not self.is_moving) and (distance > 1)):
             self.is_moving = True
             self.move_block(playerX=player_x, playerY=player_y)
+            if (self.is_dead):
+                clock.unschedule(self.return_to_standing)
+                clock.unschedule(self.done_attacking)
+                self.remove_self()
             return 0
         elif (distance <= 1 and (not self.is_attacking)):
             self.face_player(playerX=player_x, playerY=player_y)
@@ -346,6 +377,73 @@ class Monster(Sprite):
             self.set_attacking_img()
             clock.schedule_once(self.return_to_standing, 0.5)
             clock.schedule_once(self.done_attacking, 0.75)
+            if (self.is_dead):
+                clock.unschedule(self.return_to_standing)
+                clock.unschedule(self.done_attacking)
+                self.remove_self()
             return self.attack
         else:
+            if (self.is_dead):
+                clock.unschedule(self.return_to_standing)
+                clock.unschedule(self.done_attacking)
+                self.remove_self()
             return 0
+        
+'''
+Created on Feb 18, 2020
+
+@author: Wyatt Muller
+
+A random dungeon item.
+'''
+class Item(Sprite):
+    
+    sword = image.load('images/IronSwordGround.png')
+    helmet = image.load('images/IronHelmetGround.png')
+    chestpiece = image.load('images/IronChestpieceGround.png')
+    leggings = image.load('images/IronLeggingsGround.png')
+    hermes = image.load('images/HermesBootsGround.png')
+    torch = image.load('images/TorchGround.png')
+    
+    def __init__(self, backX, backY, this_room):
+        super().__init__(img=Item.sword)
+        self.startX = backX
+        self.startY = backY
+        self.curr_room = this_room
+        self.pick_random_location()
+        self.item_enum = None
+        self.pick_random_item()
+        
+    def pick_random_location(self):
+            rand_x = (random.randint(0, 24) * 40) + self.startX
+            rand_y = (random.randint(0, 24) * 40) + self.startY
+            while (self.curr_room.is_entity(aX=rand_x, aY=rand_y)):
+                rand_x = (random.randint(0, 24) * 40) + self.startX
+                rand_y = (random.randint(0, 24) * 40) + self.startY
+            self.x = rand_x
+            self.y = rand_y
+            
+    def pick_random_item(self):
+        rand_num = random.randint(0, 5)
+        if (rand_num == 0):
+            self.item_enum = Type.Weapon
+            self.image = Item.sword
+        elif (rand_num == 1):
+            self.item_enum = Type.Helmet
+            self.image = Item.helmet
+        elif (rand_num == 2):
+            self.item_enum = Type.Chestpiece
+            self.image = Item.chestpiece
+        elif (rand_num == 3):
+            self.item_enum = Type.Leggings
+            self.image = Item.leggings
+        elif (rand_num == 4):
+            self.item_enum = Type.Footwear
+            self.image = Item.hermes
+        else:
+            self.item_enum = Type.Torch
+            self.image = Item.torch
+            
+    def remove_self(self):
+        self.delete()
+        self.curr_room.entities.remove(self)

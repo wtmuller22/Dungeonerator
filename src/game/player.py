@@ -33,10 +33,11 @@ class Player(Sprite):
         self.level = 0
         self.room_number = 0
         self.life = Life(backX=backgroundX, backY=backgroundY)
-        self.defense = 0
+        self.defense = 1
         self.speed = 240
         self.visibility = 0
-        self.player_inventory = Inventory(backX=backgroundX, backY=backgroundY)
+        self.attack = 0
+        self.player_inventory = Inventory(backX=backgroundX, backY=backgroundY, the_player=self)
         self.facing = Direction.SOUTH
         self.is_moving = False
         self.queued_direction = None
@@ -59,6 +60,11 @@ class Player(Sprite):
             self.y = self.y + (self.speed * dt)
         else:
             self.x = self.x + (self.speed * dt)
+        if (not self.selected_footwear is None):
+            result = self.selected_footwear.take_damage(damage=1/60.0)
+            if (result):
+                self.selected_footwear = None
+                self.speed = 240
         
     def change_direction(self, direc):
         self.facing = direc
@@ -97,7 +103,23 @@ class Player(Sprite):
         
     #Returns if dead
     def change_life(self, change) -> bool:
-        self.life.change_health(amount=change)
+        self.life.change_health(amount=change, defense=self.defense)
+        if (change < 0):
+            if (not self.selected_chestpiece is None):
+                result = self.selected_chestpiece.take_damage(damage=(-1 * change))
+                if (result):
+                    self.selected_chestpiece = None
+                    self.defense = self.defense - 1
+            if (not self.selected_helmet is None):
+                result = self.selected_helmet.take_damage(damage=(-1 * change))
+                if (result):
+                    self.selected_helmet = None
+                    self.defense = self.defense - 0.5
+            if (not self.selected_leggings is None):
+                result = self.selected_leggings.take_damage(damage=(-1 * change))
+                if (result):
+                    self.selected_leggings = None
+                    self.defense = self.defense - 0.5
         return self.life.life_array[0].life == 0
     
     def increase_life_max(self):
@@ -130,33 +152,63 @@ class Player(Sprite):
             if (slot_type == Type.Weapon):
                 if (not self.selected_weapon is None):
                     self.selected_weapon.toggle_select()
-                self.selected_weapon = current_slot
-                self.selected_weapon.toggle_select()
+                if (self.selected_weapon is None or not (current_slot.x == self.selected_weapon.x and current_slot.y == self.selected_weapon.y)):
+                    self.selected_weapon = current_slot
+                    self.attack = self.selected_weapon.item.attack_strength_defense
+                    self.selected_weapon.toggle_select()
+                else:
+                    self.selected_weapon = None
+                    self.attack = 0
             elif (slot_type == Type.Helmet):
                 if (not self.selected_helmet is None):
+                    self.defense = self.defense - self.selected_helmet.item.attack_strength_defense
                     self.selected_helmet.toggle_select()
-                self.selected_helmet = current_slot
-                self.selected_helmet.toggle_select()
+                if (self.selected_helmet is None or not (current_slot.x == self.selected_helmet.x and current_slot.y == self.selected_helmet.y)):
+                    self.selected_helmet = current_slot
+                    self.defense = self.defense + self.selected_helmet.item.attack_strength_defense
+                    self.selected_helmet.toggle_select()
+                else:
+                    self.selected_helmet = None
             elif (slot_type == Type.Chestpiece):
                 if (not self.selected_chestpiece is None):
+                    self.defense = self.defense - self.selected_chestpiece.item.attack_strength_defense
                     self.selected_chestpiece.toggle_select()
-                self.selected_chestpiece = current_slot
-                self.selected_chestpiece.toggle_select()
+                if (self.selected_chestpiece is None or not (current_slot.x == self.selected_chestpiece.x and current_slot.y == self.selected_chestpiece.y)):
+                    self.selected_chestpiece = current_slot
+                    self.defense = self.defense + self.selected_chestpiece.item.attack_strength_defense
+                    self.selected_chestpiece.toggle_select()
+                else:
+                    self.selected_chestpiece = None
             elif (slot_type == Type.Leggings):
                 if (not self.selected_leggings is None):
+                    self.defense = self.defense - self.selected_leggings.item.attack_strength_defense
                     self.selected_leggings.toggle_select()
-                self.selected_leggings = current_slot
-                self.selected_leggings.toggle_select()
+                if (self.selected_leggings is None or not (current_slot.x == self.selected_leggings.x and current_slot.y == self.selected_leggings.y)):
+                    self.selected_leggings = current_slot
+                    self.defense = self.defense + self.selected_leggings.item.attack_strength_defense
+                    self.selected_leggings.toggle_select()
+                else:
+                    self.selected_leggings = None
             elif (slot_type == Type.Footwear):
                 if (not self.selected_footwear is None):
+                    self.speed = self.speed - self.selected_footwear.item.attack_strength_defense
                     self.selected_footwear.toggle_select()
-                self.selected_footwear = current_slot
-                self.selected_footwear.toggle_select()
+                if (self.selected_footwear is None or not (current_slot.x == self.selected_footwear.x and current_slot.y == self.selected_footwear.y)):
+                    self.selected_footwear = current_slot
+                    self.speed = self.speed + self.selected_footwear.item.attack_strength_defense
+                    self.selected_footwear.toggle_select()
+                else:
+                    self.selected_footwear = None
             else:
                 if (not self.selected_torch is None):
+                    self.visibility = self.visibility - self.selected_torch.item.attack_strength_defense
                     self.selected_torch.toggle_select()
-                self.selected_torch = current_slot
-                self.selected_torch.toggle_select()
+                if (self.selected_torch is None or not (current_slot.x == self.selected_torch.x and current_slot.y == self.selected_torch.y)):
+                    self.selected_torch = current_slot
+                    self.visibility = self.visibility + self.selected_torch.item.attack_strength_defense
+                    self.selected_torch.toggle_select()
+                else:
+                    self.selected_torch = None
         
 class Life():
     
@@ -173,11 +225,12 @@ class Life():
         to_add.x = to_add.x - (20 * num_hearts)
         to_add.decrease_scale(20)
         self.life_array.append(to_add)
-        self.change_health(20)
+        self.change_health(20, 0)
         
-    def change_health(self, amount):
+    def change_health(self, amount, defense):
         if (amount < 0):
             amount = -amount
+            amount = amount / defense
             for i in range(len(self.life_array)):
                 inverse = len(self.life_array) - (i + 1)
                 curr_heart = self.life_array[inverse]
@@ -227,7 +280,7 @@ class Heart(Sprite):
         
 class Inventory():
     
-    def __init__(self, backX, backY):
+    def __init__(self, backX, backY, the_player):
         self.array = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
         self.title = Label("Inventory",
                               font_name='Times New Roman',
@@ -240,6 +293,7 @@ class Inventory():
                               anchor_y='center')
         self.startX = backX
         self.startY = backY
+        self.this_player = the_player
         self.fill_with_slots()
         self.highlighted_x = 0
         self.highlighted_y = 0
@@ -254,7 +308,7 @@ class Inventory():
         for i in range(len(self.array)):
             for j in range(len(self.array[i])):
                 if (self.array[i][j].item is None):
-                    self.array[i][j].item = obj
+                    self.array[i][j].item = Item(item_enum=obj, aX=(self.startX + 210 + (j * 120)), aY=(self.startY + 390 - (i * 120)), frame=self.array[i][j], a_player=self.this_player)
                     return True
         return False
     
@@ -309,9 +363,13 @@ class Slot(Sprite):
         self.is_selected = not self.is_selected
         if (self.is_selected):
             self.image = Slot.highlighted_selected
+            if (self.item.type == Type.Torch):
+                clock.schedule_interval(self.item.lose_light, 1)
         else:
             if (self.is_highlighted):
                 self.image = Slot.highlighted
+                if ((not self.item is None) and self.item.type == Type.Torch):
+                    clock.unschedule(self.item.lose_light)
             else:
                 self.image = Slot.empty
             
@@ -329,15 +387,74 @@ class Slot(Sprite):
                 self.image = Slot.empty
                 
     def break_item(self):
+        self.item.delete()
         self.item = None
         self.toggle_select()
         
     def get_item_type(self) -> Type:
         if (self.item is None):
             return None
+        else:
+            return self.item.type
+        
+    def take_damage(self, damage) -> bool:
+        return self.item.take_damage(dmg=damage)
             
     def draw(self):
         Sprite.draw(self)
         if (not self.item is None):
             self.item.draw()
         
+class Item(Sprite):
+    
+    sword = image.load('images/IronSwordInventory.png')
+    helmet = image.load('images/IronHelmetInventory.png')
+    chestpiece = image.load('images/IronChestpieceInventory.png')
+    leggings = image.load('images/IronLeggingsInventory.png')
+    hermes = image.load('images/HermesBootsInventory.png')
+    torch = image.load('images/TorchInventory.png')
+    
+    def __init__(self, item_enum, aX, aY, frame, a_player):
+        super().__init__(img=Item.sword)
+        self.attack_strength_defense = None
+        self.make_item(item_id=item_enum)
+        self.durability = 100
+        self.type = item_enum
+        self.x = aX
+        self.y = aY
+        self.slot = frame
+        self.this_player = a_player
+        
+    def make_item(self, item_id):
+        if (item_id == Type.Weapon):
+            self.attack_strength_defense = 10
+            self.image = Item.sword
+        elif (item_id == Type.Helmet):
+            self.attack_strength_defense = 0.5
+            self.image = Item.helmet
+        elif (item_id == Type.Chestpiece):
+            self.attack_strength_defense = 1
+            self.image = Item.chestpiece
+        elif (item_id == Type.Leggings):
+            self.attack_strength_defense = 0.5
+            self.image = Item.leggings
+        elif (item_id == Type.Footwear):
+            self.attack_strength_defense = 100
+            self.image = Item.hermes
+        else:
+            self.attack_strength_defense = 2
+            self.image = Item.torch
+            
+    def lose_light(self, dt):
+        self.durability = self.durability - 2
+        if (self.durability <= 0):
+            clock.unschedule(self.lose_light)
+            self.this_player.visibility = self.this_player.visibility - self.attack_strength_defense
+            self.slot.break_item()
+            
+    def take_damage(self, dmg) -> bool:
+        self.durability = self.durability - dmg
+        if (self.durability <= 0):
+            self.slot.break_item()
+            return True
+        return False
