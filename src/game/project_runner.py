@@ -322,29 +322,25 @@ def start_moving_player(dt):
 def set_player_last_valid():
     if (player1.facing == Direction.WEST):
         if (player1.x <= startX):
-            remainder = 40 - ((player1.x - startX) % 40)
-            player1.x = player1.x + remainder
+            player1.x = startX
         else:
             if (player1.x != player1.nextBoxCoord):
                 player1.x = player1.nextBoxCoord + 40
     elif (player1.facing == Direction.EAST):
-        if (player1.x < startX + background.width - 40):
-            remainder = (player1.x - startX) % 40
-            player1.x = player1.x - remainder
+        if (player1.x >= startX + background.width - 40):
+            player1.x = startX + background.width - 40
         else:
             if (player1.x != player1.nextBoxCoord):
                 player1.x = player1.nextBoxCoord - 40
     elif (player1.facing == Direction.NORTH):
-        if (player1.y < startY + background.height - 40):
-            remainder = (player1.y - startY) % 40
-            player1.y = player1.y - remainder
+        if (player1.y >= startY + background.height - 40):
+            player1.y = startY + background.height - 40
         else:
             if (player1.y != player1.nextBoxCoord):
                 player1.y = player1.nextBoxCoord - 40
     else:
-        if (player1.y > 0):
-            remainder = 40 - ((player1.y - startY) % 40)
-            player1.y = player1.y + remainder
+        if (player1.y <= startY):
+            player1.y = startY
         else:
             if (player1.y != player1.nextBoxCoord):
                 player1.y = player1.nextBoxCoord + 40
@@ -468,7 +464,10 @@ def set_next_box_coords():
         player1.nextBoxCoord = player1.y - ((player1.y - startY) % 40)
         
 def player_attack():
-    if player1.attack > 0:
+    if player1.attack > 0 and not player1.is_attacking:
+        player1.is_attacking = True
+        pyglet.clock.schedule_once(player1.stop_attack, 0.75)
+        player1.attack_sprite.reset_animation()
         if player1.facing == Direction.NORTH:
             check_y = player1.nextBoxCoord
             if (check_y == player1.y):

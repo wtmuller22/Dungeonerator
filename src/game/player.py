@@ -40,6 +40,7 @@ class Player(Sprite):
         self.player_inventory = Inventory(backX=backgroundX, backY=backgroundY, the_player=self)
         self.facing = Direction.SOUTH
         self.is_moving = False
+        self.is_attacking = False
         self.queued_direction = None
         self.selected_weapon = None
         self.selected_helmet = None
@@ -47,6 +48,7 @@ class Player(Sprite):
         self.selected_leggings = None
         self.selected_footwear = None
         self.selected_torch = None
+        self.attack_sprite = Attack()
         
     def add_to_inventory(self, to_add) -> bool:
         return self.player_inventory.add(obj=to_add)
@@ -128,6 +130,12 @@ class Player(Sprite):
     def draw(self):
         Sprite.draw(self)
         self.life.draw()
+        if (self.is_attacking):
+            self.attack_sprite.update_self(player_x=self.x, player_y=self.y, direction=self.facing)
+            self.attack_sprite.draw()
+            
+    def stop_attack(self, dt):
+        self.is_attacking = False
     
     def fade(self):
         clock.schedule_interval(self.decrease_opacity, 1/60)
@@ -424,6 +432,7 @@ class Item(Sprite):
         self.y = aY
         self.slot = frame
         self.this_player = a_player
+        self.cracks = Crack(aX=self.x, aY=self.y)
         
     def make_item(self, item_id):
         if (item_id == Type.Weapon):
@@ -447,6 +456,7 @@ class Item(Sprite):
             
     def lose_light(self, dt):
         self.durability = self.durability - 2
+        self.change_cracks()
         if (self.durability <= 0):
             clock.unschedule(self.lose_light)
             self.this_player.visibility = self.this_player.visibility - self.attack_strength_defense
@@ -454,7 +464,68 @@ class Item(Sprite):
             
     def take_damage(self, dmg) -> bool:
         self.durability = self.durability - dmg
+        self.change_cracks()
         if (self.durability <= 0):
             self.slot.break_item()
             return True
         return False
+    
+    def change_cracks(self):
+        if (self.durability < 20):
+            self.cracks.image = Crack.stage_5
+        elif (self.durability < 40):
+            self.cracks.image = Crack.stage_4
+        elif (self.durability < 60):
+            self.cracks.image = Crack.stage_3
+        elif (self.durability < 80):
+            self.cracks.image = Crack.stage_2
+        else:
+            self.cracks.image = Crack.stage_1
+    
+    def draw(self):
+        Sprite.draw(self)
+        if (self.durability != 100):
+            self.cracks.draw()
+    
+class Crack(Sprite):
+    
+    stage_1 = image.load('images/Crack1.png')
+    stage_2 = image.load('images/Crack2.png')
+    stage_3 = image.load('images/Crack3.png')
+    stage_4 = image.load('images/Crack4.png')
+    stage_5 = image.load('images/Crack5.png')
+    
+    def __init__(self, aX, aY):
+        super().__init__(img=Crack.stage_1)
+        self.x = aX
+        self.y = aY
+        self.opacity = 128
+    
+class Attack(Sprite):
+    
+    attack_animation = image.load_animation('images/Attack.gif', None, None)
+    
+    def __init__(self):
+        super().__init__(img=Attack.attack_animation)
+        self.opacity = 128
+        
+    def update_self(self, player_x, player_y, direction):
+        if (direction == Direction.NORTH):
+            this_x = player_x
+            this_y = player_y + 40
+            self.update(x=this_x, y=this_y, rotation=0)
+        elif (direction == Direction.EAST):
+            this_x = player_x + 40
+            this_y = player_y + 40
+            self.update(x=this_x, y=this_y, rotation=90)
+        elif (direction == Direction.SOUTH):
+            this_x = player_x + 40
+            this_y = player_y
+            self.update(x=this_x, y=this_y, rotation=180)
+        else:
+            this_x = player_x
+            this_y = player_y
+            self.update(x=this_x, y=this_y, rotation=270)   
+            
+    def reset_animation(self):
+        self.image = Attack.attack_animation     

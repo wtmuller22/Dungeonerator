@@ -159,13 +159,13 @@ class Room():
             to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
             self.entities.append(to_add)
         rand_num = random.randint(1, 100)
-        if (rand_num > 66):
+        if (rand_num > 40):
             to_add = Item(backX=self.startX, backY=self.startY, this_room=self)
             self.entities.append(to_add)
-        if (rand_num > 86):
+        if (rand_num > 60):
             to_add = Item(backX=self.startX, backY=self.startY, this_room=self)
             self.entities.append(to_add)
-        if (rand_num > 96):
+        if (rand_num > 80):
             to_add = Item(backX=self.startX, backY=self.startY, this_room=self)
             self.entities.append(to_add)
             
@@ -201,6 +201,24 @@ class Monster(Sprite):
     bat_north_moving = image.load_animation('images/BatNorth.gif', None, None)
     bat_south_moving = image.load_animation('images/BatSouth.gif', None, None)
     bat_west_moving = image.load_animation('images/BatWest.gif', None, None)
+    
+    slime_standing = image.load('images/SlimeNSStanding.png')
+    slime_NS_moving = image.load_animation('images/SlimeNS.gif')
+    slime_east_moving = image.load_animation('images/SlimeEast.gif')
+    slime_west_moving = image.load_animation('images/SlimeWest.gif')
+    
+    skeleton_east_standing = image.load('images/SkeletonEastStanding.png')
+    skeleton_north_standing = image.load('images/SkeletonNorthStanding.png')
+    skeleton_south_standing = image.load('images/SkeletonSouthStanding.png')
+    skeleton_west_standing = image.load('images/SkeletonWestStanding.png')
+    skeletont_east_moving = image.load_animation('images/SkeletonEast.gif', None, None)
+    skeleton_north_moving = image.load_animation('images/SkeletonNorth.gif', None, None)
+    skeleton_south_moving = image.load_animation('images/SkeletonSouth.gif', None, None)
+    skeleton_west_moving = image.load_animation('images/SkeletonWest.gif', None, None)
+    skeletont_east_attack = image.load_animation('images/SkeletonAEast.gif', None, None)
+    skeleton_north_attack = image.load_animation('images/SkeletonANorth.gif', None, None)
+    skeleton_south_attack = image.load_animation('images/SkeletonASouth.gif', None, None)
+    skeleton_west_attack = image.load_animation('images/SkeletonAWest.gif', None, None)
 
     def __init__(self, backgroundX, backgroundY, this_room):
         super().__init__(img=Monster.bat_south_standing)
@@ -216,11 +234,16 @@ class Monster(Sprite):
         self.moving_img_north = None
         self.moving_img_south = None
         self.moving_img_west = None
+        self.attacking_img_east = None
+        self.attacking_img_north = None
+        self.attacking_img_south = None
+        self.attacking_img_west = None
         self.health = None
         self.speed = None
         self.attack = None
         self.sight = None
         self.is_moving = False
+        self.is_transfer_moving = False
         self.is_attacking = False
         self.is_dead = False
         self.facing = Direction.SOUTH
@@ -228,8 +251,8 @@ class Monster(Sprite):
         self.pick_random_location()
         
     def pick_random_monster(self):
-        rand_num = random.randint(0, 0)
-        if (rand_num == 0):
+        rand_num = random.randint(0, 4)
+        if (rand_num <= 1):
             self.standing_img_south = Monster.bat_south_standing
             self.moving_img_south = Monster.bat_south_moving
             self.standing_img_east = Monster.bat_east_standing
@@ -238,10 +261,48 @@ class Monster(Sprite):
             self.moving_img_north = Monster.bat_north_moving
             self.standing_img_west = Monster.bat_west_standing
             self.moving_img_west = Monster.bat_west_moving
+            self.attacking_img_east = Monster.bat_east_moving
+            self.attacking_img_north = Monster.bat_north_moving
+            self.attacking_img_south = Monster.bat_south_moving
+            self.attacking_img_west = Monster.bat_west_moving
             self.health = 10
             self.speed = 240
             self.attack = 5
             self.sight = 4
+        elif (rand_num <= 3):
+            self.standing_img_south = Monster.slime_standing
+            self.moving_img_south = Monster.slime_NS_moving
+            self.standing_img_east = Monster.slime_standing
+            self.moving_img_east = Monster.slime_east_moving
+            self.standing_img_north = Monster.slime_standing
+            self.moving_img_north = Monster.slime_NS_moving
+            self.standing_img_west = Monster.slime_standing
+            self.moving_img_west = Monster.slime_west_moving
+            self.attacking_img_east = Monster.slime_east_moving
+            self.attacking_img_north = Monster.slime_NS_moving
+            self.attacking_img_south = Monster.slime_NS_moving
+            self.attacking_img_west = Monster.slime_west_moving
+            self.health = 20
+            self.speed = 80
+            self.attack = 10
+            self.sight = 3
+        else:
+            self.standing_img_south = Monster.skeleton_south_standing
+            self.moving_img_south = Monster.skeleton_south_moving
+            self.standing_img_east = Monster.skeleton_east_standing
+            self.moving_img_east = Monster.skeletont_east_moving
+            self.standing_img_north = Monster.skeleton_north_standing
+            self.moving_img_north = Monster.skeleton_north_moving
+            self.standing_img_west = Monster.skeleton_west_standing
+            self.moving_img_west = Monster.skeleton_west_moving
+            self.attacking_img_east = Monster.skeletont_east_attack
+            self.attacking_img_north = Monster.skeleton_north_attack
+            self.attacking_img_south = Monster.skeleton_south_attack
+            self.attacking_img_west = Monster.skeleton_west_attack
+            self.health = 50
+            self.speed = 120
+            self.attack = 20
+            self.sight = 6
         self.image = self.standing_img_south
             
     def pick_random_location(self):
@@ -258,9 +319,14 @@ class Monster(Sprite):
         self.curr_room.entities.remove(self)
         
     def take_damage(self, dmg):
+        self.color = (128, 0, 0)
+        clock.schedule_once(self.revert_color, 0.25)
         self.health = self.health - dmg
         if (self.health <= 0):
             self.is_dead = True
+            
+    def revert_color(self, dt):
+        self.color = (255, 255, 255)
             
     def move_east(self, dt):
         if (self.x < self.next_coord):
@@ -269,7 +335,7 @@ class Monster(Sprite):
             self.x = self.next_coord
             clock.unschedule(self.move_east)
             self.is_moving = False
-            self.image = self.standing_img_east
+            self.is_transfer_moving = True
 
     def move_west(self, dt):
         if (self.x > self.next_coord):
@@ -278,7 +344,7 @@ class Monster(Sprite):
             self.x = self.next_coord
             clock.unschedule(self.move_west)
             self.is_moving = False
-            self.image = self.standing_img_west
+            self.is_transfer_moving = True
 
     def move_south(self, dt):
         if (self.y > self.next_coord):
@@ -287,7 +353,7 @@ class Monster(Sprite):
             self.y = self.next_coord
             clock.unschedule(self.move_south)
             self.is_moving = False
-            self.image = self.standing_img_south
+            self.is_transfer_moving = True
 
     def move_north(self, dt):
         if (self.y < self.next_coord):
@@ -296,32 +362,36 @@ class Monster(Sprite):
             self.y = self.next_coord
             clock.unschedule(self.move_north)
             self.is_moving = False
-            self.image = self.standing_img_north
+            self.is_transfer_moving = True
             
     def move_block(self, playerX, playerY):
         dif_x = self.x - playerX
         dif_y = self.y - playerY
         if (math.fabs(dif_x) >= math.fabs(dif_y)):
             if (dif_x < 0):
+                if ((not self.is_transfer_moving) or self.facing != Direction.EAST):
+                    self.image = self.moving_img_east
                 self.facing = Direction.EAST
                 self.next_coord = self.x + 40
-                self.image = self.moving_img_east
                 clock.schedule_interval(self.move_east, 1/60.0)
             else:
+                if ((not self.is_transfer_moving) or self.facing != Direction.WEST):
+                    self.image = self.moving_img_west
                 self.facing = Direction.WEST
                 self.next_coord = self.x - 40
-                self.image = self.moving_img_west
                 clock.schedule_interval(self.move_west, 1/60.0)
         else:
             if (dif_y < 0):
+                if ((not self.is_transfer_moving) or self.facing != Direction.NORTH):
+                    self.image = self.moving_img_north
                 self.facing = Direction.NORTH
                 self.next_coord = self.y + 40
-                self.image = self.moving_img_north
                 clock.schedule_interval(self.move_north, 1/60.0)
             else:
+                if ((not self.is_transfer_moving) or self.facing != Direction.SOUTH):
+                    self.image = self.moving_img_south
                 self.facing = Direction.SOUTH
                 self.next_coord = self.y - 40
-                self.image = self.moving_img_south
                 clock.schedule_interval(self.move_south, 1/60.0)
                 
     def return_to_standing(self, dt):
@@ -336,20 +406,20 @@ class Monster(Sprite):
             
     def set_attacking_img(self):
         if (self.facing == Direction.EAST):
-            self.image = self.moving_img_east
+            self.image = self.attacking_img_east
         elif (self.facing == Direction.WEST):
-            self.image = self.moving_img_west
+            self.image = self.attacking_img_west
         elif (self.facing == Direction.NORTH):
-            self.image = self.moving_img_north
+            self.image = self.attacking_img_north
         else:
-            self.image = self.moving_img_south
+            self.image = self.attacking_img_south
             
     def face_player(self, playerX, playerY):
         dif_x = self.x - playerX
         dif_y = self.y - playerY
-        if (dif_x > 0):
+        if (dif_x < 0):
             self.facing = Direction.EAST
-        elif (dif_x < 0):
+        elif (dif_x > 0):
             self.facing = Direction.WEST
         elif (dif_y > 0):
             self.facing = Direction.SOUTH
@@ -364,28 +434,37 @@ class Monster(Sprite):
         dif_y = math.fabs(self.y - player_y) / 40
         distance = dif_x + dif_y
         if ((distance <= self.sight) and (not self.is_moving) and (distance > 1)):
+            self.is_transfer_moving = False
             self.is_moving = True
             self.move_block(playerX=player_x, playerY=player_y)
             if (self.is_dead):
                 clock.unschedule(self.return_to_standing)
                 clock.unschedule(self.done_attacking)
+                clock.unschedule(self.revert_color)
                 self.remove_self()
             return 0
         elif (distance <= 1 and (not self.is_attacking)):
+            self.is_transfer_moving = False
+            self.return_to_standing(dt=0)
             self.face_player(playerX=player_x, playerY=player_y)
             self.is_attacking = True
             self.set_attacking_img()
-            clock.schedule_once(self.return_to_standing, 0.5)
-            clock.schedule_once(self.done_attacking, 0.75)
+            clock.schedule_once(self.return_to_standing, self.image.get_duration())
+            clock.schedule_once(self.done_attacking, 1)
             if (self.is_dead):
                 clock.unschedule(self.return_to_standing)
                 clock.unschedule(self.done_attacking)
+                clock.unschedule(self.revert_color)
                 self.remove_self()
             return self.attack
         else:
+            if (self.is_transfer_moving):
+                self.is_transfer_moving = False
+                self.return_to_standing(dt=0)
             if (self.is_dead):
                 clock.unschedule(self.return_to_standing)
                 clock.unschedule(self.done_attacking)
+                clock.unschedule(self.revert_color)
                 self.remove_self()
             return 0
         
