@@ -492,6 +492,9 @@ def player_attack():
             if (check_x == player1.x):
                 check_x = check_x - 40
             current_room.player_attack(damage=player1.attack, playerX=check_x, playerY=player1.y)
+            result = player1.selected_weapon.take_damage(damage=2)
+            if (result):
+                player1.selected_weapon = None
 
 @window.event
 def on_draw():
@@ -564,6 +567,8 @@ def on_key_press(symbol, modifiers):
             player1.toggle_select_highlight()
         elif symbol == key.E:
             inventory_to_game()
+        elif symbol == key.R:
+            player1.discard_item()
             
 @window.event
 def on_key_release(symbol, modifiers):

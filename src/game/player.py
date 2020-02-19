@@ -4,6 +4,7 @@ from pyglet import clock
 from pyglet.text import Label
 from game.cardinal_direction import Direction
 from game.item_type import Type
+import this
 '''
 Created on Feb 11, 2020
 
@@ -67,7 +68,6 @@ class Player(Sprite):
             result = self.selected_footwear.take_damage(damage=1/60.0)
             if (result):
                 self.selected_footwear = None
-                self.speed = 240
         
     def change_direction(self, direc):
         self.facing = direc
@@ -112,17 +112,14 @@ class Player(Sprite):
                 result = self.selected_chestpiece.take_damage(damage=(-1 * change))
                 if (result):
                     self.selected_chestpiece = None
-                    self.defense = self.defense - 1
             if (not self.selected_helmet is None):
                 result = self.selected_helmet.take_damage(damage=(-1 * change))
                 if (result):
                     self.selected_helmet = None
-                    self.defense = self.defense - 0.5
             if (not self.selected_leggings is None):
                 result = self.selected_leggings.take_damage(damage=(-1 * change))
                 if (result):
                     self.selected_leggings = None
-                    self.defense = self.defense - 0.5
         return self.life.life_array[0].life == 0
     
     def increase_life_max(self):
@@ -150,6 +147,9 @@ class Player(Sprite):
             
     def draw_inventory(self):
         self.player_inventory.draw()
+        
+    def discard_item(self):
+        self.player_inventory.discard_item()
 
     def change_highlight(self, direc):
         self.player_inventory.update_highlight(direction=direc)
@@ -349,6 +349,13 @@ class Inventory():
                 
     def get_curr_slot(self):
         return self.array[self.highlighted_y][self.highlighted_x]
+    
+    def discard_item(self):
+        this_slot = self.get_curr_slot()
+        if (not this_slot.item is None):
+            if (this_slot.is_selected):
+                this_slot.item.remove_effect()
+            this_slot.break_item()
         
     def draw(self):
         self.title.draw()
@@ -404,7 +411,8 @@ class Slot(Sprite):
     def break_item(self):
         self.item.delete()
         self.item = None
-        self.toggle_select()
+        if (self.is_selected):
+            self.toggle_select()
         
     def get_item_type(self) -> Type:
         if (self.item is None):
@@ -470,21 +478,42 @@ class Item(Sprite):
         self.slot.break_item()
             
     def lose_light(self, dt):
-        self.durability = self.durability - 2
+        self.durability = self.durability - 1
         self.change_cracks()
         if (self.durability <= 0):
             clock.unschedule(self.lose_light)
-            self.this_player.visibility.scale = self.this_player.visibility.scale - self.attack_strength_defense
-            self.this_player.visibility.update_coords(aX=(self.this_player.x + 20), aY=(self.this_player.y + 20))
+            self.remove_effect()
             self.slot.break_item()
             
     def take_damage(self, dmg) -> bool:
         self.durability = self.durability - dmg
         self.change_cracks()
         if (self.durability <= 0):
+            self.remove_effect()
             self.slot.break_item()
             return True
         return False
+    
+    def remove_effect(self):
+        if (self.type == Type.Footwear):
+            self.this_player.speed = self.this_player.speed - self.attack_strength_defense
+            self.this_player.selected_footwear = None
+        elif (self.type == Type.Torch):
+            self.this_player.visibility.scale = self.this_player.visibility.scale - self.attack_strength_defense
+            self.this_player.visibility.update_coords(aX=(self.this_player.x + 20), aY=(self.this_player.y + 20))
+            self.this_player.selected_torch = None
+        elif (self.type == Type.Chestpiece):
+            self.this_player.defense = self.this_player.defense - self.attack_strength_defense
+            self.this_player.selected_chestpiece = None
+        elif (self.type == Type.Leggings):
+            self.this_player.defense = self.this_player.defense - self.attack_strength_defense
+            self.this_player.selected_leggings = None
+        elif (self.type == Type.Helmet):
+            self.this_player.defense = self.this_player.defense - self.attack_strength_defense
+            self.this_player.selected_helmet = None
+        elif (self.type == Type.Weapon):
+            self.this_player.attack = 0
+            self.this_player.selected_weapon = None
     
     def change_cracks(self):
         if (self.durability < 20):
