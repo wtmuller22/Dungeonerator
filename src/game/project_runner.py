@@ -577,6 +577,7 @@ def on_key_press(symbol, modifiers):
 def on_key_release(symbol, modifiers):
     if (current_state == State.Game and player_is_alive):
         if ((symbol == key.UP and player1.facing == Direction.NORTH) or (symbol == key.RIGHT and player1.facing == Direction.EAST) or (symbol == key.DOWN and player1.facing == Direction.SOUTH) or (symbol == key.LEFT and player1.facing == Direction.WEST)):
+            player1.scheduled_moving = False
             pyglet.clock.unschedule(start_moving_player)
             if (player1.is_moving):
                 pyglet.clock.unschedule(moving_bounds_check)
