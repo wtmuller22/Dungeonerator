@@ -8,6 +8,7 @@ from game.player import Player
 from game.map import Map
 from game.level import Level
 from game.gameover import GameOver
+from game.visibility import Visibility
 from pyglet.window import key
 '''
 Created on Feb 11, 2020
@@ -23,7 +24,8 @@ background = Floor(windowW=window.width, windowH=window.height)
 startX = background.x
 startY = background.y
 menu = Menu(backgroundX=startX, backgroundY=startY, backgroundW=background.width, backgroundH=background.height)
-player1 = Player(given_name='player1', backgroundX=startX, backgroundY=startY)
+visibility = Visibility()
+player1 = Player(given_name='player1', backgroundX=startX, backgroundY=startY, darkness=visibility)
 room_map = Map(backgroundX=startX, backgroundY=startY)
 current_room = None
 displayed_level = Level(backgroundX=startX, backgroundY=startY)
@@ -72,10 +74,12 @@ def player_died():
     player1.fade()
     game_over.color = (140, 0, 0, 255)   
     pyglet.clock.unschedule(update) 
+    pyglet.clock.unschedule(check_ground)
     
 def check_ground(dt):
     if (not current_room is None):
         result = current_room.intersecting_item(playerX=player1.x, playerY=player1.y)
+        visibility.update_coords(aX=(player1.x + 20), aY=(player1.y + 20))
         if (not result is None):
             ground_type = result.item_enum
             add_result = player1.add_to_inventory(to_add=ground_type)
@@ -497,6 +501,7 @@ def on_draw():
         menu.draw()
     if (current_state == State.Game or current_state == State.Inventory):
         current_room.draw()
+        visibility.draw()
         player1.draw()
         displayed_level.draw()
         game_over.draw()

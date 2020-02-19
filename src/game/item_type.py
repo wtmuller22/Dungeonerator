@@ -14,5 +14,6 @@ class Type(Enum):
     Leggings = 4
     Footwear = 5
     Torch = 6
+    Potion = 7
     
         

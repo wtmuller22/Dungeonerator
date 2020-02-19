@@ -148,16 +148,6 @@ class Room():
         return None
     
     def add_entities(self):
-        rand_num = random.randint(0, 9)
-        if (rand_num > 1):
-            to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
-            self.entities.append(to_add)
-        if (rand_num > 5):
-            to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
-            self.entities.append(to_add)
-        if (rand_num > 8):
-            to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
-            self.entities.append(to_add)
         rand_num = random.randint(1, 100)
         if (rand_num > 40):
             to_add = Item(backX=self.startX, backY=self.startY, this_room=self)
@@ -167,6 +157,16 @@ class Room():
             self.entities.append(to_add)
         if (rand_num > 80):
             to_add = Item(backX=self.startX, backY=self.startY, this_room=self)
+            self.entities.append(to_add)
+        rand_num = random.randint(0, 9)
+        if (rand_num > 1):
+            to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
+            self.entities.append(to_add)
+        if (rand_num > 5):
+            to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
+            self.entities.append(to_add)
+        if (rand_num > 8):
+            to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
             self.entities.append(to_add)
             
     def update(self, dt, playerX, playerY) -> int:
@@ -483,6 +483,7 @@ class Item(Sprite):
     leggings = image.load('images/IronLeggingsGround.png')
     hermes = image.load('images/HermesBootsGround.png')
     torch = image.load('images/TorchGround.png')
+    potion = image.load('images/PotionGround.png')
     
     def __init__(self, backX, backY, this_room):
         super().__init__(img=Item.sword)
@@ -503,25 +504,28 @@ class Item(Sprite):
             self.y = rand_y
             
     def pick_random_item(self):
-        rand_num = random.randint(0, 5)
-        if (rand_num == 0):
+        rand_num = random.randint(1, 15)
+        if (rand_num <= 3):
             self.item_enum = Type.Weapon
             self.image = Item.sword
-        elif (rand_num == 1):
+        elif (rand_num <= 6):
             self.item_enum = Type.Helmet
             self.image = Item.helmet
-        elif (rand_num == 2):
+        elif (rand_num <= 9):
             self.item_enum = Type.Chestpiece
             self.image = Item.chestpiece
-        elif (rand_num == 3):
+        elif (rand_num <= 12):
             self.item_enum = Type.Leggings
             self.image = Item.leggings
-        elif (rand_num == 4):
+        elif (rand_num == 13):
             self.item_enum = Type.Footwear
             self.image = Item.hermes
-        else:
+        elif (rand_num == 14):
             self.item_enum = Type.Torch
             self.image = Item.torch
+        else:
+            self.item_enum = Type.Potion
+            self.image = Item.potion
             
     def remove_self(self):
         self.delete()

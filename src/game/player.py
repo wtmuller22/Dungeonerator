@@ -24,7 +24,7 @@ class Player(Sprite):
     south_animation = image.load_animation('images/PlayerSouth.gif', None, None)
     west_animation = image.load_animation('images/PlayerWest.gif', None, None)
 
-    def __init__(self, given_name, backgroundX, backgroundY):
+    def __init__(self, given_name, backgroundX, backgroundY, darkness):
         super().__init__(img=Player.south_standing_img)
         self.name = given_name
         self.x = backgroundX + 480
@@ -35,7 +35,6 @@ class Player(Sprite):
         self.life = Life(backX=backgroundX, backY=backgroundY)
         self.defense = 1
         self.speed = 240
-        self.visibility = 0
         self.attack = 0
         self.player_inventory = Inventory(backX=backgroundX, backY=backgroundY, the_player=self)
         self.facing = Direction.SOUTH
@@ -49,6 +48,8 @@ class Player(Sprite):
         self.selected_footwear = None
         self.selected_torch = None
         self.attack_sprite = Attack()
+        self.visibility = darkness
+        self.add_to_inventory(to_add=Type.Torch)
         
     def add_to_inventory(self, to_add) -> bool:
         return self.player_inventory.add(obj=to_add)
@@ -209,11 +210,13 @@ class Player(Sprite):
                     self.selected_footwear = None
             else:
                 if (not self.selected_torch is None):
-                    self.visibility = self.visibility - self.selected_torch.item.attack_strength_defense
+                    self.visibility.scale = self.visibility.scale - self.selected_torch.item.attack_strength_defense
+                    self.visibility.update_coords(aX=(self.x + 20), aY=(self.y + 20))
                     self.selected_torch.toggle_select()
                 if (self.selected_torch is None or not (current_slot.x == self.selected_torch.x and current_slot.y == self.selected_torch.y)):
                     self.selected_torch = current_slot
-                    self.visibility = self.visibility + self.selected_torch.item.attack_strength_defense
+                    self.visibility.scale = self.visibility.scale + self.selected_torch.item.attack_strength_defense
+                    self.visibility.update_coords(aX=(self.x + 20), aY=(self.y + 20))
                     self.selected_torch.toggle_select()
                 else:
                     self.selected_torch = None
@@ -373,6 +376,8 @@ class Slot(Sprite):
             self.image = Slot.highlighted_selected
             if (self.item.type == Type.Torch):
                 clock.schedule_interval(self.item.lose_light, 1)
+            elif (self.item.type == Type.Potion):
+                self.item.heal()
         else:
             if (self.is_highlighted):
                 self.image = Slot.highlighted
@@ -421,6 +426,7 @@ class Item(Sprite):
     leggings = image.load('images/IronLeggingsInventory.png')
     hermes = image.load('images/HermesBootsInventory.png')
     torch = image.load('images/TorchInventory.png')
+    potion = image.load('images/PotionInventory.png')
     
     def __init__(self, item_enum, aX, aY, frame, a_player):
         super().__init__(img=Item.sword)
@@ -450,16 +456,24 @@ class Item(Sprite):
         elif (item_id == Type.Footwear):
             self.attack_strength_defense = 100
             self.image = Item.hermes
-        else:
-            self.attack_strength_defense = 2
+        elif (item_id == Type.Torch):
+            self.attack_strength_defense = 4
             self.image = Item.torch
+        else:
+            self.attack_strength_defense = 50
+            self.image = Item.potion
+            
+    def heal(self):
+        self.this_player.change_life(change=self.attack_strength_defense)
+        self.slot.break_item()
             
     def lose_light(self, dt):
         self.durability = self.durability - 2
         self.change_cracks()
         if (self.durability <= 0):
             clock.unschedule(self.lose_light)
-            self.this_player.visibility = self.this_player.visibility - self.attack_strength_defense
+            self.this_player.visibility.scale = self.this_player.visibility.scale - self.attack_strength_defense
+            self.this_player.visibility.update_coords(aX=(self.this_player.x + 20), aY=(self.this_player.y + 20))
             self.slot.break_item()
             
     def take_damage(self, dmg) -> bool:
