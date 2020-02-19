@@ -40,6 +40,7 @@ class Player(Sprite):
         self.player_inventory = Inventory(backX=backgroundX, backY=backgroundY, the_player=self)
         self.facing = Direction.SOUTH
         self.is_moving = False
+        self.scheduled_moving = False
         self.is_attacking = False
         self.queued_direction = None
         self.selected_weapon = None

@@ -317,6 +317,7 @@ def change_player_level():
     displayed_level.update_level(new_level=player1.level)
     
 def start_moving_player(dt):
+    player1.scheduled_moving = False
     set_next_box_coords()
     valid = check_player_legal_movement()
     if (valid):
@@ -521,8 +522,9 @@ def on_key_press(symbol, modifiers):
         elif (symbol == key.UP or symbol == key.LEFT):
             menu.previous()
     elif current_state == State.Game and player_is_alive:
-        if (not player1.is_moving):
+        if (not player1.is_moving and not player1.scheduled_moving):
             player1.queued_direction = None
+            player1.scheduled_moving = True
             if symbol == key.UP:
                 player1.change_direction(Direction.NORTH)
                 pyglet.clock.schedule_once(start_moving_player, 0.10)
@@ -546,6 +548,7 @@ def on_key_press(symbol, modifiers):
                 player1.queued_direction = Direction.SOUTH
         if symbol == key.E:
             player1.queued_direction = None
+            player1.scheduled_moving = False
             pyglet.clock.unschedule(start_moving_player)
             if (player1.is_moving):
                 pyglet.clock.unschedule(moving_bounds_check)
