@@ -208,7 +208,7 @@ class Player(Sprite):
                     self.selected_footwear.toggle_select()
                 else:
                     self.selected_footwear = None
-            else:
+            elif (slot_type == Type.Torch):
                 if (not self.selected_torch is None):
                     self.visibility.scale = self.visibility.scale - self.selected_torch.item.attack_strength_defense
                     self.visibility.update_coords(aX=(self.x + 20), aY=(self.y + 20))
@@ -220,6 +220,8 @@ class Player(Sprite):
                     self.selected_torch.toggle_select()
                 else:
                     self.selected_torch = None
+            else:
+                current_slot.toggle_select()
         
 class Life():
     
