@@ -478,16 +478,25 @@ def player_attack():
             if (check_y == player1.y):
                 check_y = check_y + 40
             current_room.player_attack(damage=player1.attack, playerX=player1.x, playerY=check_y)
+            result = player1.selected_weapon.take_damage(damage=2)
+            if (result):
+                player1.selected_weapon = None
         elif player1.facing == Direction.EAST:
             check_x = player1.nextBoxCoord
             if (check_x == player1.x):
                 check_x = check_x + 40
             current_room.player_attack(damage=player1.attack, playerX=check_x, playerY=player1.y)
+            result = player1.selected_weapon.take_damage(damage=2)
+            if (result):
+                player1.selected_weapon = None
         elif player1.facing == Direction.SOUTH:
             check_y = player1.nextBoxCoord
             if (check_y == player1.y):
                 check_y = check_y - 40
             current_room.player_attack(damage=player1.attack, playerX=player1.x, playerY=check_y)
+            result = player1.selected_weapon.take_damage(damage=2)
+            if (result):
+                player1.selected_weapon = None
         else:
             check_x = player1.nextBoxCoord
             if (check_x == player1.x):
@@ -556,6 +565,8 @@ def on_key_press(symbol, modifiers):
                 pyglet.clock.schedule_interval(wait_until_player_in_box, 1/100.0)
             game_to_inventory()
         if symbol == key.W:
+            player1.queued_direction = None
+            player1.scheduled_moving = False
             player_attack()
     elif current_state == State.Inventory and player_is_alive:
         if symbol == key.UP:
