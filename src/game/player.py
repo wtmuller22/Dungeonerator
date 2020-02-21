@@ -4,7 +4,7 @@ from pyglet import clock
 from pyglet.text import Label
 from game.cardinal_direction import Direction
 from game.item_type import Type
-import this
+import random
 '''
 Created on Feb 11, 2020
 
@@ -442,7 +442,7 @@ class Item(Sprite):
     def __init__(self, item_enum, aX, aY, frame, a_player):
         super().__init__(img=Item.sword)
         self.attack_strength_defense = None
-        self.make_item(item_id=item_enum)
+        self.durability_max = 100
         self.durability = 100
         self.type = item_enum
         self.x = aX
@@ -450,29 +450,145 @@ class Item(Sprite):
         self.slot = frame
         self.this_player = a_player
         self.cracks = Crack(aX=self.x, aY=self.y)
+        self.rarity_img = Rarity(aX=self.x, aY=self.y)
+        self.rarity = 0
+        self.set_rarity()
+        self.make_item(item_id=item_enum)
+        
+    def set_rarity(self):
+        rand_num = random.randint(1, 5)
+        if (rand_num == 1):
+            self.rarity = 1
+            self.rarity_img.image = Rarity.uncommon
+        elif (rand_num == 2):
+            self.rarity = 2
+            self.rarity_img.image = Rarity.rare
+        elif (rand_num == 3):
+            self.rarity = 3
+            self.rarity_img.image = Rarity.epic
+        elif (rand_num == 4):
+            self.rarity = 4
+            self.rarity_img.image = Rarity.mythical
         
     def make_item(self, item_id):
-        if (item_id == Type.Weapon):
-            self.attack_strength_defense = 10
-            self.image = Item.sword
-        elif (item_id == Type.Helmet):
-            self.attack_strength_defense = 0.5
-            self.image = Item.helmet
-        elif (item_id == Type.Chestpiece):
-            self.attack_strength_defense = 1
-            self.image = Item.chestpiece
-        elif (item_id == Type.Leggings):
-            self.attack_strength_defense = 0.5
-            self.image = Item.leggings
-        elif (item_id == Type.Footwear):
-            self.attack_strength_defense = 100
-            self.image = Item.hermes
-        elif (item_id == Type.Torch):
-            self.attack_strength_defense = 4
-            self.image = Item.torch
+        if (self.rarity == 0):
+            if (item_id == Type.Weapon):
+                self.attack_strength_defense = random.randint(5, 10)
+                self.image = Item.sword
+            elif (item_id == Type.Helmet):
+                self.attack_strength_defense = random.randint(3, 7) / 10
+                self.image = Item.helmet
+            elif (item_id == Type.Chestpiece):
+                self.attack_strength_defense = random.randint(8, 12) / 10
+                self.image = Item.chestpiece
+            elif (item_id == Type.Leggings):
+                self.attack_strength_defense = random.randint(3, 7) / 10
+                self.image = Item.leggings
+            elif (item_id == Type.Footwear):
+                self.attack_strength_defense = random.randint(25, 50)
+                self.image = Item.hermes
+            elif (item_id == Type.Torch):
+                self.attack_strength_defense = 3
+                self.image = Item.torch
+            else:
+                self.attack_strength_defense = random.randint(15, 35)
+                self.image = Item.potion
+        elif (self.rarity == 1):
+            if (item_id == Type.Weapon):
+                self.attack_strength_defense = random.randint(15, 20)
+                self.image = Item.sword
+            elif (item_id == Type.Helmet):
+                self.attack_strength_defense = random.randint(5, 9) / 10
+                self.image = Item.helmet
+            elif (item_id == Type.Chestpiece):
+                self.attack_strength_defense = random.randint(10, 14) / 10
+                self.image = Item.chestpiece
+            elif (item_id == Type.Leggings):
+                self.attack_strength_defense = random.randint(5, 9) / 10
+                self.image = Item.leggings
+            elif (item_id == Type.Footwear):
+                self.attack_strength_defense = random.randint(50, 75)
+                self.image = Item.hermes
+            elif (item_id == Type.Torch):
+                self.attack_strength_defense = 3.5
+                self.image = Item.torch
+            else:
+                self.attack_strength_defense = random.randint(32, 52)
+                self.image = Item.potion
+            self.durability = 120
+            self.durability_max = 120
+        elif (self.rarity == 2):
+            if (item_id == Type.Weapon):
+                self.attack_strength_defense = random.randint(25, 30)
+                self.image = Item.sword
+            elif (item_id == Type.Helmet):
+                self.attack_strength_defense = random.randint(7, 11) / 10
+                self.image = Item.helmet
+            elif (item_id == Type.Chestpiece):
+                self.attack_strength_defense = random.randint(12, 16) / 10
+                self.image = Item.chestpiece
+            elif (item_id == Type.Leggings):
+                self.attack_strength_defense = random.randint(7, 11) / 10
+                self.image = Item.leggings
+            elif (item_id == Type.Footwear):
+                self.attack_strength_defense = random.randint(75, 100)
+                self.image = Item.hermes
+            elif (item_id == Type.Torch):
+                self.attack_strength_defense = 4
+                self.image = Item.torch
+            else:
+                self.attack_strength_defense = random.randint(49, 69)
+                self.image = Item.potion
+            self.durability = 140
+            self.durability_max = 140
+        elif (self.rarity == 3):
+            if (item_id == Type.Weapon):
+                self.attack_strength_defense = random.randint(35, 40)
+                self.image = Item.sword
+            elif (item_id == Type.Helmet):
+                self.attack_strength_defense = random.randint(9, 13) / 10
+                self.image = Item.helmet
+            elif (item_id == Type.Chestpiece):
+                self.attack_strength_defense = random.randint(14, 18) / 10
+                self.image = Item.chestpiece
+            elif (item_id == Type.Leggings):
+                self.attack_strength_defense = random.randint(9, 13) / 10
+                self.image = Item.leggings
+            elif (item_id == Type.Footwear):
+                self.attack_strength_defense = random.randint(100, 125)
+                self.image = Item.hermes
+            elif (item_id == Type.Torch):
+                self.attack_strength_defense = 4.5
+                self.image = Item.torch
+            else:
+                self.attack_strength_defense = random.randint(66, 86)
+                self.image = Item.potion
+            self.durability = 160
+            self.durability_max = 160
         else:
-            self.attack_strength_defense = 50
-            self.image = Item.potion
+            if (item_id == Type.Weapon):
+                self.attack_strength_defense = random.randint(45, 50)
+                self.image = Item.sword
+            elif (item_id == Type.Helmet):
+                self.attack_strength_defense = random.randint(11, 15) / 10
+                self.image = Item.helmet
+            elif (item_id == Type.Chestpiece):
+                self.attack_strength_defense = random.randint(16, 20) / 10
+                self.image = Item.chestpiece
+            elif (item_id == Type.Leggings):
+                self.attack_strength_defense = random.randint(11, 15) / 10
+                self.image = Item.leggings
+            elif (item_id == Type.Footwear):
+                self.attack_strength_defense = random.randint(125, 150)
+                self.image = Item.hermes
+            elif (item_id == Type.Torch):
+                self.attack_strength_defense = 5
+                self.image = Item.torch
+            else:
+                self.attack_strength_defense = random.randint(83, 100)
+                self.image = Item.potion
+            self.durability = 180
+            self.durability_max = 180
             
     def heal(self):
         self.this_player.change_life(change=self.attack_strength_defense)
@@ -517,20 +633,21 @@ class Item(Sprite):
             self.this_player.selected_weapon = None
     
     def change_cracks(self):
-        if (self.durability < 20):
+        if (self.durability < (self.durability_max // 5)):
             self.cracks.image = Crack.stage_5
-        elif (self.durability < 40):
+        elif (self.durability < 2 * (self.durability_max // 5)):
             self.cracks.image = Crack.stage_4
-        elif (self.durability < 60):
+        elif (self.durability < 3 * (self.durability_max // 5)):
             self.cracks.image = Crack.stage_3
-        elif (self.durability < 80):
+        elif (self.durability < 4 * (self.durability_max // 5)):
             self.cracks.image = Crack.stage_2
         else:
             self.cracks.image = Crack.stage_1
     
     def draw(self):
+        self.rarity_img.draw()
         Sprite.draw(self)
-        if (self.durability != 100):
+        if (self.durability != self.durability_max):
             self.cracks.draw()
     
 class Crack(Sprite):
@@ -546,6 +663,20 @@ class Crack(Sprite):
         self.x = aX
         self.y = aY
         self.opacity = 128
+        
+class Rarity(Sprite):
+    
+    common = image.load('images/Common.png')
+    uncommon = image.load('images/Uncommon.png')
+    rare = image.load('images/Rare.png')
+    epic = image.load('images/Epic.png')
+    mythical = image.load('images/Mythical.png')
+    
+    def __init__(self, aX, aY):
+        super().__init__(img=Rarity.common)
+        self.x = aX
+        self.y = aY
+        self.opacity = 64
     
 class Attack(Sprite):
     
