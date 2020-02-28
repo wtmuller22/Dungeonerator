@@ -391,10 +391,10 @@ class Slot(Sprite):
         else:
             if (self.is_highlighted):
                 self.image = Slot.highlighted
-                if ((not self.item is None) and self.item.type == Type.Torch):
-                    clock.unschedule(self.item.lose_light)
             else:
                 self.image = Slot.empty
+            if ((not self.item is None) and self.item.type == Type.Torch):
+                    clock.unschedule(self.item.lose_light)
             
     def toggle_highlight(self):
         self.is_highlighted = not self.is_highlighted

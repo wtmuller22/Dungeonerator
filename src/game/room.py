@@ -504,23 +504,23 @@ class Item(Sprite):
             self.y = rand_y
             
     def pick_random_item(self):
-        rand_num = random.randint(1, 12)
-        if (rand_num <= 3):
+        rand_num = random.randint(1, 11)
+        if (rand_num <= 2):
             self.item_enum = Type.Weapon
             self.image = Item.sword
-        elif (rand_num <= 5):
+        elif (rand_num <= 4):
             self.item_enum = Type.Helmet
             self.image = Item.helmet
-        elif (rand_num <= 7):
+        elif (rand_num <= 6):
             self.item_enum = Type.Chestpiece
             self.image = Item.chestpiece
-        elif (rand_num <= 9):
+        elif (rand_num <= 8):
             self.item_enum = Type.Leggings
             self.image = Item.leggings
-        elif (rand_num == 10):
+        elif (rand_num == 9):
             self.item_enum = Type.Footwear
             self.image = Item.hermes
-        elif (rand_num == 11):
+        elif (rand_num == 10):
             self.item_enum = Type.Torch
             self.image = Item.torch
         else:
