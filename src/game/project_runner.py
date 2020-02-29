@@ -19,6 +19,7 @@ Project runner for Dungeonerator.
 '''
 
 window = pyglet.window.Window(fullscreen=True)
+window.set_mouse_visible(visible=False)
 current_state = State.Menu
 background = Floor(windowW=window.width, windowH=window.height)
 startX = background.x
@@ -557,6 +558,8 @@ def on_key_press(symbol, modifiers):
             menu.next()
         elif (symbol == key.UP or symbol == key.LEFT):
             menu.previous()
+        elif (symbol == key.ESCAPE):
+            return pyglet.event.EVENT_HANDLED
     elif current_state == State.Game and player_is_alive:
         if (not player1.is_moving and not player1.scheduled_moving):
             player1.queued_direction = None
@@ -596,10 +599,12 @@ def on_key_press(symbol, modifiers):
                     player1.stop_moving()
                     set_player_last_valid()
             game_to_inventory()
-        if symbol == key.W:
+        elif symbol == key.W:
             player1.queued_direction = None
             player1.scheduled_moving = False
             player_attack()
+        elif (symbol == key.ESCAPE):
+            return pyglet.event.EVENT_HANDLED
     elif current_state == State.Inventory and player_is_alive:
         if symbol == key.UP:
             player1.change_highlight(direc=Direction.NORTH)
@@ -615,9 +620,13 @@ def on_key_press(symbol, modifiers):
             inventory_to_game()
         elif symbol == key.R:
             player1.discard_item()
+        elif (symbol == key.ESCAPE):
+            return pyglet.event.EVENT_HANDLED
     elif not player_is_alive:
         if symbol == key.W:
             inventory_to_menu()
+        elif (symbol == key.ESCAPE):
+            return pyglet.event.EVENT_HANDLED
             
 @window.event
 def on_key_release(symbol, modifiers):
