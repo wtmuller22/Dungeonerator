@@ -578,6 +578,7 @@ def on_key_press(symbol, modifiers):
                 if (valid):
                     pyglet.clock.schedule_interval(wait_until_player_in_box, 1/100.0)
                 else:
+                    player1.stop_moving()
                     set_player_last_valid()
             game_to_inventory()
         if symbol == key.W:
@@ -613,6 +614,7 @@ def on_key_release(symbol, modifiers):
                 if (valid):
                     pyglet.clock.schedule_interval(wait_until_player_in_box, 1/100.0)
                 else:
+                    player1.stop_moving()
                     set_player_last_valid()
         if ((symbol == key.UP and player1.queued_direction == Direction.NORTH) or (symbol == key.RIGHT and player1.queued_direction == Direction.EAST) or (symbol == key.DOWN and player1.queued_direction == Direction.SOUTH) or (symbol == key.LEFT and player1.queued_direction == Direction.WEST)):
             player1.queued_direction = None

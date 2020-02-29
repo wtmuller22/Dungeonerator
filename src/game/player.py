@@ -35,7 +35,7 @@ class Player(Sprite):
         self.room_number = 0
         self.life = Life(backX=backgroundX, backY=backgroundY)
         self.experience = Experience(backX=backgroundX, backY=backgroundY)
-        self.next_up_stat = 1
+        self.next_up_stat = 0
         self.stat_boosted = Label("++Defense++",
                               font_name='Times New Roman',
                               font_size=32,

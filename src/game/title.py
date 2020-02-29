@@ -28,7 +28,17 @@ class Title():
                               align='center',
                               anchor_x='center',
                               anchor_y='center')
+        self.text_by = Label("By: Wyatt Muller",
+                              font_name='Cracked Johnnie',
+                              font_size=16,
+                              x=backgroundX + (backgroundW / 2) + 200,
+                              y=backgroundY + (backgroundH / 2) + 120,
+                              color=(0, 0, 0, 255),
+                              align='center',
+                              anchor_x='center',
+                              anchor_y='center')
         
     def draw(self):
         self.text_dungeonerator.draw()
         self.text_the.draw()
+        self.text_by.draw()
