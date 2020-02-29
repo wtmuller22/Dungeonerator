@@ -4,7 +4,7 @@ from pyglet import clock
 from pyglet.text import Label
 from game.cardinal_direction import Direction
 from game.item_type import Type
-import random
+import random, math
 '''
 Created on Feb 11, 2020
 
@@ -456,19 +456,30 @@ class Item(Sprite):
         self.make_item(item_id=item_enum)
         
     def set_rarity(self):
-        rand_num = random.randint(1, 5)
-        if (rand_num == 1):
-            self.rarity = 1
-            self.rarity_img.image = Rarity.uncommon
-        elif (rand_num == 2):
-            self.rarity = 2
-            self.rarity_img.image = Rarity.rare
-        elif (rand_num == 3):
-            self.rarity = 3
-            self.rarity_img.image = Rarity.epic
-        elif (rand_num == 4):
-            self.rarity = 4
-            self.rarity_img.image = Rarity.mythical
+        curr_level = self.this_player.level
+        if (curr_level != 0):
+            expansion_factor = 10.60683865
+            phase_shift = -42.42735461
+            first_threshold = (-50)*(math.atan(expansion_factor*curr_level + phase_shift) / (math.pi / 2)) + 50
+            phase_shift = phase_shift - 4
+            second_threshold = (-50)*(math.atan(expansion_factor*curr_level + phase_shift) / (math.pi / 2)) + 50
+            phase_shift = phase_shift - 4
+            third_threshold = (-50)*(math.atan(expansion_factor*curr_level + phase_shift) / (math.pi / 2)) + 50
+            phase_shift = phase_shift - 4
+            fourth_threshold = (-50)*(math.atan(expansion_factor*curr_level + phase_shift) / (math.pi / 2)) + 50
+            rand_num = random.randint(1, 10000) / 100
+            if (rand_num > fourth_threshold):
+                self.rarity = 4
+                self.rarity_img.image = Rarity.mythical
+            elif (rand_num > third_threshold):
+                self.rarity = 3
+                self.rarity_img.image = Rarity.epic
+            elif (rand_num > second_threshold):
+                self.rarity = 2
+                self.rarity_img.image = Rarity.rare
+            elif (rand_num > first_threshold):
+                self.rarity = 1
+                self.rarity_img.image = Rarity.uncommon
         
     def make_item(self, item_id):
         if (self.rarity == 0):
@@ -510,7 +521,7 @@ class Item(Sprite):
                 self.attack_strength_defense = random.randint(50, 75)
                 self.image = Item.hermes
             elif (item_id == Type.Torch):
-                self.attack_strength_defense = 3.5
+                self.attack_strength_defense = 4
                 self.image = Item.torch
             else:
                 self.attack_strength_defense = random.randint(32, 52)
@@ -534,7 +545,7 @@ class Item(Sprite):
                 self.attack_strength_defense = random.randint(75, 100)
                 self.image = Item.hermes
             elif (item_id == Type.Torch):
-                self.attack_strength_defense = 4
+                self.attack_strength_defense = 5
                 self.image = Item.torch
             else:
                 self.attack_strength_defense = random.randint(49, 69)
@@ -558,7 +569,7 @@ class Item(Sprite):
                 self.attack_strength_defense = random.randint(100, 125)
                 self.image = Item.hermes
             elif (item_id == Type.Torch):
-                self.attack_strength_defense = 4.5
+                self.attack_strength_defense = 6.5
                 self.image = Item.torch
             else:
                 self.attack_strength_defense = random.randint(66, 86)
@@ -582,7 +593,7 @@ class Item(Sprite):
                 self.attack_strength_defense = random.randint(125, 150)
                 self.image = Item.hermes
             elif (item_id == Type.Torch):
-                self.attack_strength_defense = 5
+                self.attack_strength_defense = 8
                 self.image = Item.torch
             else:
                 self.attack_strength_defense = random.randint(83, 100)
