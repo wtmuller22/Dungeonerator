@@ -35,7 +35,17 @@ class Player(Sprite):
         self.room_number = 0
         self.life = Life(backX=backgroundX, backY=backgroundY)
         self.experience = Experience(backX=backgroundX, backY=backgroundY)
-        self.next_up_stat = 0
+        self.next_up_stat = 1
+        self.stat_boosted = Label("++Defense++",
+                              font_name='Times New Roman',
+                              font_size=32,
+                              x=backgroundX + 500,
+                              y=backgroundY + 980,
+                              color=(55, 235, 52, 0),
+                              align='center',
+                              anchor_x='center',
+                              anchor_y='center',
+                              bold=True)
         self.defense = 1
         self.speed = 240
         self.attack = 0
@@ -137,23 +147,38 @@ class Player(Sprite):
             self.stat_boost()
             
     def stat_boost(self):
+        clock.unschedule(self.fade_stat_text)
         if (self.next_up_stat == 0):
             self.next_up_stat = 1
             self.defense = self.defense + 0.1
+            self.stat_boosted.text = "++Defense++"
         elif (self.next_up_stat == 1):
             self.next_up_stat = 2
             self.speed = self.speed + 10
+            self.stat_boosted.text = "++Speed++"
         elif (self.next_up_stat == 2):
             self.next_up_stat = 3
             self.increase_inventory_max()
+            self.stat_boosted.text = "++Inventory++"
         else:
             self.next_up_stat = 0
             self.increase_life_max()
+            self.stat_boosted.text = "++Health++"
+        self.stat_boosted.color = (55, 235, 52, 128)
+        clock.schedule_interval(self.fade_stat_text, 1/60.0)
+            
+    def fade_stat_text(self, dt):
+        if (self.stat_boosted.color[3] >= 2):
+            self.stat_boosted.color = (55, 235, 52, self.stat_boosted.color[3] - 2)
+        else:
+            self.stat_boosted.color = (55, 235, 52, 0)
+            clock.unschedule(self.fade_stat_text)
         
     def draw(self):
         Sprite.draw(self)
         self.life.draw()
         self.experience.draw()
+        self.stat_boosted.draw()
         if (self.is_attacking):
             self.attack_sprite.update_self(player_x=self.x, player_y=self.y, direction=self.facing)
             self.attack_sprite.draw()
