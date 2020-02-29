@@ -34,6 +34,8 @@ class Player(Sprite):
         self.level = 0
         self.room_number = 0
         self.life = Life(backX=backgroundX, backY=backgroundY)
+        self.experience = Experience(backX=backgroundX, backY=backgroundY)
+        self.next_up_stat = 0
         self.defense = 1
         self.speed = 240
         self.attack = 0
@@ -126,9 +128,32 @@ class Player(Sprite):
     def increase_life_max(self):
         self.life.add_heart()
         
+    def increase_inventory_max(self):
+        self.player_inventory.add_slot()
+        
+    def add_experience(self, exp):
+        result = self.experience.add_exp(amount=exp)
+        for i in range(result):
+            self.stat_boost()
+            
+    def stat_boost(self):
+        if (self.next_up_stat == 0):
+            self.next_up_stat = 1
+            self.defense = self.defense + 0.1
+        elif (self.next_up_stat == 1):
+            self.next_up_stat = 2
+            self.speed = self.speed + 10
+        elif (self.next_up_stat == 2):
+            self.next_up_stat = 3
+            self.increase_inventory_max()
+        else:
+            self.next_up_stat = 0
+            self.increase_life_max()
+        
     def draw(self):
         Sprite.draw(self)
         self.life.draw()
+        self.experience.draw()
         if (self.is_attacking):
             self.attack_sprite.update_self(player_x=self.x, player_y=self.y, direction=self.facing)
             self.attack_sprite.draw()
@@ -223,7 +248,37 @@ class Player(Sprite):
                     self.selected_torch = None
             else:
                 current_slot.toggle_select()
+                
+class Experience():
+    
+    experience_bar = image.load('images/ExperienceBar.png')
+    experience_bar.anchor_x = experience_bar.width // 2
+    experience_bar.anchor_y = experience_bar.height // 2
+    experience_green = image.load('images/Experience.png')
+    experience_green.anchor_x = experience_green.width // 2
+    experience_green.anchor_y = experience_green.height // 2
+    
+    def __init__(self, backX, backY):
+        self.startX = backX
+        self.startY = backY
+        self.bar = Sprite(img=Experience.experience_bar, x=backX + 930, y=backY + 940)
+        self.exp = Sprite(img=Experience.experience_green, x=backX + 930, y=backY + 940)
+        self.exp.scale = 0
+        self.total_exp = 0
         
+    def draw(self):
+        self.exp.draw()
+        self.bar.draw()
+        
+    def add_exp(self, amount) -> int:
+        self.total_exp = self.total_exp + amount
+        amount_ups = 0
+        while (self.total_exp >= 100):
+            self.total_exp = self.total_exp - 100
+            amount_ups = amount_ups + 1
+        self.exp.scale = (self.total_exp / 100)
+        return amount_ups
+
 class Life():
     
     def __init__(self, backX, backY):
@@ -326,6 +381,11 @@ class Inventory():
                     return True
         return False
     
+    def add_slot(self):
+        if (len(self.array[len(self.array) - 1]) == 5):
+            self.array.append([])
+        self.array[len(self.array) - 1].append(Slot(aX=(self.startX + 200 + (len(self.array[len(self.array) - 1]) * 120)), aY =(self.startY + 380 - ((len(self.array) - 1) * 120))))
+    
     def update_highlight(self, direction):
         if (direction == Direction.NORTH):
             if (self.highlighted_y > 0):
@@ -333,12 +393,12 @@ class Inventory():
                 self.highlighted_y = self.highlighted_y - 1
                 self.array[self.highlighted_y][self.highlighted_x].toggle_highlight()
         elif (direction == Direction.EAST):
-            if (self.highlighted_x < 4):
+            if (self.highlighted_x < len(self.array[self.highlighted_y]) - 1):
                 self.array[self.highlighted_y][self.highlighted_x].toggle_highlight()
                 self.highlighted_x = self.highlighted_x + 1
                 self.array[self.highlighted_y][self.highlighted_x].toggle_highlight()
         elif (direction == Direction.SOUTH):
-            if (self.highlighted_y < (len(self.array) - 1)):
+            if (self.highlighted_y < (len(self.array) - 1) and self.highlighted_x < len(self.array[self.highlighted_y + 1])):
                 self.array[self.highlighted_y][self.highlighted_x].toggle_highlight()
                 self.highlighted_y = self.highlighted_y + 1
                 self.array[self.highlighted_y][self.highlighted_x].toggle_highlight()

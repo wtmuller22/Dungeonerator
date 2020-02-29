@@ -185,6 +185,7 @@ def change_player_level():
         result = room_map.level_prepared(level=(player1.level + 1))
         door = None
         if (not result):
+            player1.add_experience(exp=(5 * (player1.level + 1)))
             room_map.prepare_level(level_num=(player1.level + 1))
             door = Door(direct=Direction.SOUTH, backgroundX=startX, backgroundY=startY)
             door.make_golden()
@@ -198,6 +199,7 @@ def change_player_level():
         result = room_map.level_prepared(level=(player1.level + 1))
         door = None
         if (not result):
+            player1.add_experience(exp=(5 * (player1.level + 1)))
             room_map.prepare_level(level_num=(player1.level + 1))
             door = Door(direct=Direction.EAST, backgroundX=startX, backgroundY=startY)
             door.make_golden()
@@ -211,6 +213,7 @@ def change_player_level():
         result = room_map.level_prepared(level=(player1.level + 1))
         door = None
         if (not result):
+            player1.add_experience(exp=(5 * (player1.level + 1)))
             room_map.prepare_level(level_num=(player1.level + 1))
             door = Door(direct=Direction.NORTH, backgroundX=startX, backgroundY=startY)
             door.make_golden()
@@ -224,6 +227,7 @@ def change_player_level():
         result = room_map.level_prepared(level=(player1.level + 1))
         door = None
         if (not result):
+            player1.add_experience(exp=(5 * (player1.level + 1)))
             room_map.prepare_level(level_num=(player1.level + 1))
             door = Door(direct=Direction.WEST, backgroundX=startX, backgroundY=startY)
             door.make_golden()
@@ -266,6 +270,7 @@ def change_player_level():
             result = room_map.level_prepared(level=(player1.level + 1))
             door = None
             if (not result):
+                player1.add_experience(exp=(5 * (player1.level + 1)))
                 room_map.prepare_level(level_num=(player1.level + 1))
                 door = Door(direct=Direction.SOUTH, backgroundX=startX, backgroundY=startY)
                 door.make_golden()
@@ -279,6 +284,7 @@ def change_player_level():
             result = room_map.level_prepared(level=(player1.level + 1))
             door = None
             if (not result):
+                player1.add_experience(exp=(5 * (player1.level + 1)))
                 room_map.prepare_level(level_num=(player1.level + 1))
                 door = Door(direct=Direction.WEST, backgroundX=startX, backgroundY=startY)
                 door.make_golden()
@@ -292,6 +298,7 @@ def change_player_level():
             result = room_map.level_prepared(level=(player1.level + 1))
             door = None
             if (not result):
+                player1.add_experience(exp=(5 * (player1.level + 1)))
                 room_map.prepare_level(level_num=(player1.level + 1))
                 door = Door(direct=Direction.NORTH, backgroundX=startX, backgroundY=startY)
                 door.make_golden()
@@ -305,6 +312,7 @@ def change_player_level():
             result = room_map.level_prepared(level=(player1.level + 1))
             door = None
             if (not result):
+                player1.add_experience(exp=(5 * (player1.level + 1)))
                 room_map.prepare_level(level_num=(player1.level + 1))
                 door = Door(direct=Direction.EAST, backgroundX=startX, backgroundY=startY)
                 door.make_golden()
@@ -477,32 +485,36 @@ def player_attack():
             check_y = player1.nextBoxCoord
             if (check_y == player1.y):
                 check_y = check_y + 40
-            current_room.player_attack(damage=player1.attack, playerX=player1.x, playerY=check_y)
+            total_exp = current_room.player_attack(damage=player1.attack, playerX=player1.x, playerY=check_y)
             result = player1.selected_weapon.take_damage(damage=2)
+            player1.add_experience(exp=total_exp)
             if (result):
                 player1.selected_weapon = None
         elif player1.facing == Direction.EAST:
             check_x = player1.nextBoxCoord
             if (check_x == player1.x):
                 check_x = check_x + 40
-            current_room.player_attack(damage=player1.attack, playerX=check_x, playerY=player1.y)
+            total_exp = current_room.player_attack(damage=player1.attack, playerX=check_x, playerY=player1.y)
             result = player1.selected_weapon.take_damage(damage=2)
+            player1.add_experience(exp=total_exp)
             if (result):
                 player1.selected_weapon = None
         elif player1.facing == Direction.SOUTH:
             check_y = player1.nextBoxCoord
             if (check_y == player1.y):
                 check_y = check_y - 40
-            current_room.player_attack(damage=player1.attack, playerX=player1.x, playerY=check_y)
+            total_exp = current_room.player_attack(damage=player1.attack, playerX=player1.x, playerY=check_y)
             result = player1.selected_weapon.take_damage(damage=2)
+            player1.add_experience(exp=total_exp)
             if (result):
                 player1.selected_weapon = None
         else:
             check_x = player1.nextBoxCoord
             if (check_x == player1.x):
                 check_x = check_x - 40
-            current_room.player_attack(damage=player1.attack, playerX=check_x, playerY=player1.y)
+            total_exp = current_room.player_attack(damage=player1.attack, playerX=check_x, playerY=player1.y)
             result = player1.selected_weapon.take_damage(damage=2)
+            player1.add_experience(exp=total_exp)
             if (result):
                 player1.selected_weapon = None
 

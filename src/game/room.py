@@ -178,12 +178,14 @@ class Room():
                 total_damage = total_damage + entity.update(dt, player_x=playerX, player_y=playerY)
         return total_damage
     
-    def player_attack(self, damage, playerX, playerY):
+    def player_attack(self, damage, playerX, playerY) -> int:
+        total_exp = 0
         for entity in self.entities:
             if (type(entity) is Monster):
                 result = math.floor(math.fabs(entity.x - playerX)) == 0 and math.floor(math.fabs(entity.y - playerY)) == 0
                 if (result):
-                    entity.take_damage(dmg=damage)
+                    total_exp = total_exp + entity.take_damage(dmg=damage)
+        return total_exp
             
 '''
 Created on Feb 11, 2020
@@ -226,6 +228,7 @@ class Monster(Sprite):
         super().__init__(img=Monster.bat_south_standing)
         self.startX = backgroundX
         self.startY = backgroundY
+        self.multiplier = 0
         self.next_coord = None
         self.curr_room = this_room
         self.standing_img_east = None
@@ -256,7 +259,7 @@ class Monster(Sprite):
         rand_num = random.randint(0, 4)
         expansion_factor = 0.1448823074
         phase_shift = 0.1800373888
-        multiplier = (math.atan(expansion_factor*self.curr_room.level + phase_shift) / (math.pi / 2)) + (random.randint(-5, 5) / 100)
+        self.multiplier = (math.atan(expansion_factor*self.curr_room.level + phase_shift) / (math.pi / 2)) + (random.randint(-5, 5) / 100)
         if (rand_num <= 1):
             self.standing_img_south = Monster.bat_south_standing
             self.moving_img_south = Monster.bat_south_moving
@@ -270,10 +273,10 @@ class Monster(Sprite):
             self.attacking_img_north = Monster.bat_north_moving
             self.attacking_img_south = Monster.bat_south_moving
             self.attacking_img_west = Monster.bat_west_moving
-            self.health = 17.5 * multiplier
+            self.health = 17.5 * self.multiplier
             self.speed = 240
-            self.attack = 18 * multiplier
-            self.sight = 14 * multiplier
+            self.attack = 18 * self.multiplier
+            self.sight = 14 * self.multiplier
         elif (rand_num <= 3):
             self.standing_img_south = Monster.slime_standing
             self.moving_img_south = Monster.slime_NS_moving
@@ -287,10 +290,10 @@ class Monster(Sprite):
             self.attacking_img_north = Monster.slime_NS_moving
             self.attacking_img_south = Monster.slime_NS_moving
             self.attacking_img_west = Monster.slime_west_moving
-            self.health = 35 * multiplier
+            self.health = 35 * self.multiplier
             self.speed = 80
-            self.attack = 36 * multiplier
-            self.sight = 10 * multiplier
+            self.attack = 36 * self.multiplier
+            self.sight = 10 * self.multiplier
         else:
             self.standing_img_south = Monster.skeleton_south_standing
             self.moving_img_south = Monster.skeleton_south_moving
@@ -304,10 +307,10 @@ class Monster(Sprite):
             self.attacking_img_north = Monster.skeleton_north_attack
             self.attacking_img_south = Monster.skeleton_south_attack
             self.attacking_img_west = Monster.skeleton_west_attack
-            self.health = 87.5 * multiplier
+            self.health = 87.5 * self.multiplier
             self.speed = 120
-            self.attack = 72 * multiplier
-            self.sight = 20 * multiplier
+            self.attack = 72 * self.multiplier
+            self.sight = 20 * self.multiplier
         self.image = self.standing_img_south
             
     def pick_random_location(self):
@@ -323,18 +326,23 @@ class Monster(Sprite):
         self.delete()
         self.curr_room.entities.remove(self)
         
-    def take_damage(self, dmg):
+    def take_damage(self, dmg) -> int:
         self.color = (128, 0, 0)
         clock.schedule_once(self.revert_color, 0.25)
         self.health = self.health - dmg
         if (self.health <= 0):
             self.is_dead = True
+            return (5 * (1 + self.multiplier))
+        else:
+            return 0
             
     def revert_color(self, dt):
         self.color = (255, 255, 255)
             
     def move_east(self, dt):
-        if (self.x < self.next_coord):
+        if (self.is_dead):
+            clock.unschedule(self.move_east)
+        elif (self.x < self.next_coord):
             self.x = self.x + (self.speed * dt)
         else:
             self.x = self.next_coord
@@ -343,7 +351,9 @@ class Monster(Sprite):
             self.is_transfer_moving = True
 
     def move_west(self, dt):
-        if (self.x > self.next_coord):
+        if (self.is_dead):
+            clock.unschedule(self.move_west)
+        elif (self.x > self.next_coord):
             self.x = self.x - (self.speed * dt)
         else:
             self.x = self.next_coord
@@ -352,7 +362,9 @@ class Monster(Sprite):
             self.is_transfer_moving = True
 
     def move_south(self, dt):
-        if (self.y > self.next_coord):
+        if (self.is_dead):
+            clock.unschedule(self.move_south)
+        elif (self.y > self.next_coord):
             self.y = self.y - (self.speed * dt)
         else:
             self.y = self.next_coord
@@ -361,7 +373,9 @@ class Monster(Sprite):
             self.is_transfer_moving = True
 
     def move_north(self, dt):
-        if (self.y < self.next_coord):
+        if (self.is_dead):
+            clock.unschedule(self.move_north)
+        elif (self.y < self.next_coord):
             self.y = self.y + (self.speed * dt)
         else:
             self.y = self.next_coord
@@ -509,23 +523,23 @@ class Item(Sprite):
             self.y = rand_y
             
     def pick_random_item(self):
-        rand_num = random.randint(1, 11)
-        if (rand_num <= 2):
+        rand_num = random.randint(1, 13)
+        if (rand_num <= 3):
             self.item_enum = Type.Weapon
             self.image = Item.sword
-        elif (rand_num <= 4):
+        elif (rand_num <= 5):
             self.item_enum = Type.Helmet
             self.image = Item.helmet
-        elif (rand_num <= 6):
+        elif (rand_num <= 7):
             self.item_enum = Type.Chestpiece
             self.image = Item.chestpiece
-        elif (rand_num <= 8):
+        elif (rand_num <= 9):
             self.item_enum = Type.Leggings
             self.image = Item.leggings
-        elif (rand_num == 9):
+        elif (rand_num == 10):
             self.item_enum = Type.Footwear
             self.image = Item.hermes
-        elif (rand_num == 10):
+        elif (rand_num == 11):
             self.item_enum = Type.Torch
             self.image = Item.torch
         else:
