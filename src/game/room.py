@@ -5,6 +5,7 @@ import random, math
 from pyglet.sprite import Sprite
 from pyglet import image
 from pyglet import clock
+from cmath import phase
 '''
 Created on Feb 11, 2020
 
@@ -15,10 +16,11 @@ Contains all the data to recreate a room.
 
 class Room():
 
-    def __init__(self, direc, backgroundX, backgroundY):
+    def __init__(self, direc, backgroundX, backgroundY, this_level):
         self.startX = backgroundX
         self.startY = backgroundY
         self.location = direc
+        self.level = this_level
         self.entities = []
         self.add_doors()
         
@@ -252,6 +254,9 @@ class Monster(Sprite):
         
     def pick_random_monster(self):
         rand_num = random.randint(0, 4)
+        expansion_factor = 0.1448823074
+        phase_shift = 0.1800373888
+        multiplier = (math.atan(expansion_factor*self.curr_room.level + phase_shift) / (math.pi / 2)) + (random.randint(-5, 5) / 100)
         if (rand_num <= 1):
             self.standing_img_south = Monster.bat_south_standing
             self.moving_img_south = Monster.bat_south_moving
@@ -265,10 +270,10 @@ class Monster(Sprite):
             self.attacking_img_north = Monster.bat_north_moving
             self.attacking_img_south = Monster.bat_south_moving
             self.attacking_img_west = Monster.bat_west_moving
-            self.health = 10
+            self.health = 17.5 * multiplier
             self.speed = 240
-            self.attack = 5
-            self.sight = 4
+            self.attack = 18 * multiplier
+            self.sight = 14 * multiplier
         elif (rand_num <= 3):
             self.standing_img_south = Monster.slime_standing
             self.moving_img_south = Monster.slime_NS_moving
@@ -282,10 +287,10 @@ class Monster(Sprite):
             self.attacking_img_north = Monster.slime_NS_moving
             self.attacking_img_south = Monster.slime_NS_moving
             self.attacking_img_west = Monster.slime_west_moving
-            self.health = 20
+            self.health = 35 * multiplier
             self.speed = 80
-            self.attack = 10
-            self.sight = 3
+            self.attack = 36 * multiplier
+            self.sight = 10 * multiplier
         else:
             self.standing_img_south = Monster.skeleton_south_standing
             self.moving_img_south = Monster.skeleton_south_moving
@@ -299,10 +304,10 @@ class Monster(Sprite):
             self.attacking_img_north = Monster.skeleton_north_attack
             self.attacking_img_south = Monster.skeleton_south_attack
             self.attacking_img_west = Monster.skeleton_west_attack
-            self.health = 50
+            self.health = 87.5 * multiplier
             self.speed = 120
-            self.attack = 20
-            self.sight = 6
+            self.attack = 72 * multiplier
+            self.sight = 20 * multiplier
         self.image = self.standing_img_south
             
     def pick_random_location(self):
