@@ -37,8 +37,41 @@ class Title():
                               align='center',
                               anchor_x='center',
                               anchor_y='center')
+        self.text_bindings = Label("Key Bindings:",
+                              font_name='Times New Roman',
+                              font_size=16,
+                              x=backgroundX + 900,
+                              y=backgroundY + 80,
+                              color=(0, 0, 0, 150),
+                              align='center',
+                              anchor_x='center',
+                              anchor_y='center', 
+                              bold=True)
+        self.text_select = Label("Select: W",
+                              font_name='Times New Roman',
+                              font_size=16,
+                              x=backgroundX + 900,
+                              y=backgroundY + 60,
+                              color=(0, 0, 0, 150),
+                              align='center',
+                              anchor_x='center',
+                              anchor_y='center',
+                              bold=True)
+        self.text_arrows = Label("Scroll: Arrow Keys",
+                              font_name='Times New Roman',
+                              font_size=16,
+                              x=backgroundX + 900,
+                              y=backgroundY + 40,
+                              color=(0, 0, 0, 150),
+                              align='center',
+                              anchor_x='center',
+                              anchor_y='center',
+                              bold=True)
         
     def draw(self):
         self.text_dungeonerator.draw()
         self.text_the.draw()
         self.text_by.draw()
+        self.text_bindings.draw()
+        self.text_select.draw()
+        self.text_arrows.draw()

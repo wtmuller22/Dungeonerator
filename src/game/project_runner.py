@@ -35,6 +35,22 @@ player_is_alive = True
 def main():
     pyglet.app.run()
     
+def reset_data():
+    global visibility
+    global player1
+    global room_map
+    global displayed_level
+    global game_over
+    global player_is_alive
+    global current_room
+    visibility = Visibility()
+    player1 = Player(given_name='player1', backgroundX=startX, backgroundY=startY, darkness=visibility)
+    room_map = Map(backgroundX=startX, backgroundY=startY)
+    displayed_level = Level(backgroundX=startX, backgroundY=startY)
+    game_over = GameOver(backgroundX=startX, backgroundY=startY)
+    player_is_alive = True
+    current_room = None
+    
 def select_button():
     selected = menu.get_current_idx()
     if (selected == 2):
@@ -53,12 +69,11 @@ def menu_to_game():
     
 def inventory_to_menu():
     global current_state
-    global current_room
     current_state = State.Menu
     background.switch_image()
-    current_room = None
     pyglet.clock.unschedule(update)
     pyglet.clock.unschedule(check_ground)
+    reset_data()
     
 def game_to_inventory():
     global current_state
@@ -72,7 +87,7 @@ def player_died():
     global player_is_alive
     player_is_alive = False
     player1.fade()
-    game_over.color = (140, 0, 0, 255)   
+    game_over.make_visible()
     pyglet.clock.unschedule(update) 
     pyglet.clock.unschedule(check_ground)
     
@@ -600,6 +615,9 @@ def on_key_press(symbol, modifiers):
             inventory_to_game()
         elif symbol == key.R:
             player1.discard_item()
+    elif not player_is_alive:
+        if symbol == key.W:
+            inventory_to_menu()
             
 @window.event
 def on_key_release(symbol, modifiers):
