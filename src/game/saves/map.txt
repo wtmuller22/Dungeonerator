@@ -1,0 +1,11 @@
+Room Dictionary:
+Room Number: 0
+Direction: None
+Level: 0
+Entities:
+Door:
+X: 770.0
+Y: 0.0
+Is Gold: True
+Rotation: 270
+Corner Dictionary:

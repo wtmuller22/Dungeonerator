@@ -385,6 +385,15 @@ class Inventory():
                               align='center',
                               anchor_x='center',
                               anchor_y='center')
+        self.quit = Label("(Press Esc to save and quit)",
+                              font_name='Times New Roman',
+                              font_size=16,
+                              x=backX + 500,
+                              y=backY + 690,
+                              color=(135, 135, 135, 128),
+                              align='center',
+                              anchor_x='center',
+                              anchor_y='center')
         self.startX = backX
         self.startY = backY
         self.this_player = the_player
@@ -445,6 +454,7 @@ class Inventory():
         
     def draw(self):
         self.title.draw()
+        self.quit.draw()
         for row in self.array:
             for slot in row:
                 slot.draw()

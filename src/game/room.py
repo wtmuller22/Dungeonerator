@@ -5,7 +5,6 @@ import random, math
 from pyglet.sprite import Sprite
 from pyglet import image
 from pyglet import clock
-from cmath import phase
 '''
 Created on Feb 11, 2020
 
@@ -150,24 +149,30 @@ class Room():
         return None
     
     def add_entities(self):
-        rand_num = random.randint(1, 100)
-        if (rand_num > 40):
+        rand_num = random.randint(1, 10)
+        if (rand_num > 3):
             to_add = Item(backX=self.startX, backY=self.startY, this_room=self)
             self.entities.append(to_add)
-        if (rand_num > 60):
+        if (rand_num > 5):
             to_add = Item(backX=self.startX, backY=self.startY, this_room=self)
             self.entities.append(to_add)
-        if (rand_num > 80):
+        if (rand_num > 7):
             to_add = Item(backX=self.startX, backY=self.startY, this_room=self)
             self.entities.append(to_add)
-        rand_num = random.randint(0, 9)
+        if (rand_num > 9):
+            to_add = Item(backX=self.startX, backY=self.startY, this_room=self)
+            self.entities.append(to_add)
+        rand_num = random.randint(1, 10)
         if (rand_num > 1):
             to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
             self.entities.append(to_add)
-        if (rand_num > 5):
+        if (rand_num > 4):
             to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
             self.entities.append(to_add)
-        if (rand_num > 8):
+        if (rand_num > 7):
+            to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
+            self.entities.append(to_add)
+        if (rand_num > 9):
             to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
             self.entities.append(to_add)
             
@@ -231,6 +236,7 @@ class Monster(Sprite):
         self.multiplier = 0
         self.next_coord = None
         self.curr_room = this_room
+        self.monster_type = None
         self.standing_img_east = None
         self.standing_img_north = None
         self.standing_img_south = None
@@ -261,6 +267,7 @@ class Monster(Sprite):
         phase_shift = 0.1800373888
         self.multiplier = (math.atan(expansion_factor*self.curr_room.level + phase_shift) / (math.pi / 2)) + (random.randint(-5, 5) / 100)
         if (rand_num <= 1):
+            self.monster_type = 'Bat'
             self.standing_img_south = Monster.bat_south_standing
             self.moving_img_south = Monster.bat_south_moving
             self.standing_img_east = Monster.bat_east_standing
@@ -278,6 +285,7 @@ class Monster(Sprite):
             self.attack = 18 * self.multiplier
             self.sight = 14 * self.multiplier
         elif (rand_num <= 3):
+            self.monster_type = 'Slime'
             self.standing_img_south = Monster.slime_standing
             self.moving_img_south = Monster.slime_NS_moving
             self.standing_img_east = Monster.slime_standing
@@ -295,6 +303,7 @@ class Monster(Sprite):
             self.attack = 36 * self.multiplier
             self.sight = 10 * self.multiplier
         else:
+            self.monster_type = 'Skeleton'
             self.standing_img_south = Monster.skeleton_south_standing
             self.moving_img_south = Monster.skeleton_south_moving
             self.standing_img_east = Monster.skeleton_east_standing
@@ -523,7 +532,7 @@ class Item(Sprite):
             self.y = rand_y
             
     def pick_random_item(self):
-        rand_num = random.randint(1, 13)
+        rand_num = random.randint(1, 14)
         if (rand_num <= 3):
             self.item_enum = Type.Weapon
             self.image = Item.sword

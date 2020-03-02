@@ -10,6 +10,8 @@ from game.level import Level
 from game.gameover import GameOver
 from game.visibility import Visibility
 from pyglet.window import key
+from game.room import Monster
+from game.room import Item
 '''
 Created on Feb 11, 2020
 
@@ -58,6 +60,8 @@ def select_button():
         pyglet.app.exit()
     elif (selected == 0):
         menu_to_game()
+    elif (selected == 1):
+        load_state()
         
 def menu_to_game():
     global current_state 
@@ -502,7 +506,7 @@ def player_attack():
             if (check_y == player1.y):
                 check_y = check_y + 40
             total_exp = current_room.player_attack(damage=player1.attack, playerX=player1.x, playerY=check_y)
-            result = player1.selected_weapon.take_damage(damage=2)
+            result = player1.selected_weapon.take_damage(damage=10)
             player1.add_experience(exp=total_exp)
             if (result):
                 player1.selected_weapon = None
@@ -511,7 +515,7 @@ def player_attack():
             if (check_x == player1.x):
                 check_x = check_x + 40
             total_exp = current_room.player_attack(damage=player1.attack, playerX=check_x, playerY=player1.y)
-            result = player1.selected_weapon.take_damage(damage=2)
+            result = player1.selected_weapon.take_damage(damage=10)
             player1.add_experience(exp=total_exp)
             if (result):
                 player1.selected_weapon = None
@@ -520,7 +524,7 @@ def player_attack():
             if (check_y == player1.y):
                 check_y = check_y - 40
             total_exp = current_room.player_attack(damage=player1.attack, playerX=player1.x, playerY=check_y)
-            result = player1.selected_weapon.take_damage(damage=2)
+            result = player1.selected_weapon.take_damage(damage=10)
             player1.add_experience(exp=total_exp)
             if (result):
                 player1.selected_weapon = None
@@ -529,10 +533,107 @@ def player_attack():
             if (check_x == player1.x):
                 check_x = check_x - 40
             total_exp = current_room.player_attack(damage=player1.attack, playerX=check_x, playerY=player1.y)
-            result = player1.selected_weapon.take_damage(damage=2)
+            result = player1.selected_weapon.take_damage(damage=10)
             player1.add_experience(exp=total_exp)
             if (result):
                 player1.selected_weapon = None
+                
+def save_state():
+    with open('saves/player.txt', 'w', encoding = 'utf-8') as f:
+        f.write('Name: ' + player1.name + '\n')
+        f.write('X: ' + str(player1.x) + '\n')
+        f.write('Y: ' + str(player1.y) + '\n')
+        f.write('Next Coord: ' + str(player1.nextBoxCoord) + '\n')
+        f.write('Level: ' + str(player1.level) + '\n')
+        f.write('Room Number: ' + str(player1.room_number) + '\n')
+        f.write('Next Stat: ' + str(player1.next_up_stat) + '\n')
+        f.write('Defense: ' + str(player1.defense) + '\n')
+        f.write('Speed: ' + str(player1.speed) + '\n')
+        f.write('Attack: ' + str(player1.attack) + '\n')
+        f.write('Facing: ' + str(player1.facing) + '\n')
+        f.write('Number Hearts: ' + str(len(player1.life.life_array)) + '\n')
+        life_missing = 0
+        for heart in player1.life.life_array:
+            life_missing = life_missing + (20 - heart.life)
+        f.write('Missing Health: ' + str(life_missing) + '\n')
+        f.write('Total Experience: ' + str(player1.experience.total_exp) + '\n')
+        f.write('Exp Scale: ' + str(player1.experience.exp.scale) + '\n')
+        f.write('Inventory Highlight X: ' + str(player1.player_inventory.highlighted_x) + '\n')
+        f.write('Inventory Highlight Y: ' + str(player1.player_inventory.highlighted_y) + '\n')
+        extra_slots = 0
+        row_num = 0
+        for row in player1.player_inventory.array:
+            if (row_num > 1):
+                extra_slots = extra_slots + len(row)
+            row_num = row_num + 1
+        f.write('Extra Slots: ' + str(extra_slots) + '\n')
+        for row in player1.player_inventory.array:
+            for slot in row:
+                f.write('Slot:\n')
+                f.write('Selected: ' + str(slot.is_selected) + '\n')
+                f.write('Highlighted: ' + str(slot.is_highlighted) + '\n')
+                f.write('Item:\n')
+                if (slot.item is None):
+                    f.write('None\n')
+                else:
+                    f.write('Value: ' + str(slot.item.attack_strength_defense) + '\n')
+                    f.write('Durability Max: ' + str(slot.item.durability_max) + '\n')
+                    f.write('Durability: ' + str(slot.item.durability) + '\n')
+                    f.write('Type: ' + str(slot.item.type) + '\n')
+                    f.write('Rarity: ' + str(slot.item.rarity) + '\n')
+    with open('saves/map.txt', 'w', encoding = 'utf-8') as f:
+        f.write('Room Dictionary:\n')
+        keys = list(room_map.room_dict.keys())
+        for key in keys:
+            f.write('Room Number: ' + str(key) + '\n')
+            this_room = room_map.room_dict[key]
+            f.write('Direction: ' + str(this_room.location) + '\n')
+            f.write('Level: ' + str(this_room.level) + '\n')
+            f.write('Entities:\n')
+            for entity in this_room.entities:
+                if isinstance(entity, Monster):
+                    f.write('Monster:\n')
+                    f.write('Type: ' + entity.monster_type + '\n')
+                    f.write('Multiplier: ' + str(entity.multiplier) + '\n')
+                    f.write('Next Coord: ' + str(entity.next_coord) + '\n')
+                    f.write('Health: ' + str(entity.health) + '\n')
+                    f.write('Speed: ' + str(entity.speed) + '\n')
+                    f.write('Attack: ' + str(entity.attack) + '\n')
+                    f.write('Sight: ' + str(entity.sight) + '\n')
+                    f.write('Is Moving: ' + str(entity.is_moving) + '\n')
+                    f.write('Is Trans Moving: ' + str(entity.is_transfer_moving) + '\n')
+                    f.write('Is Attacking: ' + str(entity.is_attacking) + '\n')
+                    f.write('Is Dead: ' + str(entity.is_dead) + '\n')
+                    f.write('Facing: ' + str(entity.facing) + '\n')
+                    f.write('X: ' + str(entity.x) + '\n')
+                    f.write('Y: ' + str(entity.y) + '\n')
+                elif isinstance(entity, Item):
+                    f.write('Item:\n')
+                    f.write('X: ' + str(entity.x) + '\n')
+                    f.write('Y: ' + str(entity.y) + '\n')
+                    f.write('Type: ' + str(entity.item_enum) + '\n')
+                elif isinstance(entity, Door):
+                    f.write('Door:\n')
+                    f.write('X: ' + str(entity.x) + '\n')
+                    f.write('Y: ' + str(entity.y) + '\n')
+                    f.write('Is Gold: ' + str(entity.is_gold) + '\n')
+                    f.write('Rotation: ' + str(entity.rotation) + '\n')
+        f.write('Corner Dictionary:\n')
+        keys = list(room_map.corner_numbers.keys())
+        for key in keys:
+            if key != 0:
+                f.write('Corners:\n')
+                f.write('Level: ' + str(key) + '\n')
+                nums = room_map.corner_numbers[key]
+                f.write(str(nums[0]) + '\n')
+                f.write(str(nums[1]) + '\n')
+                f.write(str(nums[2]) + '\n')
+                f.write(str(nums[3]) + '\n')
+                
+def load_state():
+    with open('saves/player.txt', 'r', encoding = 'utf-8') as f:
+        for line in f:
+            print(line)
 
 @window.event
 def on_draw():
@@ -621,12 +722,13 @@ def on_key_press(symbol, modifiers):
         elif symbol == key.R:
             player1.discard_item()
         elif (symbol == key.ESCAPE):
-            return pyglet.event.EVENT_HANDLED
+            save_state()
+            pyglet.app.exit()
     elif not player_is_alive:
         if symbol == key.W:
             inventory_to_menu()
         elif (symbol == key.ESCAPE):
-            return pyglet.event.EVENT_HANDLED
+            return pyglet.event.EVENT_HANDLED        
             
 @window.event
 def on_key_release(symbol, modifiers):
