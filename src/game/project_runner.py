@@ -16,7 +16,6 @@ from game.room import Room
 from game.player import Item as pItem
 from game.item_type import Type
 from game.player import Rarity
-from game import room
 '''
 Created on Feb 11, 2020
 
@@ -438,7 +437,7 @@ def check_player_legal_movement() -> bool:
                     change_player_level()
         return result and (not is_monster)
     else:
-        result = player1.y > 0
+        result = player1.y > startY
         check_y = player1.nextBoxCoord
         if (check_y == player1.y):
             check_y = check_y - 40
