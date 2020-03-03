@@ -478,7 +478,10 @@ class Slot(Sprite):
     def toggle_select(self):
         self.is_selected = not self.is_selected
         if (self.is_selected):
-            self.image = Slot.highlighted_selected
+            if (self.is_highlighted):
+                self.image = Slot.highlighted_selected
+            else:
+                self.image = Slot.selected
             if (self.item.type == Type.Torch):
                 clock.schedule_interval(self.item.lose_light, 1)
             elif (self.item.type == Type.Potion):

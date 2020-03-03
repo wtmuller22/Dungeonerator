@@ -12,6 +12,11 @@ from game.visibility import Visibility
 from pyglet.window import key
 from game.room import Monster
 from game.room import Item
+from game.room import Room
+from game.player import Item as pItem
+from game.item_type import Type
+from game.player import Rarity
+from game import room
 '''
 Created on Feb 11, 2020
 
@@ -30,7 +35,7 @@ menu = Menu(backgroundX=startX, backgroundY=startY, backgroundW=background.width
 visibility = Visibility()
 player1 = Player(given_name='player1', backgroundX=startX, backgroundY=startY, darkness=visibility)
 room_map = Map(backgroundX=startX, backgroundY=startY)
-current_room = None
+current_room = room_map.change_to_room(number=0, level=0)
 displayed_level = Level(backgroundX=startX, backgroundY=startY)
 game_over = GameOver(backgroundX=startX, backgroundY=startY)
 player_is_alive = True
@@ -52,7 +57,7 @@ def reset_data():
     displayed_level = Level(backgroundX=startX, backgroundY=startY)
     game_over = GameOver(backgroundX=startX, backgroundY=startY)
     player_is_alive = True
-    current_room = None
+    current_room = room_map.change_to_room(number=0, level=0)
     
 def select_button():
     selected = menu.get_current_idx()
@@ -62,11 +67,11 @@ def select_button():
         menu_to_game()
     elif (selected == 1):
         load_state()
+        menu_to_game()
         
 def menu_to_game():
     global current_state 
     global current_room
-    current_room = room_map.change_to_room(number=0, level=0)
     current_state = State.Game
     background.switch_image()
     pyglet.clock.schedule_interval(update, 1/60.0)
@@ -560,6 +565,7 @@ def save_state():
         f.write('Exp Scale: ' + str(player1.experience.exp.scale) + '\n')
         f.write('Inventory Highlight X: ' + str(player1.player_inventory.highlighted_x) + '\n')
         f.write('Inventory Highlight Y: ' + str(player1.player_inventory.highlighted_y) + '\n')
+        f.write('Visibility Scale: ' + str(player1.visibility.scale) + '\n')
         extra_slots = 0
         row_num = 0
         for row in player1.player_inventory.array:
@@ -570,17 +576,17 @@ def save_state():
         for row in player1.player_inventory.array:
             for slot in row:
                 f.write('Slot:\n')
-                f.write('Selected: ' + str(slot.is_selected) + '\n')
-                f.write('Highlighted: ' + str(slot.is_highlighted) + '\n')
                 f.write('Item:\n')
                 if (slot.item is None):
                     f.write('None\n')
                 else:
+                    f.write('Type: ' + str(slot.item.type) + '\n')
                     f.write('Value: ' + str(slot.item.attack_strength_defense) + '\n')
                     f.write('Durability Max: ' + str(slot.item.durability_max) + '\n')
                     f.write('Durability: ' + str(slot.item.durability) + '\n')
-                    f.write('Type: ' + str(slot.item.type) + '\n')
                     f.write('Rarity: ' + str(slot.item.rarity) + '\n')
+                f.write('Selected: ' + str(slot.is_selected) + '\n')
+                f.write('Highlighted: ' + str(slot.is_highlighted) + '\n')
     with open('saves/map.txt', 'w', encoding = 'utf-8') as f:
         f.write('Room Dictionary:\n')
         keys = list(room_map.room_dict.keys())
@@ -593,25 +599,22 @@ def save_state():
             for entity in this_room.entities:
                 if isinstance(entity, Monster):
                     f.write('Monster:\n')
-                    f.write('Type: ' + entity.monster_type + '\n')
+                    f.write('Monster Type: ' + entity.monster_type + '\n')
                     f.write('Multiplier: ' + str(entity.multiplier) + '\n')
-                    f.write('Next Coord: ' + str(entity.next_coord) + '\n')
                     f.write('Health: ' + str(entity.health) + '\n')
                     f.write('Speed: ' + str(entity.speed) + '\n')
                     f.write('Attack: ' + str(entity.attack) + '\n')
                     f.write('Sight: ' + str(entity.sight) + '\n')
                     f.write('Is Moving: ' + str(entity.is_moving) + '\n')
-                    f.write('Is Trans Moving: ' + str(entity.is_transfer_moving) + '\n')
-                    f.write('Is Attacking: ' + str(entity.is_attacking) + '\n')
-                    f.write('Is Dead: ' + str(entity.is_dead) + '\n')
                     f.write('Facing: ' + str(entity.facing) + '\n')
                     f.write('X: ' + str(entity.x) + '\n')
                     f.write('Y: ' + str(entity.y) + '\n')
+                    f.write('Next Coord: ' + str(entity.next_coord) + '\n')
                 elif isinstance(entity, Item):
                     f.write('Item:\n')
                     f.write('X: ' + str(entity.x) + '\n')
                     f.write('Y: ' + str(entity.y) + '\n')
-                    f.write('Type: ' + str(entity.item_enum) + '\n')
+                    f.write('Item Type: ' + str(entity.item_enum) + '\n')
                 elif isinstance(entity, Door):
                     f.write('Door:\n')
                     f.write('X: ' + str(entity.x) + '\n')
@@ -625,15 +628,329 @@ def save_state():
                 f.write('Corners:\n')
                 f.write('Level: ' + str(key) + '\n')
                 nums = room_map.corner_numbers[key]
-                f.write(str(nums[0]) + '\n')
-                f.write(str(nums[1]) + '\n')
-                f.write(str(nums[2]) + '\n')
-                f.write(str(nums[3]) + '\n')
+                f.write('Corner: ' + str(nums[0]) + '\n')
+                f.write('Corner: ' + str(nums[1]) + '\n')
+                f.write('Corner: ' + str(nums[2]) + '\n')
+                f.write('Corner: ' + str(nums[3]) + '\n')
                 
 def load_state():
+    global current_room
     with open('saves/player.txt', 'r', encoding = 'utf-8') as f:
+        row = 0
+        slot = 0
         for line in f:
-            print(line)
+            if (line.startswith('Name:')):
+                data = line[6:(len(line) - 1)]
+                player1.name = data
+            elif (line.startswith('X:')):
+                data = line[3:(len(line) - 1)]
+                player1.x = float(data)
+            elif (line.startswith('Y:')):
+                data = line[3:(len(line) - 1)]
+                player1.y = float(data)
+            elif (line.startswith('Next Coord:')):
+                data = line[12:(len(line) - 1)]
+                player1.nextBoxCoord = float(data)
+            elif (line.startswith('Level:')):
+                data = line[7:(len(line) - 1)]
+                player1.level = int(data)
+            elif (line.startswith('Room Number:')):
+                data = line[13:(len(line) - 1)]
+                player1.room_number = int(data)
+            elif (line.startswith('Next Stat:')):
+                data = line[11:(len(line) - 1)]
+                player1.next_up_stat = int(data)
+            elif (line.startswith('Defense:')):
+                data = line[9:(len(line) - 1)]
+                player1.defense = float(data)
+            elif (line.startswith('Speed:')):
+                data = line[7:(len(line) - 1)]
+                player1.speed = int(data)
+            elif (line.startswith('Attack:')):
+                data = line[8:(len(line) - 1)]
+                player1.attack = int(data)
+            elif (line.startswith('Facing:')):
+                if (line.find('EAST') != -1):
+                    player1.facing = Direction.EAST
+                    player1.image = Player.east_standing_img
+                elif (line.find('NORTH') != -1):
+                    player1.facing = Direction.NORTH
+                    player1.image = Player.north_standing_img
+                elif (line.find('WEST') != -1):
+                    player1.facing = Direction.WEST
+                    player1.image = Player.west_standing_img
+                else:
+                    player1.facing = Direction.SOUTH
+                    player1.image = Player.south_standing_img
+            elif (line.startswith('Number Hearts:')):
+                data = int(line[15:(len(line) - 1)]) - 5
+                while (data > 0):
+                    player1.increase_life_max()
+                    data = data - 1
+            elif (line.startswith('Missing Health:')):
+                data = float(line[16:(len(line) - 1)])
+                player1.life.change_health(amount=(-1 * data), defense=1)
+            elif (line.startswith('Total Experience:')):
+                data = line[18:(len(line) - 1)]
+                player1.experience.total_exp = float(data)
+            elif (line.startswith('Exp Scale:')):
+                data = line[11:(len(line) - 1)]
+                player1.experience.exp.scale = float(data)
+            elif (line.startswith('Inventory Highlight X:')):
+                player1.player_inventory.array[0][0].toggle_highlight()
+                data = line[23:(len(line) - 1)]
+                player1.player_inventory.highlighted_x = int(data)
+            elif (line.startswith('Inventory Highlight Y:')):
+                data = line[23:(len(line) - 1)]
+                player1.player_inventory.highlighted_y = int(data)
+            elif (line.startswith('Visibility Scale:')):
+                data = line[18:(len(line) - 1)]
+                player1.visibility.scale = float(data)
+            elif (line.startswith('Extra Slots:')):
+                data = int(line[13:(len(line) - 1)])
+                while (data > 0):
+                    player1.increase_inventory_max()
+                    data = data - 1
+            elif (line.startswith('Selected:')):
+                data = line[10:(len(line) - 1)]
+                if (data == 'True'):
+                    player1.player_inventory.array[row][slot].toggle_select()
+                    if (player1.player_inventory.array[row][slot].item.type == Type.Weapon):
+                        player1.selected_weapon = player1.player_inventory.array[row][slot]
+                    elif (player1.player_inventory.array[row][slot].item.type == Type.Helmet):
+                        player1.selected_helmet = player1.player_inventory.array[row][slot]
+                    elif (player1.player_inventory.array[row][slot].item.type == Type.Chestpiece):
+                        player1.selected_chestpiece = player1.player_inventory.array[row][slot]
+                    elif (player1.player_inventory.array[row][slot].item.type == Type.Leggings):
+                        player1.selected_leggings = player1.player_inventory.array[row][slot]
+                    elif (player1.player_inventory.array[row][slot].item.type == Type.Footwear):
+                        player1.selected_footwear = player1.player_inventory.array[row][slot]
+                    elif (player1.player_inventory.array[row][slot].item.type == Type.Torch):
+                        player1.selected_torch = player1.player_inventory.array[row][slot]
+            elif (line.startswith('Highlighted:')):
+                data = line[13:(len(line) - 1)]
+                if (data == 'True'):
+                    player1.player_inventory.array[row][slot].toggle_highlight()
+                if (slot == 4):
+                    slot = 0
+                    row = row + 1
+                else:
+                    slot = slot + 1
+            elif (line.startswith('Type:')):
+                if (line.find('Weapon') != -1):
+                    to_add = pItem(item_enum=Type.Weapon, aX=(player1.player_inventory.array[row][slot].x + 10), aY=(player1.player_inventory.array[row][slot].y + 10), frame=player1.player_inventory.array[row][slot], a_player=player1)
+                    player1.player_inventory.array[row][slot].item = to_add
+                elif (line.find('Helmet') != -1):
+                    to_add = pItem(item_enum=Type.Helmet, aX=(player1.player_inventory.array[row][slot].x + 10), aY=(player1.player_inventory.array[row][slot].y + 10), frame=player1.player_inventory.array[row][slot], a_player=player1)
+                    player1.player_inventory.array[row][slot].item = to_add
+                elif (line.find('Chestpiece') != -1):
+                    to_add = pItem(item_enum=Type.Chestpiece, aX=(player1.player_inventory.array[row][slot].x + 10), aY=(player1.player_inventory.array[row][slot].y + 10), frame=player1.player_inventory.array[row][slot], a_player=player1)
+                    player1.player_inventory.array[row][slot].item = to_add
+                elif (line.find('Leggings') != -1):
+                    to_add = pItem(item_enum=Type.Leggings, aX=(player1.player_inventory.array[row][slot].x + 10), aY=(player1.player_inventory.array[row][slot].y + 10), frame=player1.player_inventory.array[row][slot], a_player=player1)
+                    player1.player_inventory.array[row][slot].item = to_add
+                elif (line.find('Footwear') != -1):
+                    to_add = pItem(item_enum=Type.Footwear, aX=(player1.player_inventory.array[row][slot].x + 10), aY=(player1.player_inventory.array[row][slot].y + 10), frame=player1.player_inventory.array[row][slot], a_player=player1)
+                    player1.player_inventory.array[row][slot].item = to_add
+                elif (line.find('Torch') != -1):
+                    to_add = pItem(item_enum=Type.Torch, aX=(player1.player_inventory.array[row][slot].x + 10), aY=(player1.player_inventory.array[row][slot].y + 10), frame=player1.player_inventory.array[row][slot], a_player=player1)
+                    player1.player_inventory.array[row][slot].item = to_add
+                else:
+                    to_add = pItem(item_enum=Type.Potion, aX=(player1.player_inventory.array[row][slot].x + 10), aY=(player1.player_inventory.array[row][slot].y + 10), frame=player1.player_inventory.array[row][slot], a_player=player1)
+                    player1.player_inventory.array[row][slot].item = to_add
+            elif (line.startswith('Value:')):
+                data = line[7:(len(line) - 1)]
+                player1.player_inventory.array[row][slot].item.attack_strength_defense = float(data)
+            elif (line.startswith('Durability:')):
+                data = line[12:(len(line) - 1)]
+                player1.player_inventory.array[row][slot].item.durability = float(data)
+                player1.player_inventory.array[row][slot].item.change_cracks()
+            elif (line.startswith('Durability Max:')):
+                data = line[16:(len(line) - 1)]
+                player1.player_inventory.array[row][slot].item.durability_max = float(data)
+            elif (line.startswith('Rarity:')):
+                data = int(line[8:(len(line) - 1)])
+                player1.player_inventory.array[row][slot].item.rarity = data
+                if (data == 4):
+                    player1.player_inventory.array[row][slot].item.rarity_img.image = Rarity.mythical
+                elif (data == 3):
+                    player1.player_inventory.array[row][slot].item.rarity_img.image = Rarity.epic
+                elif (data == 2):
+                    player1.player_inventory.array[row][slot].item.rarity_img.image = Rarity.rare
+                elif (data == 1):
+                    player1.player_inventory.array[row][slot].item.rarity_img.image = Rarity.uncommon
+    with open('saves/map.txt', 'r', encoding = 'utf-8') as f:
+        room_num = 0
+        is_room = True
+        for line in f:
+            if (line.startswith('Room Number:')):
+                data = line[13:(len(line) - 1)]
+                room_num = int(data)
+                to_add = Room(direc=None, backgroundX=startX, backgroundY=startY, this_level=0)
+                room_map.room_dict[room_num] = to_add
+            elif (line.startswith('Direction:')):
+                if (line.find('EAST') != -1):
+                    room_map.room_dict[room_num].location = Direction.EAST
+                elif (line.find('NORTH') != -1):
+                    room_map.room_dict[room_num].location = Direction.NORTH
+                elif (line.find('WEST') != -1):
+                    room_map.room_dict[room_num].location = Direction.WEST
+                elif (line.find('SOUTH') != -1):
+                    room_map.room_dict[room_num].location = Direction.SOUTH
+                elif (line.find('NE') != -1):
+                    room_map.room_dict[room_num].location = Direction.NE
+                elif (line.find('NW') != -1):
+                    room_map.room_dict[room_num].location = Direction.NW
+                elif (line.find('SE') != -1):
+                    room_map.room_dict[room_num].location = Direction.SE
+                else:
+                    room_map.room_dict[room_num].location = Direction.SW
+            elif (line.startswith('Level:')):
+                data = line[7:(len(line) - 1)]
+                if (is_room):
+                    room_map.room_dict[room_num].level = int(data)
+                else:
+                    room_num = int(data)
+                    room_map.corner_numbers[room_num] = []
+            elif (line.startswith('Monster:')):
+                room_map.room_dict[room_num].entities.append(Monster(backgroundX=startX, backgroundY=startY, this_room=room_map.room_dict[room_num]))
+            elif (line.startswith('Item:')):
+                room_map.room_dict[room_num].entities.append(Item(backX=startX, backY=startY, this_room=room_map.room_dict[room_num]))
+            elif (line.startswith('Door:')):
+                room_map.room_dict[room_num].entities.append(Door(backgroundX=startX, backgroundY=startY, direct=None))
+            elif (line.startswith('Monster Type:')):
+                data = line[14:(len(line) - 1)]
+                room_map.room_dict[room_num].entities[-1].monster_type = data
+                if (data == 'Bat'):
+                    room_map.room_dict[room_num].entities[-1].standing_img_south = Monster.bat_south_standing
+                    room_map.room_dict[room_num].entities[-1].moving_img_south = Monster.bat_south_moving
+                    room_map.room_dict[room_num].entities[-1].standing_img_east = Monster.bat_east_standing
+                    room_map.room_dict[room_num].entities[-1].moving_img_east = Monster.bat_east_moving
+                    room_map.room_dict[room_num].entities[-1].standing_img_north = Monster.bat_north_standing
+                    room_map.room_dict[room_num].entities[-1].moving_img_north = Monster.bat_north_moving
+                    room_map.room_dict[room_num].entities[-1].standing_img_west = Monster.bat_west_standing
+                    room_map.room_dict[room_num].entities[-1].moving_img_west = Monster.bat_west_moving
+                    room_map.room_dict[room_num].entities[-1].attacking_img_east = Monster.bat_east_moving
+                    room_map.room_dict[room_num].entities[-1].attacking_img_north = Monster.bat_north_moving
+                    room_map.room_dict[room_num].entities[-1].attacking_img_south = Monster.bat_south_moving
+                    room_map.room_dict[room_num].entities[-1].attacking_img_west = Monster.bat_west_moving
+                elif (data == 'Slime'):
+                    room_map.room_dict[room_num].entities[-1].standing_img_south = Monster.slime_standing
+                    room_map.room_dict[room_num].entities[-1].moving_img_south = Monster.slime_NS_moving
+                    room_map.room_dict[room_num].entities[-1].standing_img_east = Monster.slime_standing
+                    room_map.room_dict[room_num].entities[-1].moving_img_east = Monster.slime_east_moving
+                    room_map.room_dict[room_num].entities[-1].standing_img_north = Monster.slime_standing
+                    room_map.room_dict[room_num].entities[-1].moving_img_north = Monster.slime_NS_moving
+                    room_map.room_dict[room_num].entities[-1].standing_img_west = Monster.slime_standing
+                    room_map.room_dict[room_num].entities[-1].moving_img_west = Monster.slime_west_moving
+                    room_map.room_dict[room_num].entities[-1].attacking_img_east = Monster.slime_east_moving
+                    room_map.room_dict[room_num].entities[-1].attacking_img_north = Monster.slime_NS_moving
+                    room_map.room_dict[room_num].entities[-1].attacking_img_south = Monster.slime_NS_moving
+                    room_map.room_dict[room_num].entities[-1].attacking_img_west = Monster.slime_west_moving
+                else:
+                    room_map.room_dict[room_num].entities[-1].standing_img_south = Monster.skeleton_south_standing
+                    room_map.room_dict[room_num].entities[-1].moving_img_south = Monster.skeleton_south_moving
+                    room_map.room_dict[room_num].entities[-1].standing_img_east = Monster.skeleton_east_standing
+                    room_map.room_dict[room_num].entities[-1].moving_img_east = Monster.skeletont_east_moving
+                    room_map.room_dict[room_num].entities[-1].standing_img_north = Monster.skeleton_north_standing
+                    room_map.room_dict[room_num].entities[-1].moving_img_north = Monster.skeleton_north_moving
+                    room_map.room_dict[room_num].entities[-1].standing_img_west = Monster.skeleton_west_standing
+                    room_map.room_dict[room_num].entities[-1].moving_img_west = Monster.skeleton_west_moving
+                    room_map.room_dict[room_num].entities[-1].attacking_img_east = Monster.skeletont_east_attack
+                    room_map.room_dict[room_num].entities[-1].attacking_img_north = Monster.skeleton_north_attack
+                    room_map.room_dict[room_num].entities[-1].attacking_img_south = Monster.skeleton_south_attack
+                    room_map.room_dict[room_num].entities[-1].attacking_img_west = Monster.skeleton_west_attack
+            elif (line.startswith('Multiplier:')):
+                data = line[12:(len(line) - 1)]
+                room_map.room_dict[room_num].entities[-1].multiplier = float(data)
+            elif (line.startswith('Health:')):
+                data = line[8:(len(line) - 1)]
+                room_map.room_dict[room_num].entities[-1].health = float(data)
+            elif (line.startswith('Speed:')):
+                data = line[7:(len(line) - 1)]
+                room_map.room_dict[room_num].entities[-1].speed = float(data)
+            elif (line.startswith('Attack:')):
+                data = line[8:(len(line) - 1)]
+                room_map.room_dict[room_num].entities[-1].attack = float(data)
+            elif (line.startswith('Sight:')):
+                data = line[7:(len(line) - 1)]
+                room_map.room_dict[room_num].entities[-1].sight = float(data)
+            elif (line.startswith('Is Moving:')):
+                data = line[11:(len(line) - 1)]
+                if (data == 'True'):
+                    room_map.room_dict[room_num].entities[-1].is_moving = True
+                else:
+                    room_map.room_dict[room_num].entities[-1].is_moving = False
+            elif (line.startswith('Facing:')):
+                if (line.find('EAST') != -1):
+                    room_map.room_dict[room_num].entities[-1].facing = Direction.EAST
+                    room_map.room_dict[room_num].entities[-1].image = room_map.room_dict[room_num].entities[-1].standing_img_east
+                elif (line.find('NORTH') != -1):
+                    room_map.room_dict[room_num].entities[-1].facing = Direction.NORTH
+                    room_map.room_dict[room_num].entities[-1].image = room_map.room_dict[room_num].entities[-1].standing_img_north
+                elif (line.find('WEST') != -1):
+                    room_map.room_dict[room_num].entities[-1].facing = Direction.WEST
+                    room_map.room_dict[room_num].entities[-1].image = room_map.room_dict[room_num].entities[-1].standing_img_west
+                else:
+                    room_map.room_dict[room_num].entities[-1].facing = Direction.SOUTH
+                    room_map.room_dict[room_num].entities[-1].image = room_map.room_dict[room_num].entities[-1].standing_img_south
+            elif (line.startswith('X:')):
+                data = line[3:(len(line) - 1)]
+                room_map.room_dict[room_num].entities[-1].x = float(data)
+            elif (line.startswith('Y:')):
+                data = line[3:(len(line) - 1)]
+                room_map.room_dict[room_num].entities[-1].y = float(data)
+            elif (line.startswith('Next Coord:')):
+                data = line[12:(len(line) - 1)]
+                if (data == 'None'):
+                    room_map.room_dict[room_num].entities[-1].next_coord = None
+                else:
+                    room_map.room_dict[room_num].entities[-1].next_coord = float(data)
+                    if (room_map.room_dict[room_num].entities[-1].is_moving):
+                        if (room_map.room_dict[room_num].entities[-1].facing == Direction.EAST or room_map.room_dict[room_num].entities[-1].facing == Direction.WEST):
+                            room_map.room_dict[room_num].entities[-1].x = float(data)
+                        else:
+                            room_map.room_dict[room_num].entities[-1].y = float(data)
+            elif (line.startswith('Item Type:')):
+                if (line.find('Weapon') != -1):
+                    room_map.room_dict[room_num].entities[-1].item_enum = Type.Weapon
+                    room_map.room_dict[room_num].entities[-1].image = Item.sword
+                elif (line.find('Helmet') != -1):
+                    room_map.room_dict[room_num].entities[-1].item_enum = Type.Helmet
+                    room_map.room_dict[room_num].entities[-1].image = Item.helmet
+                elif (line.find('Chestpiece') != -1):
+                    room_map.room_dict[room_num].entities[-1].item_enum = Type.Chestpiece
+                    room_map.room_dict[room_num].entities[-1].image = Item.chestpiece
+                elif (line.find('Leggings') != -1):
+                    room_map.room_dict[room_num].entities[-1].item_enum = Type.Leggings
+                    room_map.room_dict[room_num].entities[-1].image = Item.leggings
+                elif (line.find('Footwear') != -1):
+                    room_map.room_dict[room_num].entities[-1].item_enum = Type.Footwear
+                    room_map.room_dict[room_num].entities[-1].image = Item.hermes
+                elif (line.find('Torch') != -1):
+                    room_map.room_dict[room_num].entities[-1].item_enum = Type.Torch
+                    room_map.room_dict[room_num].entities[-1].image = Item.torch
+                else:
+                    room_map.room_dict[room_num].entities[-1].item_enum = Type.Potion
+                    room_map.room_dict[room_num].entities[-1].image = Item.potion
+            elif (line.startswith('Is Gold:')):
+                data = line[9:(len(line) - 1)]
+                if (data == 'True'):
+                    room_map.room_dict[room_num].entities[-1].is_gold = True
+                    room_map.room_dict[room_num].entities[-1].image = Door.level_up
+                else:
+                    room_map.room_dict[room_num].entities[-1].is_gold = False
+            elif (line.startswith('Rotation:')):
+                data = line[10:(len(line) - 1)]
+                room_map.room_dict[room_num].entities[-1].rotation = float(data)
+            elif (line.startswith('Corner Dictionary:')):
+                is_room = False
+                room_num = 0
+            elif (line.startswith('Corner:')):
+                data = line[8:(len(line) - 1)]
+                room_map.corner_numbers[room_num].append(int(data))
+    current_room = room_map.change_to_room(number=player1.room_number, level=player1.level)
+    displayed_level.update_level(new_level=player1.level)
 
 @window.event
 def on_draw():
@@ -723,7 +1040,8 @@ def on_key_press(symbol, modifiers):
             player1.discard_item()
         elif (symbol == key.ESCAPE):
             save_state()
-            pyglet.app.exit()
+            inventory_to_menu()
+            return pyglet.event.EVENT_HANDLED
     elif not player_is_alive:
         if symbol == key.W:
             inventory_to_menu()

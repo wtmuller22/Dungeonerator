@@ -1,11 +1,145 @@
 Room Dictionary:
 Room Number: 0
-Direction: None
+Direction: Direction.SW
 Level: 0
 Entities:
+Door:
+X: 250.0
+Y: 480.0
+Is Gold: True
+Rotation: 0.0
+Room Number: 6
+Direction: Direction.SOUTH
+Level: 1
+Entities:
+Door:
+X: 1250.0
+Y: 520.0
+Is Gold: False
+Rotation: 180.0
+Door:
+X: 250.0
+Y: 480.0
+Is Gold: False
+Rotation: 0.0
 Door:
 X: 770.0
 Y: 0.0
 Is Gold: True
-Rotation: 270
+Rotation: 270.0
+Item:
+X: 730.0
+Y: 320.0
+Item Type: Type.Footwear
+Item:
+X: 330.0
+Y: 640.0
+Item Type: Type.Chestpiece
+Monster:
+Monster Type: Slime
+Multiplier: 0.24999999998105166
+Health: 8.749999999336808
+Speed: 80.0
+Attack: 8.99999999931786
+Sight: 2.4999999998105165
+Is Moving: False
+Facing: Direction.SOUTH
+X: 410.0
+Y: 920.0
+Next Coord: None
+Room Number: 8
+Direction: Direction.WEST
+Level: 1
+Entities:
+Door:
+X: 770.0
+Y: 0.0
+Is Gold: False
+Rotation: 270.0
+Door:
+X: 730.0
+Y: 1000.0
+Is Gold: False
+Rotation: 90.0
+Item:
+X: 330.0
+Y: 160.0
+Item Type: Type.Potion
+Monster:
+Monster Type: Slime
+Multiplier: 0.14999999998105162
+Health: 5.249999999336807
+Speed: 80.0
+Attack: 5.399999999317858
+Sight: 1.4999999998105162
+Is Moving: False
+Facing: Direction.SOUTH
+X: 890.0
+Y: 840.0
+Next Coord: None
+Monster:
+Monster Type: Slime
+Multiplier: 0.21999999998105163
+Health: 7.699999999336807
+Speed: 80.0
+Attack: 7.9199999993178585
+Sight: 2.199999999810516
+Is Moving: False
+Facing: Direction.SOUTH
+X: 410.0
+Y: 240.0
+Next Coord: None
+Door:
+X: 1250.0
+Y: 520.0
+Is Gold: True
+Rotation: 180.0
+Room Number: 7
+Direction: Direction.SW
+Level: 1
+Entities:
+Door:
+X: 730.0
+Y: 1000.0
+Is Gold: False
+Rotation: 90.0
+Door:
+X: 1250.0
+Y: 520.0
+Is Gold: False
+Rotation: 180.0
+Item:
+X: 250.0
+Y: 600.0
+Item Type: Type.Footwear
+Item:
+X: 930.0
+Y: 120.0
+Item Type: Type.Potion
+Item:
+X: 770.0
+Y: 440.0
+Item Type: Type.Leggings
+Item:
+X: 930.0
+Y: 0.0
+Item Type: Type.Potion
+Monster:
+Monster Type: Skeleton
+Multiplier: 0.19999999998105164
+Health: 17.49999999834202
+Speed: 120.0
+Attack: 14.399999998635717
+Sight: 3.999999999621033
+Is Moving: False
+Facing: Direction.SOUTH
+X: 930.0
+Y: 640.0
+Next Coord: None
 Corner Dictionary:
+Corners:
+Level: 1
+Corner: 1
+Corner: 3
+Corner: 5
+Corner: 7

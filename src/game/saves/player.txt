@@ -5,68 +5,69 @@ Next Coord: 810.0
 Level: 0
 Room Number: 0
 Next Stat: 0
-Defense: 1
+Defense: 1.0
 Speed: 240
 Attack: 0
 Facing: Direction.EAST
 Number Hearts: 5
 Missing Health: 0
-Total Experience: 0
-Exp Scale: 0
+Total Experience: 5.0
+Exp Scale: 0.05
 Inventory Highlight X: 0
 Inventory Highlight Y: 0
+Visibility Scale: 7.0
 Extra Slots: 0
 Slot:
-Selected: False
-Highlighted: True
 Item:
-Value: 3
-Durability Max: 100
-Durability: 100
 Type: Type.Torch
+Value: 3.0
+Durability Max: 100.0
+Durability: 68.0
 Rarity: 0
+Selected: True
+Highlighted: True
 Slot:
-Selected: False
-Highlighted: False
 Item:
 None
-Slot:
 Selected: False
 Highlighted: False
+Slot:
 Item:
 None
-Slot:
 Selected: False
 Highlighted: False
+Slot:
 Item:
 None
-Slot:
 Selected: False
 Highlighted: False
+Slot:
 Item:
 None
-Slot:
 Selected: False
 Highlighted: False
+Slot:
 Item:
 None
-Slot:
 Selected: False
 Highlighted: False
+Slot:
 Item:
 None
-Slot:
 Selected: False
 Highlighted: False
+Slot:
 Item:
 None
-Slot:
 Selected: False
 Highlighted: False
+Slot:
 Item:
 None
-Slot:
 Selected: False
 Highlighted: False
+Slot:
 Item:
 None
+Selected: False
+Highlighted: False
