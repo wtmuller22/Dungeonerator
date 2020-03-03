@@ -24,6 +24,7 @@ Created on Feb 11, 2020
 Project runner for Dungeonerator.
 '''
 
+pyglet.font.add_file('fonts/cracj___.ttf')
 window = pyglet.window.Window(fullscreen=True)
 window.set_mouse_visible(visible=False)
 current_state = State.Menu
