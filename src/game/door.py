@@ -14,24 +14,25 @@ class Door(Sprite):
     door_img = image.load('images/Doorway.png')
     level_up = image.load('images/DoorwayLevelUp.png')
 
-    def __init__(self, direct, backgroundX, backgroundY):
+    def __init__(self, game_scale, direct, backgroundX, backgroundY):
         super().__init__(img=Door.door_img)
+        self.scale = game_scale
         self.is_gold = False
         if (direct == Direction.NORTH):
             self.rotation=90
-            self.x=480 + backgroundX
-            self.y=1000 + backgroundY
+            self.x=(480 * game_scale) + backgroundX
+            self.y=(1000 * game_scale) + backgroundY
         elif (direct == Direction.EAST):
             self.rotation=180
-            self.x=1000 + backgroundX
-            self.y=520 + backgroundY
+            self.x=(1000 * game_scale) + backgroundX
+            self.y=(520 * game_scale) + backgroundY
         elif (direct == Direction.SOUTH):
             self.rotation=270
-            self.x=520 + backgroundX
+            self.x=(520 * game_scale) + backgroundX
             self.y=0 + backgroundY
         else:
             self.x=0 + backgroundX
-            self.y=480 + backgroundY
+            self.y=(480 * game_scale) + backgroundY
             
     def make_golden(self):
         self.image=Door.level_up
@@ -42,10 +43,10 @@ class Door(Sprite):
     
     def check_intersection(self, playerX, playerY) -> bool:
         if (self.rotation == 90):
-            return (playerX == self.x) and (playerY == (self.y - 40))
+            return (playerX == self.x) and (playerY == (self.y - (40 * self.scale)))
         elif (self.rotation == 180):
-            return ((playerX == (self.x - 40)) and (playerY == (self.y - 40)))
+            return ((playerX == (self.x - (40 * self.scale))) and (playerY == (self.y - (40 * self.scale))))
         elif (self.rotation == 270):
-            return ((playerX == (self.x - 40)) and (playerY == self.y))
+            return ((playerX == (self.x - (40 * self.scale))) and (playerY == self.y))
         else:
             return ((playerX == self.x) and (playerY == self.y))

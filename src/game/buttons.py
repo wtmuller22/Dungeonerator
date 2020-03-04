@@ -13,11 +13,11 @@ class Buttons():
     
     current_idx = 0
 
-    def __init__(self, backgroundX, backgroundY, backgroundW, backgroundH):
-        new_button = Button(name="New Game", xCoord=(backgroundX + (backgroundW / 2)), yCoord=(backgroundY + (backgroundH / 2)))
+    def __init__(self, game_scale, backgroundX, backgroundY, backgroundW, backgroundH):
+        new_button = Button(a_scale=game_scale, name="New Game", xCoord=(backgroundX + (backgroundW / 2)), yCoord=(backgroundY + (backgroundH / 2)))
         new_button.select()
-        load_button = Button(name="Load Game", xCoord=new_button.x, yCoord=new_button.y - 55)
-        quit_button = Button(name="Quit", xCoord=load_button.x, yCoord=load_button.y - 55)
+        load_button = Button(a_scale=game_scale, name="Load Game", xCoord=new_button.x, yCoord=new_button.y - (55 * game_scale))
+        quit_button = Button(a_scale=game_scale, name="Quit", xCoord=load_button.x, yCoord=load_button.y - (55 * game_scale))
         Buttons.list.append(new_button)
         Buttons.list.append(load_button)
         Buttons.list.append(quit_button)
@@ -44,10 +44,10 @@ class Buttons():
 
 class Button(Label):
     
-    def __init__(self, name, xCoord, yCoord):
+    def __init__(self, a_scale, name, xCoord, yCoord):
         super().__init__(name,
                          font_name='Times New Roman',
-                         font_size=32,
+                         font_size=32 * a_scale,
                          x=xCoord,
                          y=yCoord,
                          color=(0, 0, 0, 255),
@@ -55,12 +55,13 @@ class Button(Label):
                          anchor_x='center',
                          anchor_y='center')
         self.button_text = name
+        self.game_scale = a_scale
         
     def select(self):
-        self.font_size = 48
+        self.font_size = 48 * self.game_scale
         self.color = (50, 50, 50, 255)
         
     def deselect(self):
-        self.font_size = 32  
+        self.font_size = 32 * self.game_scale
         self.color = (0, 0, 0, 255)
         

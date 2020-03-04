@@ -10,9 +10,9 @@ The menu for the game.
 
 class Menu():
 
-    def __init__(self, backgroundX, backgroundY, backgroundW, backgroundH):
-        self.title_text = Title(backgroundX=backgroundX, backgroundY=backgroundY, backgroundW=backgroundW, backgroundH=backgroundH)
-        self.menu_buttons = Buttons(backgroundX=backgroundX, backgroundY=backgroundY, backgroundW=backgroundW, backgroundH=backgroundH)
+    def __init__(self, a_scale, backgroundX, backgroundY, backgroundW, backgroundH):
+        self.title_text = Title(game_scale=a_scale, backgroundX=backgroundX, backgroundY=backgroundY, backgroundW=backgroundW, backgroundH=backgroundH)
+        self.menu_buttons = Buttons(game_scale=a_scale, backgroundX=backgroundX, backgroundY=backgroundY, backgroundW=backgroundW, backgroundH=backgroundH)
         
     def draw(self):
         self.title_text.draw()

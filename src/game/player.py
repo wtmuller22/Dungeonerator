@@ -25,31 +25,33 @@ class Player(Sprite):
     south_animation = image.load_animation('images/PlayerSouth.gif', None, None)
     west_animation = image.load_animation('images/PlayerWest.gif', None, None)
 
-    def __init__(self, given_name, backgroundX, backgroundY, darkness):
+    def __init__(self, a_scale, given_name, backgroundX, backgroundY, darkness):
         super().__init__(img=Player.south_standing_img)
+        self.game_scale = a_scale
+        self.scale = a_scale
         self.name = given_name
-        self.x = backgroundX + 480
-        self.y = backgroundY + 480
+        self.x = backgroundX + (480 * a_scale)
+        self.y = backgroundY + (480 * a_scale)
         self.nextBoxCoord = 0
         self.level = 0
         self.room_number = 0
-        self.life = Life(backX=backgroundX, backY=backgroundY)
-        self.experience = Experience(backX=backgroundX, backY=backgroundY)
+        self.life = Life(game_scale=a_scale, backX=backgroundX, backY=backgroundY)
+        self.experience = Experience(game_scale=a_scale, backX=backgroundX, backY=backgroundY)
         self.next_up_stat = 0
         self.stat_boosted = Label("++Defense++",
                               font_name='Times New Roman',
-                              font_size=32,
-                              x=backgroundX + 500,
-                              y=backgroundY + 980,
+                              font_size=32 * a_scale,
+                              x=backgroundX + (500 * a_scale),
+                              y=backgroundY + (980 * a_scale),
                               color=(55, 235, 52, 0),
                               align='center',
                               anchor_x='center',
                               anchor_y='center',
                               bold=True)
         self.defense = 1
-        self.speed = 240
+        self.speed = 240 * a_scale
         self.attack = 0
-        self.player_inventory = Inventory(backX=backgroundX, backY=backgroundY, the_player=self)
+        self.player_inventory = Inventory(game_scale=a_scale, backX=backgroundX, backY=backgroundY, the_player=self)
         self.facing = Direction.SOUTH
         self.is_moving = False
         self.scheduled_moving = False
@@ -61,7 +63,7 @@ class Player(Sprite):
         self.selected_leggings = None
         self.selected_footwear = None
         self.selected_torch = None
-        self.attack_sprite = Attack()
+        self.attack_sprite = Attack(game_scale=a_scale)
         self.visibility = darkness
         self.add_to_inventory(to_add=Type.Torch)
         
@@ -262,12 +264,12 @@ class Player(Sprite):
             elif (slot_type == Type.Torch):
                 if (not self.selected_torch is None):
                     self.visibility.scale = self.visibility.scale - self.selected_torch.item.attack_strength_defense
-                    self.visibility.update_coords(aX=(self.x + 20), aY=(self.y + 20))
+                    self.visibility.update_coords(aX=(self.x + (20 * self.game_scale)), aY=(self.y + (20 * self.game_scale)))
                     self.selected_torch.toggle_select()
                 if (self.selected_torch is None or not (current_slot.x == self.selected_torch.x and current_slot.y == self.selected_torch.y)):
                     self.selected_torch = current_slot
                     self.visibility.scale = self.visibility.scale + self.selected_torch.item.attack_strength_defense
-                    self.visibility.update_coords(aX=(self.x + 20), aY=(self.y + 20))
+                    self.visibility.update_coords(aX=(self.x + (20 * self.game_scale)), aY=(self.y + (20 * self.game_scale)))
                     self.selected_torch.toggle_select()
                 else:
                     self.selected_torch = None
@@ -283,11 +285,13 @@ class Experience():
     experience_green.anchor_x = experience_green.width // 2
     experience_green.anchor_y = experience_green.height // 2
     
-    def __init__(self, backX, backY):
+    def __init__(self, game_scale, backX, backY):
         self.startX = backX
         self.startY = backY
-        self.bar = Sprite(img=Experience.experience_bar, x=backX + 930, y=backY + 940)
-        self.exp = Sprite(img=Experience.experience_green, x=backX + 930, y=backY + 940)
+        self.bar = Sprite(img=Experience.experience_bar, x=backX + (930 * game_scale), y=backY + (940 * game_scale))
+        self.bar.scale = game_scale
+        self.exp = Sprite(img=Experience.experience_green, x=backX + (930 * game_scale), y=backY + (940 * game_scale))
+        self.exp.scale = game_scale
         self.exp.scale = 0
         self.total_exp = 0
         
@@ -306,17 +310,18 @@ class Experience():
 
 class Life():
     
-    def __init__(self, backX, backY):
+    def __init__(self, game_scale, backX, backY):
         self.life_array = []
+        self.a_scale = game_scale
         self.startX = backX
         self.startY = backY
         for i in range(5):
             self.add_heart()
         
     def add_heart(self):
-        to_add = Heart(backgroundX=self.startX, backgroundY=self.startY)
+        to_add = Heart(game_scale=self.a_scale, backgroundX=self.startX, backgroundY=self.startY)
         num_hearts = len(self.life_array)
-        to_add.x = to_add.x - (20 * num_hearts)
+        to_add.x = to_add.x - ((20 * self.a_scale) * num_hearts)
         to_add.decrease_scale(20)
         self.life_array.append(to_add)
         self.change_health(20, 0)
@@ -344,10 +349,12 @@ class Heart(Sprite):
     heart_img.anchor_x = heart_img.width // 2
     heart_img.anchor_y = heart_img.height // 2
         
-    def __init__(self, backgroundX, backgroundY):
+    def __init__(self, game_scale, backgroundX, backgroundY):
         super().__init__(img=Heart.heart_img)
-        self.x = backgroundX + 970
-        self.y = backgroundY + 970
+        self.x = backgroundX + (970 * game_scale)
+        self.y = backgroundY + (970 * game_scale)
+        self.scale = game_scale
+        self.a_scale = game_scale
         self.life = 20
         
     def decrease_scale(self, change) -> int:
@@ -358,38 +365,39 @@ class Heart(Sprite):
             return remainder
         else:
             self.life = self.life - change
-            self.scale = (self.life / 20)
+            self.scale = (self.life / 20) * self.a_scale
             return 0
         
     def increase_scale(self, change) -> int:
         remainder = 20 - self.life
         if (change <= remainder):
             self.life = self.life + change
-            self.scale = (self.life / 20)
+            self.scale = (self.life / 20) * self.a_scale
             return 0
         else:
             self.life = 20
-            self.scale = 1
+            self.scale = self.a_scale
             return change - remainder
         
 class Inventory():
     
-    def __init__(self, backX, backY, the_player):
+    def __init__(self, game_scale, backX, backY, the_player):
         self.array = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+        self.a_scale = game_scale
         self.title = Label("Inventory",
                               font_name='Times New Roman',
-                              font_size=56,
-                              x=backX + 500,
-                              y=backY + 750,
+                              font_size=56 * game_scale,
+                              x=backX + (500 * game_scale),
+                              y=backY + (750 * game_scale),
                               color=(135, 135, 135, 128),
                               align='center',
                               anchor_x='center',
                               anchor_y='center')
         self.quit = Label("(Press Esc to save and quit)",
                               font_name='Times New Roman',
-                              font_size=16,
-                              x=backX + 500,
-                              y=backY + 690,
+                              font_size=16 * game_scale,
+                              x=backX + (500 * game_scale),
+                              y=backY + (690 * game_scale),
                               color=(135, 135, 135, 128),
                               align='center',
                               anchor_x='center',
@@ -405,20 +413,20 @@ class Inventory():
     def fill_with_slots(self):
         for i in range(len(self.array)):
             for j in range(len(self.array[i])):
-                self.array[i][j] = Slot(aX=(self.startX + 200 + (j * 120)), aY=(self.startY + 380 - (i * 120)))
+                self.array[i][j] = Slot(game_scale=self.a_scale, aX=(self.startX + (200 * self.a_scale) + (j * (120 * self.a_scale))), aY=(self.startY + (380 * self.a_scale) - (i * (120 * self.a_scale))))
         
     def add(self, obj) -> bool:
         for i in range(len(self.array)):
             for j in range(len(self.array[i])):
                 if (self.array[i][j].item is None):
-                    self.array[i][j].item = Item(item_enum=obj, aX=(self.startX + 210 + (j * 120)), aY=(self.startY + 390 - (i * 120)), frame=self.array[i][j], a_player=self.this_player)
+                    self.array[i][j].item = Item(game_scale=self.a_scale, item_enum=obj, aX=(self.startX + (210 * self.a_scale) + (j * (120 * self.a_scale))), aY=(self.startY + (390 * self.a_scale) - (i * (120 * self.a_scale))), frame=self.array[i][j], a_player=self.this_player)
                     return True
         return False
     
     def add_slot(self):
         if (len(self.array[len(self.array) - 1]) == 5):
             self.array.append([])
-        self.array[len(self.array) - 1].append(Slot(aX=(self.startX + 200 + (len(self.array[len(self.array) - 1]) * 120)), aY =(self.startY + 380 - ((len(self.array) - 1) * 120))))
+        self.array[len(self.array) - 1].append(Slot(game_scale=self.a_scale, aX=(self.startX + (200 * self.a_scale) + (len(self.array[len(self.array) - 1]) * (120 * self.a_scale))), aY =(self.startY + (380 * self.a_scale) - ((len(self.array) - 1) * (120 * self.a_scale)))))
     
     def update_highlight(self, direction):
         if (direction == Direction.NORTH):
@@ -466,8 +474,9 @@ class Slot(Sprite):
     highlighted = image.load('images/HighlightedSlot.png')
     highlighted_selected = image.load('images/HighlightedSelectedSlot.png')
     
-    def __init__(self, aX, aY):
+    def __init__(self, game_scale, aX, aY):
         super().__init__(img=Slot.empty)
+        self.scale = game_scale
         self.x = aX
         self.y = aY
         self.opacity = 192
@@ -537,8 +546,9 @@ class Item(Sprite):
     torch = image.load('images/TorchInventory.png')
     potion = image.load('images/PotionInventory.png')
     
-    def __init__(self, item_enum, aX, aY, frame, a_player):
+    def __init__(self, game_scale, item_enum, aX, aY, frame, a_player):
         super().__init__(img=Item.sword)
+        self.scale = game_scale
         self.attack_strength_defense = None
         self.durability_max = 100
         self.durability = 100
@@ -547,8 +557,8 @@ class Item(Sprite):
         self.y = aY
         self.slot = frame
         self.this_player = a_player
-        self.cracks = Crack(aX=self.x, aY=self.y)
-        self.rarity_img = Rarity(aX=self.x, aY=self.y)
+        self.cracks = Crack(a_scale=game_scale, aX=self.x, aY=self.y)
+        self.rarity_img = Rarity(a_scale=game_scale, aX=self.x, aY=self.y)
         self.rarity = 0
         self.set_rarity()
         self.make_item(item_id=item_enum)
@@ -594,7 +604,7 @@ class Item(Sprite):
                 self.attack_strength_defense = random.randint(3, 7) / 10
                 self.image = Item.leggings
             elif (item_id == Type.Footwear):
-                self.attack_strength_defense = random.randint(25, 50)
+                self.attack_strength_defense = random.randint(25, 50) * self.scale
                 self.image = Item.hermes
             elif (item_id == Type.Torch):
                 self.attack_strength_defense = 3
@@ -616,7 +626,7 @@ class Item(Sprite):
                 self.attack_strength_defense = random.randint(5, 9) / 10
                 self.image = Item.leggings
             elif (item_id == Type.Footwear):
-                self.attack_strength_defense = random.randint(50, 75)
+                self.attack_strength_defense = random.randint(50, 75) * self.scale
                 self.image = Item.hermes
             elif (item_id == Type.Torch):
                 self.attack_strength_defense = 4
@@ -640,7 +650,7 @@ class Item(Sprite):
                 self.attack_strength_defense = random.randint(7, 11) / 10
                 self.image = Item.leggings
             elif (item_id == Type.Footwear):
-                self.attack_strength_defense = random.randint(75, 100)
+                self.attack_strength_defense = random.randint(75, 100) * self.scale
                 self.image = Item.hermes
             elif (item_id == Type.Torch):
                 self.attack_strength_defense = 5
@@ -664,7 +674,7 @@ class Item(Sprite):
                 self.attack_strength_defense = random.randint(9, 13) / 10
                 self.image = Item.leggings
             elif (item_id == Type.Footwear):
-                self.attack_strength_defense = random.randint(100, 125)
+                self.attack_strength_defense = random.randint(100, 125) * self.scale
                 self.image = Item.hermes
             elif (item_id == Type.Torch):
                 self.attack_strength_defense = 6.5
@@ -688,7 +698,7 @@ class Item(Sprite):
                 self.attack_strength_defense = random.randint(11, 15) / 10
                 self.image = Item.leggings
             elif (item_id == Type.Footwear):
-                self.attack_strength_defense = random.randint(125, 150)
+                self.attack_strength_defense = random.randint(125, 150) * self.scale
                 self.image = Item.hermes
             elif (item_id == Type.Torch):
                 self.attack_strength_defense = 8
@@ -726,7 +736,7 @@ class Item(Sprite):
             self.this_player.selected_footwear = None
         elif (self.type == Type.Torch):
             self.this_player.visibility.scale = self.this_player.visibility.scale - self.attack_strength_defense
-            self.this_player.visibility.update_coords(aX=(self.this_player.x + 20), aY=(self.this_player.y + 20))
+            self.this_player.visibility.update_coords(aX=(self.this_player.x + (20 * self.scale)), aY=(self.this_player.y + (20 * self.scale)))
             self.this_player.selected_torch = None
         elif (self.type == Type.Chestpiece):
             self.this_player.defense = self.this_player.defense - self.attack_strength_defense
@@ -767,8 +777,9 @@ class Crack(Sprite):
     stage_4 = image.load('images/Crack4.png')
     stage_5 = image.load('images/Crack5.png')
     
-    def __init__(self, aX, aY):
+    def __init__(self, a_scale, aX, aY):
         super().__init__(img=Crack.stage_1)
+        self.scale = a_scale
         self.x = aX
         self.y = aY
         self.opacity = 128
@@ -781,8 +792,9 @@ class Rarity(Sprite):
     epic = image.load('images/Epic.png')
     mythical = image.load('images/Mythical.png')
     
-    def __init__(self, aX, aY):
+    def __init__(self, a_scale, aX, aY):
         super().__init__(img=Rarity.common)
+        self.scale = a_scale
         self.x = aX
         self.y = aY
         self.opacity = 64
@@ -791,21 +803,22 @@ class Attack(Sprite):
     
     attack_animation = image.load_animation('images/Attack.gif', None, None)
     
-    def __init__(self):
+    def __init__(self, game_scale):
         super().__init__(img=Attack.attack_animation)
+        self.scale = game_scale
         self.opacity = 128
         
     def update_self(self, player_x, player_y, direction):
         if (direction == Direction.NORTH):
             this_x = player_x
-            this_y = player_y + 40
+            this_y = player_y + (40 * self.scale)
             self.update(x=this_x, y=this_y, rotation=0)
         elif (direction == Direction.EAST):
-            this_x = player_x + 40
-            this_y = player_y + 40
+            this_x = player_x + (40 * self.scale)
+            this_y = player_y + (40 * self.scale)
             self.update(x=this_x, y=this_y, rotation=90)
         elif (direction == Direction.SOUTH):
-            this_x = player_x + 40
+            this_x = player_x + (40 * self.scale)
             this_y = player_y
             self.update(x=this_x, y=this_y, rotation=180)
         else:

@@ -1,17 +1,17 @@
 Name: player1
-X: 810.0
-Y: 480.0
-Next Coord: 810.0
-Level: 0
-Room Number: 0
+X: 730.0
+Y: 160.0
+Next Coord: 160.0
+Level: 1
+Room Number: 8
 Next Stat: 0
-Defense: 1.0
-Speed: 240
+Defense: 1
+Speed: 240.0
 Attack: 0
-Facing: Direction.EAST
+Facing: Direction.NORTH
 Number Hearts: 5
 Missing Health: 0
-Total Experience: 5.0
+Total Experience: 5
 Exp Scale: 0.05
 Inventory Highlight X: 0
 Inventory Highlight Y: 0
@@ -20,20 +20,28 @@ Extra Slots: 0
 Slot:
 Item:
 Type: Type.Torch
-Value: 3.0
-Durability Max: 100.0
-Durability: 68.0
+Value: 3
+Durability Max: 100
+Durability: 69
 Rarity: 0
 Selected: True
 Highlighted: True
 Slot:
 Item:
-None
+Type: Type.Leggings
+Value: 0.3
+Durability Max: 100
+Durability: 100
+Rarity: 0
 Selected: False
 Highlighted: False
 Slot:
 Item:
-None
+Type: Type.Leggings
+Value: 0.5
+Durability Max: 100
+Durability: 100
+Rarity: 0
 Selected: False
 Highlighted: False
 Slot:

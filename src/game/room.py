@@ -15,7 +15,8 @@ Contains all the data to recreate a room.
 
 class Room():
 
-    def __init__(self, direc, backgroundX, backgroundY, this_level):
+    def __init__(self, game_scale, direc, backgroundX, backgroundY, this_level):
+        self.a_scale = game_scale
         self.startX = backgroundX
         self.startY = backgroundY
         self.location = direc
@@ -30,43 +31,43 @@ class Room():
     def add_doors(self):
         if (not self.location is None):
             if (self.location == Direction.NW):
-                door1 = Door(direct=Direction.SOUTH, backgroundX=self.startX, backgroundY=self.startY)
-                door2 = Door(direct=Direction.EAST, backgroundX=self.startX, backgroundY=self.startY)
+                door1 = Door(game_scale=self.a_scale, direct=Direction.SOUTH, backgroundX=self.startX, backgroundY=self.startY)
+                door2 = Door(game_scale=self.a_scale, direct=Direction.EAST, backgroundX=self.startX, backgroundY=self.startY)
                 self.entities.append(door1)
                 self.entities.append(door2)
             elif (self.location == Direction.NE):
-                door1 = Door(direct=Direction.SOUTH, backgroundX=self.startX, backgroundY=self.startY)
-                door2 = Door(direct=Direction.WEST, backgroundX=self.startX, backgroundY=self.startY)
+                door1 = Door(game_scale=self.a_scale, direct=Direction.SOUTH, backgroundX=self.startX, backgroundY=self.startY)
+                door2 = Door(game_scale=self.a_scale, direct=Direction.WEST, backgroundX=self.startX, backgroundY=self.startY)
                 self.entities.append(door1)
                 self.entities.append(door2)
             elif (self.location == Direction.SE):
-                door1 = Door(direct=Direction.NORTH, backgroundX=self.startX, backgroundY=self.startY)
-                door2 = Door(direct=Direction.WEST, backgroundX=self.startX, backgroundY=self.startY)
+                door1 = Door(game_scale=self.a_scale, direct=Direction.NORTH, backgroundX=self.startX, backgroundY=self.startY)
+                door2 = Door(game_scale=self.a_scale, direct=Direction.WEST, backgroundX=self.startX, backgroundY=self.startY)
                 self.entities.append(door1)
                 self.entities.append(door2)
             elif (self.location == Direction.SW):
-                door1 = Door(direct=Direction.NORTH, backgroundX=self.startX, backgroundY=self.startY)
-                door2 = Door(direct=Direction.EAST, backgroundX=self.startX, backgroundY=self.startY)
+                door1 = Door(game_scale=self.a_scale, direct=Direction.NORTH, backgroundX=self.startX, backgroundY=self.startY)
+                door2 = Door(game_scale=self.a_scale, direct=Direction.EAST, backgroundX=self.startX, backgroundY=self.startY)
                 self.entities.append(door1)
                 self.entities.append(door2)
             elif (self.location == Direction.NORTH):
-                door1 = Door(direct=Direction.EAST, backgroundX=self.startX, backgroundY=self.startY)
-                door2 = Door(direct=Direction.WEST, backgroundX=self.startX, backgroundY=self.startY)
+                door1 = Door(game_scale=self.a_scale, direct=Direction.EAST, backgroundX=self.startX, backgroundY=self.startY)
+                door2 = Door(game_scale=self.a_scale, direct=Direction.WEST, backgroundX=self.startX, backgroundY=self.startY)
                 self.entities.append(door1)
                 self.entities.append(door2)
             elif (self.location == Direction.EAST):
-                door1 = Door(direct=Direction.SOUTH, backgroundX=self.startX, backgroundY=self.startY)
-                door2 = Door(direct=Direction.NORTH, backgroundX=self.startX, backgroundY=self.startY)
+                door1 = Door(game_scale=self.a_scale, direct=Direction.SOUTH, backgroundX=self.startX, backgroundY=self.startY)
+                door2 = Door(game_scale=self.a_scale, direct=Direction.NORTH, backgroundX=self.startX, backgroundY=self.startY)
                 self.entities.append(door1)
                 self.entities.append(door2)
             elif (self.location == Direction.SOUTH):
-                door1 = Door(direct=Direction.EAST, backgroundX=self.startX, backgroundY=self.startY)
-                door2 = Door(direct=Direction.WEST, backgroundX=self.startX, backgroundY=self.startY)
+                door1 = Door(game_scale=self.a_scale, direct=Direction.EAST, backgroundX=self.startX, backgroundY=self.startY)
+                door2 = Door(game_scale=self.a_scale, direct=Direction.WEST, backgroundX=self.startX, backgroundY=self.startY)
                 self.entities.append(door1)
                 self.entities.append(door2)
             elif (self.location == Direction.WEST):
-                door1 = Door(direct=Direction.SOUTH, backgroundX=self.startX, backgroundY=self.startY)
-                door2 = Door(direct=Direction.NORTH, backgroundX=self.startX, backgroundY=self.startY)
+                door1 = Door(game_scale=self.a_scale, direct=Direction.SOUTH, backgroundX=self.startX, backgroundY=self.startY)
+                door2 = Door(game_scale=self.a_scale, direct=Direction.NORTH, backgroundX=self.startX, backgroundY=self.startY)
                 self.entities.append(door1)
                 self.entities.append(door2)
                 
@@ -75,42 +76,42 @@ class Room():
             rand_num = random.randint(1, 2)
             if (self.location == Direction.NW):
                 if (rand_num == 1):
-                    door = Door(direct=Direction.NORTH, backgroundX=self.startX, backgroundY=self.startY)
+                    door = Door(game_scale=self.a_scale, direct=Direction.NORTH, backgroundX=self.startX, backgroundY=self.startY)
                     door.make_golden()
                     self.entities.append(door)
                 else:
-                    door = Door(direct=Direction.WEST, backgroundX=self.startX, backgroundY=self.startY)
+                    door = Door(game_scale=self.a_scale, direct=Direction.WEST, backgroundX=self.startX, backgroundY=self.startY)
                     door.make_golden()
                     self.entities.append(door)
             elif (self.location == Direction.NE):
                 if (rand_num == 1):
-                    door = Door(direct=Direction.NORTH, backgroundX=self.startX, backgroundY=self.startY)
+                    door = Door(game_scale=self.a_scale, direct=Direction.NORTH, backgroundX=self.startX, backgroundY=self.startY)
                     door.make_golden()
                     self.entities.append(door)
                 else:
-                    door = Door(direct=Direction.EAST, backgroundX=self.startX, backgroundY=self.startY)
+                    door = Door(game_scale=self.a_scale, direct=Direction.EAST, backgroundX=self.startX, backgroundY=self.startY)
                     door.make_golden()
                     self.entities.append(door)
             elif (self.location == Direction.SE):
                 if (rand_num == 1):
-                    door = Door(direct=Direction.SOUTH, backgroundX=self.startX, backgroundY=self.startY)
+                    door = Door(game_scale=self.a_scale, direct=Direction.SOUTH, backgroundX=self.startX, backgroundY=self.startY)
                     door.make_golden()
                     self.entities.append(door)
                 else:
-                    door = Door(direct=Direction.EAST, backgroundX=self.startX, backgroundY=self.startY)
+                    door = Door(game_scale=self.a_scale, direct=Direction.EAST, backgroundX=self.startX, backgroundY=self.startY)
                     door.make_golden()
                     self.entities.append(door)
             else:
                 if (rand_num == 1):
-                    door = Door(direct=Direction.SOUTH, backgroundX=self.startX, backgroundY=self.startY)
+                    door = Door(game_scale=self.a_scale, direct=Direction.SOUTH, backgroundX=self.startX, backgroundY=self.startY)
                     door.make_golden()
                     self.entities.append(door)
                 else:
-                    door = Door(direct=Direction.WEST, backgroundX=self.startX, backgroundY=self.startY)
+                    door = Door(game_scale=self.a_scale, direct=Direction.WEST, backgroundX=self.startX, backgroundY=self.startY)
                     door.make_golden()
                     self.entities.append(door)
         else:
-            door = Door(direct=self.location, backgroundX=self.startX, backgroundY=self.startY)
+            door = Door(game_scale=self.a_scale, direct=self.location, backgroundX=self.startX, backgroundY=self.startY)
             door.make_golden()
             self.entities.append(door)
             
@@ -151,29 +152,29 @@ class Room():
     def add_entities(self):
         rand_num = random.randint(1, 10)
         if (rand_num > 3):
-            to_add = Item(backX=self.startX, backY=self.startY, this_room=self)
+            to_add = Item(game_scale=self.a_scale, backX=self.startX, backY=self.startY, this_room=self)
             self.entities.append(to_add)
         if (rand_num > 5):
-            to_add = Item(backX=self.startX, backY=self.startY, this_room=self)
+            to_add = Item(game_scale=self.a_scale, backX=self.startX, backY=self.startY, this_room=self)
             self.entities.append(to_add)
         if (rand_num > 7):
-            to_add = Item(backX=self.startX, backY=self.startY, this_room=self)
+            to_add = Item(game_scale=self.a_scale, backX=self.startX, backY=self.startY, this_room=self)
             self.entities.append(to_add)
         if (rand_num > 9):
-            to_add = Item(backX=self.startX, backY=self.startY, this_room=self)
+            to_add = Item(game_scale=self.a_scale, backX=self.startX, backY=self.startY, this_room=self)
             self.entities.append(to_add)
         rand_num = random.randint(1, 10)
         if (rand_num > 1):
-            to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
+            to_add = Monster(game_scale=self.a_scale, backgroundX=self.startX, backgroundY=self.startY, this_room=self)
             self.entities.append(to_add)
         if (rand_num > 4):
-            to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
+            to_add = Monster(game_scale=self.a_scale, backgroundX=self.startX, backgroundY=self.startY, this_room=self)
             self.entities.append(to_add)
         if (rand_num > 7):
-            to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
+            to_add = Monster(game_scale=self.a_scale, backgroundX=self.startX, backgroundY=self.startY, this_room=self)
             self.entities.append(to_add)
         if (rand_num > 9):
-            to_add = Monster(backgroundX=self.startX, backgroundY=self.startY, this_room=self)
+            to_add = Monster(game_scale=self.a_scale, backgroundX=self.startX, backgroundY=self.startY, this_room=self)
             self.entities.append(to_add)
             
     def update(self, dt, playerX, playerY) -> int:
@@ -229,8 +230,9 @@ class Monster(Sprite):
     skeleton_south_attack = image.load_animation('images/SkeletonASouth.gif', None, None)
     skeleton_west_attack = image.load_animation('images/SkeletonAWest.gif', None, None)
 
-    def __init__(self, backgroundX, backgroundY, this_room):
+    def __init__(self, game_scale, backgroundX, backgroundY, this_room):
         super().__init__(img=Monster.bat_south_standing)
+        self.scale = game_scale
         self.startX = backgroundX
         self.startY = backgroundY
         self.multiplier = 0
@@ -281,7 +283,7 @@ class Monster(Sprite):
             self.attacking_img_south = Monster.bat_south_moving
             self.attacking_img_west = Monster.bat_west_moving
             self.health = 17.5 * self.multiplier
-            self.speed = 240
+            self.speed = 240 * self.scale
             self.attack = 18 * self.multiplier
             self.sight = 14 * self.multiplier
         elif (rand_num <= 3):
@@ -299,7 +301,7 @@ class Monster(Sprite):
             self.attacking_img_south = Monster.slime_NS_moving
             self.attacking_img_west = Monster.slime_west_moving
             self.health = 35 * self.multiplier
-            self.speed = 80
+            self.speed = 80 * self.scale
             self.attack = 36 * self.multiplier
             self.sight = 10 * self.multiplier
         else:
@@ -317,17 +319,17 @@ class Monster(Sprite):
             self.attacking_img_south = Monster.skeleton_south_attack
             self.attacking_img_west = Monster.skeleton_west_attack
             self.health = 87.5 * self.multiplier
-            self.speed = 120
+            self.speed = 120 * self.scale
             self.attack = 72 * self.multiplier
             self.sight = 20 * self.multiplier
         self.image = self.standing_img_south
             
     def pick_random_location(self):
-            rand_x = (random.randint(0, 24) * 40) + self.startX
-            rand_y = (random.randint(0, 24) * 40) + self.startY
+            rand_x = (random.randint(0, 24) * (40 * self.scale)) + self.startX
+            rand_y = (random.randint(0, 24) * (40 * self.scale)) + self.startY
             while (self.curr_room.is_entity(aX=rand_x, aY=rand_y)):
-                rand_x = (random.randint(0, 24) * 40) + self.startX
-                rand_y = (random.randint(0, 24) * 40) + self.startY
+                rand_x = (random.randint(0, 24) * (40 * self.scale)) + self.startX
+                rand_y = (random.randint(0, 24) * (40 * self.scale)) + self.startY
             self.x = rand_x
             self.y = rand_y
             
@@ -400,26 +402,26 @@ class Monster(Sprite):
                 if ((not self.is_transfer_moving) or self.facing != Direction.EAST):
                     self.image = self.moving_img_east
                 self.facing = Direction.EAST
-                self.next_coord = self.x + 40
+                self.next_coord = self.x + (40 * self.scale)
                 clock.schedule_interval(self.move_east, 1/60.0)
             else:
                 if ((not self.is_transfer_moving) or self.facing != Direction.WEST):
                     self.image = self.moving_img_west
                 self.facing = Direction.WEST
-                self.next_coord = self.x - 40
+                self.next_coord = self.x - (40 * self.scale)
                 clock.schedule_interval(self.move_west, 1/60.0)
         else:
             if (dif_y < 0):
                 if ((not self.is_transfer_moving) or self.facing != Direction.NORTH):
                     self.image = self.moving_img_north
                 self.facing = Direction.NORTH
-                self.next_coord = self.y + 40
+                self.next_coord = self.y + (40 * self.scale)
                 clock.schedule_interval(self.move_north, 1/60.0)
             else:
                 if ((not self.is_transfer_moving) or self.facing != Direction.SOUTH):
                     self.image = self.moving_img_south
                 self.facing = Direction.SOUTH
-                self.next_coord = self.y - 40
+                self.next_coord = self.y - (40 * self.scale)
                 clock.schedule_interval(self.move_south, 1/60.0)
                 
     def return_to_standing(self, dt):
@@ -458,8 +460,8 @@ class Monster(Sprite):
         self.is_attacking = False
 
     def update(self, dt, player_x, player_y) -> int:
-        dif_x = math.fabs(self.x - player_x) / 40
-        dif_y = math.fabs(self.y - player_y) / 40
+        dif_x = math.fabs(self.x - player_x) / (40 * self.scale)
+        dif_y = math.fabs(self.y - player_y) / (40 * self.scale)
         distance = dif_x + dif_y
         if ((distance <= self.sight) and (not self.is_moving) and (distance > 1)):
             self.is_transfer_moving = False
@@ -513,8 +515,9 @@ class Item(Sprite):
     torch = image.load('images/TorchGround.png')
     potion = image.load('images/PotionGround.png')
     
-    def __init__(self, backX, backY, this_room):
+    def __init__(self, game_scale, backX, backY, this_room):
         super().__init__(img=Item.sword)
+        self.scale = game_scale
         self.startX = backX
         self.startY = backY
         self.curr_room = this_room
@@ -523,11 +526,11 @@ class Item(Sprite):
         self.pick_random_item()
         
     def pick_random_location(self):
-            rand_x = (random.randint(0, 24) * 40) + self.startX
-            rand_y = (random.randint(0, 24) * 40) + self.startY
+            rand_x = (random.randint(0, 24) * (40 * self.scale)) + self.startX
+            rand_y = (random.randint(0, 24) * (40 * self.scale)) + self.startY
             while (self.curr_room.is_entity(aX=rand_x, aY=rand_y)):
-                rand_x = (random.randint(0, 24) * 40) + self.startX
-                rand_y = (random.randint(0, 24) * 40) + self.startY
+                rand_x = (random.randint(0, 24) * (40 * self.scale)) + self.startX
+                rand_y = (random.randint(0, 24) * (40 * self.scale)) + self.startY
             self.x = rand_x
             self.y = rand_y
             

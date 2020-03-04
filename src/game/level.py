@@ -9,12 +9,12 @@ Displays the current level of the player.
 
 class Level(Label):
 
-    def __init__(self, backgroundX, backgroundY):
+    def __init__(self, a_scale, backgroundX, backgroundY):
         super().__init__('Level: 0',
                          font_name='Cracked Johnnie',
-                         font_size=16,
-                         x=backgroundX + 40,
-                         y=backgroundY + 960,
+                         font_size=16 * a_scale,
+                         x=backgroundX + (40 * a_scale),
+                         y=backgroundY + (960 * a_scale),
                          color=(140, 0, 0, 255))
         
     def update_level(self, new_level):
