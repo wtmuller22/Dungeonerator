@@ -1,77 +1,83 @@
 Name: player1
-X: 730.0
-Y: 160.0
-Next Coord: 160.0
-Level: 1
-Room Number: 8
-Next Stat: 0
-Defense: 1
-Speed: 240.0
-Attack: 0
-Facing: Direction.NORTH
+X: 330.0
+Y: 400.0
+Next Coord: 330.0
+Level: 4
+Room Number: 70
+Next Stat: 2
+Defense: 3.1999999999999993
+Speed: 397.0
+Attack: 47
+Facing: Direction.WEST
 Number Hearts: 5
 Missing Health: 0
-Total Experience: 5
-Exp Scale: 0.05
-Inventory Highlight X: 0
-Inventory Highlight Y: 0
-Visibility Scale: 7.0
+Total Experience: 51.717176939730784
+Exp Scale: 0.5171717693973078
+Inventory Highlight X: 4
+Inventory Highlight Y: 1
+Visibility Scale: 4.0
 Extra Slots: 0
 Slot:
 Item:
-Type: Type.Torch
-Value: 3
-Durability Max: 100
-Durability: 69
-Rarity: 0
+Type: Type.Weapon
+Value: 15
+Durability Max: 120
+Durability: 80
+Rarity: 1
+Selected: False
+Highlighted: False
+Slot:
+Item:
+Type: Type.Footwear
+Value: 147.0
+Durability Max: 180
+Durability: 158.26666666664937
+Rarity: 4
 Selected: True
-Highlighted: True
+Highlighted: False
 Slot:
 Item:
 Type: Type.Leggings
 Value: 0.3
 Durability Max: 100
-Durability: 100
+Durability: 76.58854539753028
 Rarity: 0
+Selected: True
+Highlighted: False
+Slot:
+Item:
+Type: Type.Footwear
+Value: 51.0
+Durability Max: 120
+Durability: 120
+Rarity: 1
 Selected: False
 Highlighted: False
 Slot:
 Item:
-Type: Type.Leggings
-Value: 0.5
-Durability Max: 100
-Durability: 100
-Rarity: 0
-Selected: False
+Type: Type.Weapon
+Value: 47
+Durability Max: 180
+Durability: 180
+Rarity: 4
+Selected: True
 Highlighted: False
 Slot:
 Item:
-None
-Selected: False
+Type: Type.Chestpiece
+Value: 1.0
+Durability Max: 120
+Durability: 2.6989087868281585
+Rarity: 1
+Selected: True
 Highlighted: False
 Slot:
 Item:
-None
-Selected: False
-Highlighted: False
-Slot:
-Item:
-None
-Selected: False
-Highlighted: False
-Slot:
-Item:
-None
-Selected: False
-Highlighted: False
-Slot:
-Item:
-None
-Selected: False
-Highlighted: False
-Slot:
-Item:
-None
+Type: Type.Weapon
+Value: 17
+Durability Max: 120
+Durability: 120
+Rarity: 1
 Selected: False
 Highlighted: False
 Slot:
@@ -79,3 +85,17 @@ Item:
 None
 Selected: False
 Highlighted: False
+Slot:
+Item:
+Type: Type.Helmet
+Value: 0.8
+Durability Max: 120
+Durability: 120
+Rarity: 1
+Selected: True
+Highlighted: False
+Slot:
+Item:
+None
+Selected: False
+Highlighted: True

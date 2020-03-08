@@ -737,6 +737,7 @@ class Item(Sprite):
         elif (self.type == Type.Torch):
             self.this_player.visibility.scale = self.this_player.visibility.scale - self.attack_strength_defense
             self.this_player.visibility.update_coords(aX=(self.this_player.x + (20 * self.scale)), aY=(self.this_player.y + (20 * self.scale)))
+            clock.unschedule(self.lose_light)
             self.this_player.selected_torch = None
         elif (self.type == Type.Chestpiece):
             self.this_player.defense = self.this_player.defense - self.attack_strength_defense

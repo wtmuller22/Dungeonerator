@@ -29,9 +29,8 @@ window = pyglet.window.Window(fullscreen=True)
 window.set_mouse_visible(visible=False)
 current_state = State.Menu
 background = Floor(windowW=window.width, windowH=window.height)
-GAME_SCALE = window.height / background.height
+GAME_SCALE = background.scale
 BLOCK_SIZE = 40 * GAME_SCALE
-background.scale = GAME_SCALE
 startX = background.x
 startY = background.y
 menu = Menu(a_scale=GAME_SCALE, backgroundX=startX, backgroundY=startY, backgroundW=background.width, backgroundH=background.height)
@@ -99,6 +98,7 @@ def inventory_to_game():
 def player_died():
     global player_is_alive
     player_is_alive = False
+    player1.stop_moving()
     player1.fade()
     game_over.make_visible()
     pyglet.clock.unschedule(update) 
@@ -514,7 +514,7 @@ def player_attack():
             if (check_y == player1.y):
                 check_y = check_y + BLOCK_SIZE
             total_exp = current_room.player_attack(damage=player1.attack, playerX=player1.x, playerY=check_y)
-            result = player1.selected_weapon.take_damage(damage=10)
+            result = player1.selected_weapon.take_damage(damage=5)
             player1.add_experience(exp=total_exp)
             if (result):
                 player1.selected_weapon = None
@@ -523,7 +523,7 @@ def player_attack():
             if (check_x == player1.x):
                 check_x = check_x + BLOCK_SIZE
             total_exp = current_room.player_attack(damage=player1.attack, playerX=check_x, playerY=player1.y)
-            result = player1.selected_weapon.take_damage(damage=10)
+            result = player1.selected_weapon.take_damage(damage=5)
             player1.add_experience(exp=total_exp)
             if (result):
                 player1.selected_weapon = None
@@ -532,7 +532,7 @@ def player_attack():
             if (check_y == player1.y):
                 check_y = check_y - BLOCK_SIZE
             total_exp = current_room.player_attack(damage=player1.attack, playerX=player1.x, playerY=check_y)
-            result = player1.selected_weapon.take_damage(damage=10)
+            result = player1.selected_weapon.take_damage(damage=5)
             player1.add_experience(exp=total_exp)
             if (result):
                 player1.selected_weapon = None
@@ -541,7 +541,7 @@ def player_attack():
             if (check_x == player1.x):
                 check_x = check_x - BLOCK_SIZE
             total_exp = current_room.player_attack(damage=player1.attack, playerX=check_x, playerY=player1.y)
-            result = player1.selected_weapon.take_damage(damage=10)
+            result = player1.selected_weapon.take_damage(damage=5)
             player1.add_experience(exp=total_exp)
             if (result):
                 player1.selected_weapon = None
@@ -668,10 +668,10 @@ def load_state():
                 player1.defense = float(data)
             elif (line.startswith('Speed:')):
                 data = line[7:(len(line) - 1)]
-                player1.speed = int(data)
+                player1.speed = float(data)
             elif (line.startswith('Attack:')):
                 data = line[8:(len(line) - 1)]
-                player1.attack = int(data)
+                player1.attack = float(data)
             elif (line.startswith('Facing:')):
                 if (line.find('EAST') != -1):
                     player1.facing = Direction.EAST

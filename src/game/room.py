@@ -119,6 +119,7 @@ class Room():
         for entity in self.entities:
             if (type(entity) is Door):
                 result = entity.check_intersection(playerX, playerY)
+                print(result)
                 if (result):
                     return entity
         return None
@@ -151,16 +152,16 @@ class Room():
     
     def add_entities(self):
         rand_num = random.randint(1, 10)
-        if (rand_num > 3):
+        if (rand_num > 2):
             to_add = Item(game_scale=self.a_scale, backX=self.startX, backY=self.startY, this_room=self)
             self.entities.append(to_add)
-        if (rand_num > 5):
+        if (rand_num > 4):
             to_add = Item(game_scale=self.a_scale, backX=self.startX, backY=self.startY, this_room=self)
             self.entities.append(to_add)
-        if (rand_num > 7):
+        if (rand_num > 6):
             to_add = Item(game_scale=self.a_scale, backX=self.startX, backY=self.startY, this_room=self)
             self.entities.append(to_add)
-        if (rand_num > 9):
+        if (rand_num > 8):
             to_add = Item(game_scale=self.a_scale, backX=self.startX, backY=self.startY, this_room=self)
             self.entities.append(to_add)
         rand_num = random.randint(1, 10)

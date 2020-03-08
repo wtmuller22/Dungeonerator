@@ -15,6 +15,7 @@ class Floor(Sprite):
 
     def __init__(self, windowW, windowH):
         super().__init__(img=Floor.title)
+        self.scale = windowH / self.height
         self.x = (windowW / 2) - (self.width / 2)
         self.y = (windowH / 2) - (self.height / 2)
         self.curr_img = 0

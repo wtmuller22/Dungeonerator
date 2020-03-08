@@ -18,5 +18,5 @@ class Visibility(Sprite):
         self.game_scale = a_scale
         
     def update_coords(self, aX, aY):
-        self.x = aX - (self.scale * (600 * self.game_scale))
-        self.y = aY - (self.scale * (600 * self.game_scale))
+        self.x = aX - (self.scale * 600)
+        self.y = aY - (self.scale * 600)
