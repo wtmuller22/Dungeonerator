@@ -119,7 +119,6 @@ class Room():
         for entity in self.entities:
             if (type(entity) is Door):
                 result = entity.check_intersection(playerX, playerY)
-                print(result)
                 if (result):
                     return entity
         return None
@@ -463,7 +462,7 @@ class Monster(Sprite):
     def update(self, dt, player_x, player_y) -> int:
         dif_x = math.fabs(self.x - player_x) / (40 * self.scale)
         dif_y = math.fabs(self.y - player_y) / (40 * self.scale)
-        distance = dif_x + dif_y
+        distance = round(dif_x, 1) + round(dif_y, 1)
         if ((distance <= self.sight) and (not self.is_moving) and (distance > 1)):
             self.is_transfer_moving = False
             self.is_moving = True

@@ -42,19 +42,11 @@ class Door(Sprite):
         return self.is_gold
     
     def check_intersection(self, playerX, playerY) -> bool:
-        print('Player X: ' + str(playerX))
-        print('Player Y: ' + str(playerY))
-        print('Door X: ' + str(self.x))
-        print('Door Y: ' + str(self.y))
         if (self.rotation == 90):
-            print('NORTH')
-            return (playerX == self.x) and (playerY == (self.y - (40 * self.scale)))
+            return (round(playerX, 1) == round(self.x, 1)) and (round(playerY, 1) == round(self.y - (40 * self.scale), 1))
         elif (self.rotation == 180):
-            print('EAST')
-            return ((playerX == (self.x - (40 * self.scale))) and (playerY == (self.y - (40 * self.scale))))
+            return ((round(playerX, 1) == round(self.x - (40 * self.scale), 1)) and (round(playerY, 1) == round(self.y - (40 * self.scale), 1)))
         elif (self.rotation == 270):
-            print('SOUTH')
-            return ((playerX == (self.x - (40 * self.scale))) and (playerY == self.y))
+            return ((round(playerX, 1) == round(self.x - (40 * self.scale), 1)) and (round(playerY, 1) == round(self.y, 1)))
         else:
-            print('WEST')
-            return ((playerX == self.x) and (playerY == self.y))
+            return ((round(playerX, 1) == round(self.x, 1)) and (round(playerY, 1) == round(self.y, 1)))

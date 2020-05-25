@@ -1,101 +1,77 @@
 Name: player1
-X: 330.0
-Y: 400.0
-Next Coord: 330.0
-Level: 4
-Room Number: 70
-Next Stat: 2
-Defense: 3.1999999999999993
-Speed: 397.0
-Attack: 47
-Facing: Direction.WEST
+X: 592.8
+Y: 518.4000000000001
+Next Coord: 592.8
+Level: 2
+Room Number: 16
+Next Stat: 0
+Defense: 0.9999999999999999
+Speed: 259.20000000000005
+Attack: 6
+Facing: Direction.EAST
 Number Hearts: 5
-Missing Health: 0
-Total Experience: 51.717176939730784
-Exp Scale: 0.5171717693973078
-Inventory Highlight X: 4
-Inventory Highlight Y: 1
-Visibility Scale: 4.0
+Missing Health: 73.25312183212885
+Total Experience: 39.54801288953633
+Exp Scale: 0.3954801288953633
+Inventory Highlight X: 3
+Inventory Highlight Y: 0
+Visibility Scale: 4.32
 Extra Slots: 0
 Slot:
 Item:
-Type: Type.Weapon
-Value: 15
-Durability Max: 120
-Durability: 80
-Rarity: 1
+None
 Selected: False
 Highlighted: False
 Slot:
 Item:
-Type: Type.Footwear
-Value: 147.0
-Durability Max: 180
-Durability: 158.26666666664937
-Rarity: 4
-Selected: True
+None
+Selected: False
 Highlighted: False
 Slot:
 Item:
-Type: Type.Leggings
-Value: 0.3
+Type: Type.Weapon
+Value: 6
 Durability Max: 100
-Durability: 76.58854539753028
+Durability: 55
 Rarity: 0
 Selected: True
 Highlighted: False
 Slot:
 Item:
-Type: Type.Footwear
-Value: 51.0
-Durability Max: 120
-Durability: 120
-Rarity: 1
-Selected: False
-Highlighted: False
-Slot:
-Item:
-Type: Type.Weapon
-Value: 47
-Durability Max: 180
-Durability: 180
-Rarity: 4
-Selected: True
-Highlighted: False
-Slot:
-Item:
-Type: Type.Chestpiece
-Value: 1.0
-Durability Max: 120
-Durability: 2.6989087868281585
-Rarity: 1
-Selected: True
-Highlighted: False
-Slot:
-Item:
-Type: Type.Weapon
-Value: 17
-Durability Max: 120
-Durability: 120
-Rarity: 1
-Selected: False
-Highlighted: False
-Slot:
-Item:
-None
-Selected: False
-Highlighted: False
-Slot:
-Item:
 Type: Type.Helmet
-Value: 0.8
-Durability Max: 120
-Durability: 120
-Rarity: 1
-Selected: True
-Highlighted: False
-Slot:
-Item:
-None
+Value: 0.4
+Durability Max: 100
+Durability: 68.00292158021706
+Rarity: 0
 Selected: False
 Highlighted: True
+Slot:
+Item:
+None
+Selected: False
+Highlighted: False
+Slot:
+Item:
+None
+Selected: False
+Highlighted: False
+Slot:
+Item:
+None
+Selected: False
+Highlighted: False
+Slot:
+Item:
+None
+Selected: False
+Highlighted: False
+Slot:
+Item:
+None
+Selected: False
+Highlighted: False
+Slot:
+Item:
+None
+Selected: False
+Highlighted: False
