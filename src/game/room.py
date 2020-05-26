@@ -24,6 +24,12 @@ class Room():
         self.entities = []
         self.add_doors()
         
+    def scale_room(self, game_scale, x_offset):
+        self.a_scale = game_scale
+        self.startX = x_offset
+        for entity in self.entities:
+            entity.scale_entity(game_scale, x_offset)
+        
     def draw(self):
         for entity in self.entities:
             entity.draw()
@@ -262,6 +268,16 @@ class Monster(Sprite):
         self.facing = Direction.SOUTH
         self.pick_random_monster()
         self.pick_random_location()
+        
+    def scale_entity(self, game_scale, x_offset):
+        self.scale = game_scale
+        self.startX = x_offset
+        if (self.facing == Direction.SOUTH or self.facing == Direction.NORTH) and not(self.next_coord is None):
+            self.next_coord = self.next_coord * game_scale 
+        elif not(self.next_coord is None):
+            self.next_coord = (self.next_coord * game_scale) + x_offset
+        self.x = (self.x * game_scale) + x_offset
+        self.y = (self.y * game_scale)
         
     def pick_random_monster(self):
         rand_num = random.randint(0, 4)
@@ -524,6 +540,12 @@ class Item(Sprite):
         self.pick_random_location()
         self.item_enum = None
         self.pick_random_item()
+        
+    def scale_entity(self, game_scale, x_offset):
+        self.scale = game_scale
+        self.startX = x_offset
+        self.x = (self.x * game_scale) + x_offset
+        self.y = (self.y * game_scale)
         
     def pick_random_location(self):
             rand_x = (random.randint(0, 24) * (40 * self.scale)) + self.startX

@@ -16,6 +16,8 @@ from game.room import Room
 from game.player import Item as pItem
 from game.item_type import Type
 from game.player import Rarity
+import game.server as server
+from game.network import Network
 '''
 Created on Feb 11, 2020
 
@@ -34,27 +36,26 @@ BLOCK_SIZE = 40 * GAME_SCALE
 startX = background.x
 startY = background.y
 menu = Menu(a_scale=GAME_SCALE, backgroundX=startX, backgroundY=startY, backgroundW=background.width, backgroundH=background.height)
-visibility = Visibility(a_scale=GAME_SCALE)
-player1 = Player(a_scale=GAME_SCALE, given_name='player1', backgroundX=startX, backgroundY=startY, darkness=visibility)
+player1 = Player(a_scale=GAME_SCALE, given_name='player1', backgroundX=startX, backgroundY=startY, darkness=Visibility(a_scale=GAME_SCALE))
 room_map = Map(a_scale=GAME_SCALE, backgroundX=startX, backgroundY=startY)
 current_room = room_map.change_to_room(number=0, level=0)
 displayed_level = Level(a_scale=GAME_SCALE, backgroundX=startX, backgroundY=startY)
 game_over = GameOver(a_scale=GAME_SCALE, backgroundX=startX, backgroundY=startY)
 player_is_alive = True
+n = None
+player_num = None
 
 def main():
     pyglet.app.run()
     
 def reset_data():
-    global visibility
     global player1
     global room_map
     global displayed_level
     global game_over
     global player_is_alive
     global current_room
-    visibility = Visibility(a_scale=GAME_SCALE)
-    player1 = Player(a_scale=GAME_SCALE, given_name='player1', backgroundX=startX, backgroundY=startY, darkness=visibility)
+    player1 = Player(a_scale=GAME_SCALE, given_name='player1', backgroundX=startX, backgroundY=startY, darkness=Visibility(a_scale=GAME_SCALE))
     room_map = Map(a_scale=GAME_SCALE, backgroundX=startX, backgroundY=startY)
     displayed_level = Level(a_scale=GAME_SCALE, backgroundX=startX, backgroundY=startY)
     game_over = GameOver(a_scale=GAME_SCALE, backgroundX=startX, backgroundY=startY)
@@ -70,6 +71,22 @@ def select_button():
     elif (selected == 1):
         load_state()
         menu_to_game()
+    elif (selected == 3):
+        host()
+    elif (selected == 4):
+        create_client()
+    
+def host():
+    server.start_server()
+    
+def create_client():
+    global current_state 
+    global n
+    global player_num
+    current_state = State.Multi
+    background.switch_image()
+    n = Network()
+    player_num = int(n.getP())
         
 def menu_to_game():
     global current_state 
@@ -81,19 +98,26 @@ def menu_to_game():
     
 def inventory_to_menu():
     global current_state
-    current_state = State.Menu
     background.switch_image()
-    pyglet.clock.unschedule(update)
-    pyglet.clock.unschedule(check_ground)
+    if current_state == State.Inventory:
+        pyglet.clock.unschedule(update)
+        pyglet.clock.unschedule(check_ground)
+    current_state = State.Menu
     reset_data()
     
 def game_to_inventory():
     global current_state
-    current_state = State.Inventory
+    if (current_state == State.Multi):
+        current_state = State.MultiInven
+    else:
+        current_state = State.Inventory
     
 def inventory_to_game():
     global current_state
-    current_state = State.Game
+    if (current_state == State.MultiInven):
+        current_state = State.Multi
+    else:
+        current_state = State.Game
     
 def player_died():
     global player_is_alive
@@ -107,7 +131,7 @@ def player_died():
 def check_ground(dt):
     if (not current_room is None):
         result = current_room.intersecting_item(playerX=player1.x, playerY=player1.y)
-        visibility.update_coords(aX=(player1.x + (BLOCK_SIZE / 2)), aY=(player1.y + (BLOCK_SIZE / 2)))
+        player1.visibility.update_coords(aX=(player1.x + (BLOCK_SIZE / 2)), aY=(player1.y + (BLOCK_SIZE / 2)))
         if (not result is None):
             ground_type = result.item_enum
             add_result = player1.add_to_inventory(to_add=ground_type)
@@ -963,13 +987,44 @@ def on_draw():
         menu.draw()
     if (current_state == State.Game or current_state == State.Inventory):
         current_room.draw()
-        visibility.draw()
+        player1.visibility.draw()
         player1.draw()
         displayed_level.draw()
         game_over.draw()
     if (current_state == State.Inventory and player_is_alive):
         player1.draw_inventory()
+    if (current_state == State.Multi or current_state == State.MultiInven):
+        current_game = n.send("get")
+        scale_game(current_game)
+        player1 = current_game.players[player_num]
+        current_room = current_game.room_map.change_to_room(number=player1.room_number, level=player1.level)
+        displayed_level.update_level(new_level=player1.level)
+        current_room.draw()
+        for i in range(len(current_game.players)):
+            if i != player_num and (player1.room_number == current_game.players[i].room_number and player1.level == current_game.players[i].level):
+                current_game.players[i].draw()                
+        player1.visibility.draw()
+        player1.draw()
+        displayed_level.draw()
+        if player1.life.life_array[0].life == 0:
+            game_over.make_visible()
+            player_is_alive = False
+        game_over.draw()
+    if (current_state == State.MultiInven):
+        player1.draw_inventory()
     
+def scale_game(current_game):
+    for i in range(len(current_game.players)):
+            if i == player_num:
+                current_game.players[i].scale_player(GAME_SCALE, startX)
+            elif not(current_game.players[i] is None) and (player1.room_number == current_game.players[i].room_number and player1.level == current_game.players[i].level):
+                current_game.players[i].x = (current_game.players[i].x * GAME_SCALE) + startX
+                current_game.players[i].y = (current_game.players[i].y * GAME_SCALE)
+                current_game.players[i].game_scale = GAME_SCALE
+                current_game.players[i].scale = GAME_SCALE
+    current_room = current_game.room_map.change_to_room(number=current_game.players[player_num].room_number, level=current_game.players[player_num].level)
+    current_room.scale_room(GAME_SCALE, startX)
+
 @window.event
 def on_key_press(symbol, modifiers):
     if current_state == State.Menu:
@@ -1045,6 +1100,64 @@ def on_key_press(symbol, modifiers):
             save_state()
             inventory_to_menu()
             return pyglet.event.EVENT_HANDLED
+    elif current_state == State.Multi and player_is_alive:
+        if (not player1.is_moving and not player1.scheduled_moving):
+            if symbol == key.UP:
+                n.send("MoveUp")
+            elif symbol == key.RIGHT:
+                n.send("MoveRight")
+            elif symbol == key.DOWN:
+                n.send("MoveDown")
+            elif symbol == key.LEFT:
+                n.send("MoveLeft")
+        else:
+            if symbol == key.UP:
+                n.send("QueueUp")
+            elif symbol == key.RIGHT:
+                n.send("QueueRight")
+            elif symbol == key.LEFT:
+                n.send("QueueLeft")
+            elif symbol == key.DOWN:
+                n.send("QueueDown")
+        if symbol == key.E:
+            if (player1.is_moving):
+                valid = check_player_legal_movement()
+                if (valid):
+                    n.send("InvenValid")
+                else:
+                    n.send("InvenNot")
+            else:
+                n.send("Inven")
+            game_to_inventory()
+        elif symbol == key.W:
+            n.send("Attack")
+        elif (symbol == key.ESCAPE):
+            return pyglet.event.EVENT_HANDLED
+    elif current_state == State.MultiInven and player_is_alive:
+        if symbol == key.UP:
+            n.send("InvenUp")
+        elif symbol == key.RIGHT:
+            n.send("InvenRight")
+        elif symbol == key.DOWN:
+            n.send("InvenDown")
+        elif symbol == key.LEFT:
+            n.send("InvenLeft")
+        elif symbol == key.W:
+            n.send("Toggle")
+        elif symbol == key.E:
+            inventory_to_game()
+        elif symbol == key.R:
+            n.send("Discard")
+        elif (symbol == key.ESCAPE):
+            inventory_to_menu()
+            n.send("Quit")
+            return pyglet.event.EVENT_HANDLED
+    elif current_state == State.Multi or current_state == State.MultiInven:
+        if symbol == key.W:
+            inventory_to_menu()
+            n.send("Quit")
+        elif (symbol == key.ESCAPE):
+            return pyglet.event.EVENT_HANDLED
     elif not player_is_alive:
         if symbol == key.W:
             inventory_to_menu()
@@ -1068,6 +1181,18 @@ def on_key_release(symbol, modifiers):
                     set_player_last_valid()
         if ((symbol == key.UP and player1.queued_direction == Direction.NORTH) or (symbol == key.RIGHT and player1.queued_direction == Direction.EAST) or (symbol == key.DOWN and player1.queued_direction == Direction.SOUTH) or (symbol == key.LEFT and player1.queued_direction == Direction.WEST)):
             player1.queued_direction = None
+    elif (current_state == State.Multi and player_is_alive):
+        if ((symbol == key.UP and player1.facing == Direction.NORTH) or (symbol == key.RIGHT and player1.facing == Direction.EAST) or (symbol == key.DOWN and player1.facing == Direction.SOUTH) or (symbol == key.LEFT and player1.facing == Direction.WEST)):
+            if (player1.is_moving):
+                valid = check_player_legal_movement()
+                if (valid):
+                    n.send("ReleaseValid")
+                else:
+                    n.send("ReleaseNot")
+            else:
+                n.send("Release")
+        if ((symbol == key.UP and player1.queued_direction == Direction.NORTH) or (symbol == key.RIGHT and player1.queued_direction == Direction.EAST) or (symbol == key.DOWN and player1.queued_direction == Direction.SOUTH) or (symbol == key.LEFT and player1.queued_direction == Direction.WEST)):
+            n.send("Dequeue")
 
 if __name__ == '__main__':
     main()

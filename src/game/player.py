@@ -5,6 +5,7 @@ from pyglet.text import Label
 from game.cardinal_direction import Direction
 from game.item_type import Type
 import random, math
+import game
 '''
 Created on Feb 11, 2020
 
@@ -66,6 +67,26 @@ class Player(Sprite):
         self.attack_sprite = Attack(game_scale=a_scale)
         self.visibility = darkness
         self.add_to_inventory(to_add=Type.Torch)
+        
+    def scale_player(self, game_scale, x_offset):
+        self.x = (self.x * game_scale) + x_offset
+        self.y = (self.y * game_scale)
+        self.game_scale = game_scale
+        self.scale = game_scale
+        if self.is_facing == Direction.NORTH or self.is_facing == Direction.SOUTH:
+            self.nextBoxCoord = (self.nextBoxCoord * game_scale)
+        else:
+            self.nextBoxCoord = (self.nextBoxCoord * game_scale) + x_offset
+        self.stat_boosted.font_size = self.stat_boosted.font_size * game_scale
+        self.stat_boosted.x = (self.stat_boosted.x * game_scale) + x_offset
+        self.stat_boosted.y = (self.stat_boosted.y * game_scale)
+        self.speed = self.speed * game_scale
+        self.visibility.game_scale = game_scale
+        self.visibility.scale = self.visibility.scale * game_scale
+        self.attack_sprite.scale_attack(game_scale)
+        self.life.scale_life(game_scale, x_offset)
+        self.experience.scale_experience(game_scale, x_offset)
+        self.player_inventory.scale_inventory(game_scale, x_offset)
         
     def add_to_inventory(self, to_add) -> bool:
         return self.player_inventory.add(obj=to_add)
@@ -291,7 +312,7 @@ class Experience():
         self.bar = Sprite(img=Experience.experience_bar, x=backX + (930 * game_scale), y=backY + (940 * game_scale))
         self.bar.scale = game_scale
         self.exp = Sprite(img=Experience.experience_green, x=backX + (930 * game_scale), y=backY + (940 * game_scale))
-        self.exp.scale = game_scale
+        self.game_scale = game_scale
         self.exp.scale = 0
         self.total_exp = 0
         
@@ -305,8 +326,18 @@ class Experience():
         while (self.total_exp >= 100):
             self.total_exp = self.total_exp - 100
             amount_ups = amount_ups + 1
-        self.exp.scale = (self.total_exp / 100)
+        self.exp.scale = (self.total_exp / 100) * self.game_scale
         return amount_ups
+    
+    def scale_experience(self, game_scale, x_offset):
+        self.startX = x_offset
+        self.bar.x = (self.bar.x * game_scale) + x_offset
+        self.bar.y = (self.bar.y * game_scale)
+        self.bar.scale = game_scale
+        self.exp.x = (self.exp.x * game_scale) + x_offset
+        self.exp.y = (self.exp.y * game_scale)
+        self.game_scale = game_scale
+        self.exp.scale = self.exp.scale * game_scale
 
 class Life():
     
@@ -317,6 +348,15 @@ class Life():
         self.startY = backY
         for i in range(5):
             self.add_heart()
+            
+    def scale_life(self, game_scale, x_offset):
+        self.a_scale = game_scale
+        self.startX = x_offset
+        for heart in self.life_array:
+            heart.x = (heart.x * game_scale) + x_offset
+            heart.y = (heart.y * game_scale)
+            heart.scale = heart.scale * game_scale
+            heart.a_scale = game_scale
         
     def add_heart(self):
         to_add = Heart(game_scale=self.a_scale, backgroundX=self.startX, backgroundY=self.startY)
@@ -410,6 +450,19 @@ class Inventory():
         self.highlighted_y = 0
         self.array[self.highlighted_y][self.highlighted_x].toggle_highlight()
         
+    def scale_inventory(self, game_scale, x_offset):
+        self.a_scale = game_scale
+        self.title.font_size = self.title.font_size * game_scale
+        self.title.x = (self.title.x * game_scale) + x_offset
+        self.title.y = (self.title.y * game_scale)
+        self.quit.font_size = self.quit.font_size * game_scale
+        self.quit.x = (self.quit.x * game_scale) + x_offset
+        self.quit.y = (self.quit.y * game_scale)
+        self.startX = x_offset
+        for row in self.array:
+            for slot in row:
+                slot.scale_slot(game_scale, x_offset)
+        
     def fill_with_slots(self):
         for i in range(len(self.array)):
             for j in range(len(self.array[i])):
@@ -483,6 +536,13 @@ class Slot(Sprite):
         self.item = None
         self.is_selected = False
         self.is_highlighted = False
+        
+    def scale_slot(self, game_scale, x_offset):
+        self.scale = game_scale
+        self.x = (self.x * game_scale) + x_offset
+        self.y = (self.y * game_scale)
+        if not(self.item is None):
+            self.item.scale_item(game_scale, x_offset)
         
     def toggle_select(self):
         self.is_selected = not self.is_selected
@@ -562,6 +622,13 @@ class Item(Sprite):
         self.rarity = 0
         self.set_rarity()
         self.make_item(item_id=item_enum)
+        
+    def scale_item(self, game_scale, x_offset):
+        self.scale = game_scale
+        self.x = (self.x * game_scale) + x_offset
+        self.y = (self.y * game_scale)
+        self.cracks.scale_cracks(game_scale, x_offset)
+        self.rarity_img.scale_rarity(game_scale, x_offset)
         
     def set_rarity(self):
         curr_level = self.this_player.level
@@ -785,6 +852,11 @@ class Crack(Sprite):
         self.y = aY
         self.opacity = 128
         
+    def scale_cracks(self, game_scale, x_offset):
+        self.scale = game_scale
+        self.x = (self.x * game_scale) + x_offset
+        self.y = (self.y * game_scale)
+        
 class Rarity(Sprite):
     
     common = image.load('images/Common.png')
@@ -799,6 +871,11 @@ class Rarity(Sprite):
         self.x = aX
         self.y = aY
         self.opacity = 64
+        
+    def scale_rarity(self, game_scale, x_offset):
+        self.scale = game_scale
+        self.x = (self.x * game_scale) + x_offset
+        self.y = (self.y * game_scale)
     
 class Attack(Sprite):
     
@@ -808,6 +885,9 @@ class Attack(Sprite):
         super().__init__(img=Attack.attack_animation)
         self.scale = game_scale
         self.opacity = 128
+        
+    def scale_attack(self, game_scale):
+        self.scale = game_scale
         
     def update_self(self, player_x, player_y, direction):
         if (direction == Direction.NORTH):

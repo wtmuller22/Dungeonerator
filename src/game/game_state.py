@@ -11,3 +11,5 @@ class State(Enum):
     Menu = 1
     Game = 2
     Inventory = 3
+    Multi = 4
+    MultiInven = 5

@@ -18,9 +18,13 @@ class Buttons():
         new_button.select()
         load_button = Button(a_scale=game_scale, name="Load Game", xCoord=new_button.x, yCoord=new_button.y - (55 * game_scale))
         quit_button = Button(a_scale=game_scale, name="Quit", xCoord=load_button.x, yCoord=load_button.y - (55 * game_scale))
+        host_button = Button(a_scale=game_scale, name="Host Game", xCoord=load_button.x, yCoord=quit_button.y - (55 * game_scale))
+        join_button = Button(a_scale=game_scale, name="Join Game", xCoord=load_button.x, yCoord=host_button.y - (55 * game_scale))
         Buttons.list.append(new_button)
         Buttons.list.append(load_button)
         Buttons.list.append(quit_button)
+        Buttons.list.append(host_button)
+        Buttons.list.append(join_button)
         
     def next(self):
         Buttons.list[Buttons.current_idx].deselect()

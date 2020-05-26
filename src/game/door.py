@@ -34,6 +34,11 @@ class Door(Sprite):
             self.x=0 + backgroundX
             self.y=(480 * game_scale) + backgroundY
             
+    def scale_entity(self, game_scale, x_offset):
+        self.scale = game_scale
+        self.x = (self.x * game_scale) + x_offset
+        self.y = (self.y * game_scale)
+            
     def make_golden(self):
         self.image=Door.level_up
         self.is_gold = True
