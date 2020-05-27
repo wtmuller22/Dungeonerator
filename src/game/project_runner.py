@@ -77,12 +77,32 @@ def select_button():
         create_client()
     
 def host():
+    global player1
+    global room_map
+    global displayed_level
+    global game_over
+    global current_room
+    player1.remove()
+    player1 = None
+    room_map = None
+    displayed_level = None
+    game_over = None
+    current_room.remove()
+    current_room = None
     server.start_server()
     
 def create_client():
+    global player1
+    global room_map
+    global current_room
     global current_state 
     global n
     global player_num
+    player1.remove()
+    player1 = None
+    room_map = None
+    current_room.remove()
+    current_room = None
     current_state = State.Multi
     background.switch_image()
     n = Network()
@@ -981,6 +1001,8 @@ def load_state():
 
 @window.event
 def on_draw():
+    global player1
+    global player_is_alive
     window.clear()
     background.draw()
     if (current_state == State.Menu):
@@ -997,7 +1019,6 @@ def on_draw():
         current_game = n.send("get")
         scale_game(current_game)
         player1 = current_game.players[player_num]
-        current_room = current_game.room_map.change_to_room(number=player1.room_number, level=player1.level)
         displayed_level.update_level(new_level=player1.level)
         current_room.draw()
         for i in range(len(current_game.players)):
@@ -1014,6 +1035,7 @@ def on_draw():
         player1.draw_inventory()
     
 def scale_game(current_game):
+    global current_room
     for i in range(len(current_game.players)):
             if i == player_num:
                 current_game.players[i].scale_player(GAME_SCALE, startX)

@@ -1,69 +1,93 @@
 Name: player1
-X: 592.8
-Y: 518.4000000000001
-Next Coord: 592.8
+X: 770.0
+Y: 480.0
+Next Coord: 770.0
 Level: 2
-Room Number: 16
+Room Number: 20
 Next Stat: 0
-Defense: 0.9999999999999999
-Speed: 259.20000000000005
-Attack: 6
+Defense: 1.7
+Speed: 282.0
+Attack: 10
 Facing: Direction.EAST
 Number Hearts: 5
-Missing Health: 73.25312183212885
-Total Experience: 39.54801288953633
-Exp Scale: 0.3954801288953633
-Inventory Highlight X: 3
+Missing Health: 28.082308719351886
+Total Experience: 21.648012889820556
+Exp Scale: 0.21648012889820556
+Inventory Highlight X: 0
 Inventory Highlight Y: 0
-Visibility Scale: 4.32
+Visibility Scale: 7.0
 Extra Slots: 0
 Slot:
 Item:
-None
-Selected: False
-Highlighted: False
-Slot:
-Item:
-None
-Selected: False
-Highlighted: False
+Type: Type.Torch
+Value: 3
+Durability Max: 100
+Durability: 83
+Rarity: 0
+Selected: True
+Highlighted: True
 Slot:
 Item:
 Type: Type.Weapon
-Value: 6
+Value: 10
 Durability Max: 100
-Durability: 55
+Durability: 95
 Rarity: 0
 Selected: True
 Highlighted: False
 Slot:
 Item:
-Type: Type.Helmet
-Value: 0.4
+Type: Type.Leggings
+Value: 0.7
 Durability Max: 100
-Durability: 68.00292158021706
+Durability: 59.91007517652197
+Rarity: 0
+Selected: True
+Highlighted: False
+Slot:
+Item:
+Type: Type.Potion
+Value: 22
+Durability Max: 100
+Durability: 100
 Rarity: 0
 Selected: False
-Highlighted: True
+Highlighted: False
 Slot:
 Item:
-None
+Type: Type.Potion
+Value: 21
+Durability Max: 100
+Durability: 100
+Rarity: 0
 Selected: False
 Highlighted: False
 Slot:
 Item:
-None
+Type: Type.Weapon
+Value: 5
+Durability Max: 100
+Durability: 100
+Rarity: 0
 Selected: False
 Highlighted: False
 Slot:
 Item:
-None
+Type: Type.Leggings
+Value: 0.5
+Durability Max: 100
+Durability: 100
+Rarity: 0
 Selected: False
 Highlighted: False
 Slot:
 Item:
-None
-Selected: False
+Type: Type.Footwear
+Value: 42.0
+Durability Max: 100
+Durability: 76.516666666668
+Rarity: 0
+Selected: True
 Highlighted: False
 Slot:
 Item:

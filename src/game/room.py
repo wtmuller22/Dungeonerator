@@ -29,6 +29,10 @@ class Room():
         self.startX = x_offset
         for entity in self.entities:
             entity.scale_entity(game_scale, x_offset)
+    
+    def remove(self):
+        for entity in self.entities:
+            entity.delete()
         
     def draw(self):
         for entity in self.entities:

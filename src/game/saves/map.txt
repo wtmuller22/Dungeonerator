@@ -4,318 +4,540 @@ Direction: None
 Level: 0
 Entities:
 Door:
-X: 420.0
-Y: 518.4000000000001
-Is Gold: True
-Rotation: 0
-Room Number: 5
-Direction: Direction.SE
-Level: 1
-Entities:
-Door:
-X: 938.4000000000001
-Y: 1080.0
-Is Gold: False
-Rotation: 90
-Door:
-X: 420.0
-Y: 518.4000000000001
-Is Gold: False
-Rotation: 0
-Door:
-X: 1500.0
-Y: 561.6
-Is Gold: True
-Rotation: 180
-Monster:
-Monster Type: Bat
-Multiplier: 0.15999999998105163
-Health: 2.7999999996684037
-Speed: 259.20000000000005
-Attack: 2.8799999996589296
-Sight: 2.2399999997347226
-Is Moving: False
-Facing: Direction.EAST
-X: 1284.0
-Y: 907.2
-Next Coord: 1284.0
-Room Number: 8
-Direction: Direction.WEST
-Level: 1
-Entities:
-Door:
-X: 981.6
+X: 770.0
 Y: 0.0
-Is Gold: False
-Rotation: 270
-Door:
-X: 938.4000000000001
-Y: 1080.0
-Is Gold: False
-Rotation: 90
-Item:
-X: 420.0
-Y: 950.4000000000001
-Item Type: Type.Leggings
-Monster:
-Monster Type: Bat
-Multiplier: 0.22999999998105164
-Health: 4.024999999668403
-Speed: 259.20000000000005
-Attack: 4.139999999658929
-Sight: 3.219999999734723
-Is Moving: False
-Facing: Direction.SOUTH
-X: 1370.4
-Y: 864.0
-Next Coord: None
-Monster:
-Monster Type: Slime
-Multiplier: 0.16999999998105164
-Health: 5.949999999336807
-Speed: 86.4
-Attack: 6.119999999317859
-Sight: 1.6999999998105164
-Is Moving: False
-Facing: Direction.EAST
-X: 765.6
-Y: 432.0
-Next Coord: None
-Monster:
-Monster Type: Bat
-Multiplier: 0.16999999998105164
-Health: 2.9749999996684036
-Speed: 259.20000000000005
-Attack: 3.0599999996589293
-Sight: 2.379999999734723
-Is Moving: False
-Facing: Direction.NORTH
-X: 895.2
-Y: 777.6000000000001
-Next Coord: 777.6000000000001
-Monster:
-Monster Type: Skeleton
-Multiplier: 0.21999999998105163
-Health: 19.249999998342016
-Speed: 129.60000000000002
-Attack: 15.839999998635717
-Sight: 4.399999999621032
-Is Moving: False
-Facing: Direction.SOUTH
-X: 1370.4
-Y: 302.40000000000003
-Next Coord: None
-Door:
-X: 1500.0
-Y: 561.6
 Is Gold: True
-Rotation: 180
-Room Number: 1
-Direction: Direction.NW
-Level: 1
-Entities:
-Door:
-X: 981.6
-Y: 0.0
-Is Gold: False
 Rotation: 270
-Door:
-X: 1500.0
-Y: 561.6
-Is Gold: False
-Rotation: 180
-Room Number: 2
-Direction: Direction.NORTH
-Level: 1
-Entities:
-Door:
-X: 1500.0
-Y: 561.6
-Is Gold: False
-Rotation: 180
-Door:
-X: 420.0
-Y: 518.4000000000001
-Is Gold: False
-Rotation: 0
-Item:
-X: 981.6
-Y: 907.2
-Item Type: Type.Weapon
-Item:
-X: 1024.8000000000002
-Y: 345.6
-Item Type: Type.Weapon
-Monster:
-Monster Type: Slime
-Multiplier: 0.19999999998105164
-Health: 6.999999999336808
-Speed: 86.4
-Attack: 7.199999999317859
-Sight: 1.9999999998105165
-Is Moving: False
-Facing: Direction.SOUTH
-X: 679.2
-Y: 216.0
-Next Coord: None
-Monster:
-Monster Type: Slime
-Multiplier: 0.21999999998105163
-Health: 7.699999999336807
-Speed: 86.4
-Attack: 7.9199999993178585
-Sight: 2.199999999810516
-Is Moving: False
-Facing: Direction.SOUTH
-X: 938.4000000000001
-Y: 993.6
-Next Coord: None
 Room Number: 3
 Direction: Direction.NE
 Level: 1
 Entities:
 Door:
-X: 981.6
+X: 770.0
 Y: 0.0
 Is Gold: False
 Rotation: 270
 Door:
-X: 420.0
-Y: 518.4000000000001
+X: 250.0
+Y: 480.0
 Is Gold: False
 Rotation: 0
-Item:
-X: 1456.8000000000002
-Y: 43.2
-Item Type: Type.Leggings
-Item:
-X: 679.2
-Y: 432.0
-Item Type: Type.Weapon
-Monster:
-Monster Type: Skeleton
-Multiplier: 0.23999999998105165
-Health: 20.99999999834202
-Speed: 129.60000000000002
-Attack: 17.27999999863572
-Sight: 4.799999999621033
-Is Moving: False
-Facing: Direction.NORTH
-X: 895.2
-Y: 777.6000000000001
-Next Coord: 777.6000000000001
-Monster:
-Monster Type: Bat
-Multiplier: 0.15999999998105163
-Health: 2.7999999996684037
-Speed: 259.20000000000005
-Attack: 2.8799999996589296
-Sight: 2.2399999997347226
-Is Moving: False
-Facing: Direction.WEST
-X: 981.6000000000001
-Y: 0.0
-Next Coord: 981.6000000000001
-Monster:
-Monster Type: Bat
-Multiplier: 0.18999999998105163
-Health: 3.3249999996684036
-Speed: 259.20000000000005
-Attack: 3.419999999658929
-Sight: 2.659999999734723
-Is Moving: False
-Facing: Direction.SOUTH
-X: 852.0
-Y: 259.20000000000005
-Next Coord: None
-Room Number: 4
-Direction: Direction.EAST
+Door:
+X: 730.0
+Y: 1000.0
+Is Gold: True
+Rotation: 90
+Room Number: 6
+Direction: Direction.SOUTH
 Level: 1
 Entities:
 Door:
-X: 981.6
-Y: 0.0
+X: 1250.0
+Y: 520.0
 Is Gold: False
-Rotation: 270
+Rotation: 180
 Door:
-X: 938.4000000000001
-Y: 1080.0
+X: 250.0
+Y: 480.0
 Is Gold: False
-Rotation: 90
+Rotation: 0
+Item:
+X: 250.0
+Y: 120.0
+Item Type: Type.Footwear
+Item:
+X: 970.0
+Y: 160.0
+Item Type: Type.Weapon
+Monster:
+Monster Type: Bat
+Multiplier: 0.24999999998105166
+Health: 4.374999999668404
+Speed: 240.0
+Attack: 4.49999999965893
+Sight: 3.4999999997347233
+Is Moving: False
+Facing: Direction.WEST
+X: 570.0
+Y: 800.0
+Next Coord: 570.0
 Monster:
 Monster Type: Slime
 Multiplier: 0.14999999998105162
 Health: 5.249999999336807
-Speed: 86.4
+Speed: 80.0
 Attack: 5.399999999317858
 Sight: 1.4999999998105162
 Is Moving: False
 Facing: Direction.SOUTH
-X: 420.0
-Y: 432.0
+X: 890.0
+Y: 920.0
 Next Coord: None
+Monster:
+Monster Type: Skeleton
+Multiplier: 0.20999999998105165
+Health: 18.37499999834202
+Speed: 120.0
+Attack: 15.119999998635718
+Sight: 4.199999999621033
+Is Moving: False
+Facing: Direction.SOUTH
+X: 850.0
+Y: 160.0
+Next Coord: None
+Monster:
+Monster Type: Slime
+Multiplier: 0.17999999998105165
+Health: 6.299999999336808
+Speed: 80.0
+Attack: 6.47999999931786
+Sight: 1.7999999998105165
+Is Moving: False
+Facing: Direction.SOUTH
+X: 1090.0
+Y: 440.0
+Next Coord: None
+Door:
+X: 730.0
+Y: 1000.0
+Is Gold: True
+Rotation: 90
+Room Number: 7
+Direction: Direction.SW
+Level: 1
+Entities:
+Door:
+X: 730.0
+Y: 1000.0
+Is Gold: False
+Rotation: 90
+Door:
+X: 1250.0
+Y: 520.0
+Is Gold: False
+Rotation: 180
+Monster:
+Monster Type: Slime
+Multiplier: 0.14999999998105162
+Health: 5.249999999336807
+Speed: 80.0
+Attack: 5.399999999317858
+Sight: 1.4999999998105162
+Is Moving: False
+Facing: Direction.SOUTH
+X: 930.0
+Y: 520.0
+Next Coord: None
+Room Number: 8
+Direction: Direction.WEST
+Level: 1
+Entities:
+Door:
+X: 770.0
+Y: 0.0
+Is Gold: False
+Rotation: 270
+Door:
+X: 730.0
+Y: 1000.0
+Is Gold: False
+Rotation: 90
+Monster:
+Monster Type: Bat
+Multiplier: 0.23999999998105165
+Health: 4.199999999668404
+Speed: 240.0
+Attack: 4.31999999965893
+Sight: 3.359999999734723
+Is Moving: False
+Facing: Direction.SOUTH
+X: 450.0
+Y: 920.0
+Next Coord: None
+Room Number: 1
+Direction: Direction.NW
+Level: 1
+Entities:
+Door:
+X: 770.0
+Y: 0.0
+Is Gold: False
+Rotation: 270
+Door:
+X: 1250.0
+Y: 520.0
+Is Gold: False
+Rotation: 180
+Monster:
+Monster Type: Skeleton
+Multiplier: 0.17999999998105165
+Health: 15.74999999834202
+Speed: 120.0
+Attack: 12.95999999863572
+Sight: 3.599999999621033
+Is Moving: False
+Facing: Direction.SOUTH
+X: 1210.0
+Y: 160.0
+Next Coord: None
+Monster:
+Monster Type: Slime
+Multiplier: 0.22999999998105164
+Health: 8.049999999336807
+Speed: 80.0
+Attack: 8.279999999317859
+Sight: 2.2999999998105163
+Is Moving: False
+Facing: Direction.SOUTH
+X: 370.0
+Y: 320.0
+Next Coord: None
+Room Number: 2
+Direction: Direction.NORTH
+Level: 1
+Entities:
+Door:
+X: 1250.0
+Y: 520.0
+Is Gold: False
+Rotation: 180
+Door:
+X: 250.0
+Y: 480.0
+Is Gold: False
+Rotation: 0
+Item:
+X: 970.0
+Y: 200.0
+Item Type: Type.Helmet
+Room Number: 21
+Direction: Direction.SW
+Level: 2
+Entities:
+Door:
+X: 730.0
+Y: 1000.0
+Is Gold: False
+Rotation: 90
+Door:
+X: 1250.0
+Y: 520.0
+Is Gold: False
+Rotation: 180
+Door:
+X: 250.0
+Y: 480.0
+Is Gold: True
+Rotation: 0
+Monster:
+Monster Type: Skeleton
+Multiplier: 0.3196025779641113
+Health: 27.965225571859737
+Speed: 120.0
+Attack: 23.011385613416014
+Sight: 6.392051559282226
+Is Moving: False
+Facing: Direction.SOUTH
+X: 730.0
+Y: 800.0
+Next Coord: 800.0
 Room Number: 12
 Direction: Direction.NORTH
 Level: 2
 Entities:
 Door:
-X: 1500.0
-Y: 561.6
+X: 1250.0
+Y: 520.0
 Is Gold: False
 Rotation: 180
 Door:
-X: 420.0
-Y: 518.4000000000001
+X: 250.0
+Y: 480.0
 Is Gold: False
 Rotation: 0
-Door:
-X: 938.4000000000001
-Y: 1080.0
-Is Gold: True
-Rotation: 90
+Item:
+X: 930.0
+Y: 520.0
+Item Type: Type.Chestpiece
 Monster:
 Monster Type: Bat
 Multiplier: 0.2796025779641113
 Health: 4.893045114371948
-Speed: 259.20000000000005
+Speed: 240.0
 Attack: 5.032846403354004
 Sight: 3.9144360914975582
 Is Moving: False
 Facing: Direction.SOUTH
-X: 592.8
-Y: 820.8000000000001
+X: 450.0
+Y: 600.0
 Next Coord: None
-Monster:
-Monster Type: Skeleton
-Multiplier: 0.3096025779641113
-Health: 27.090225571859737
-Speed: 129.60000000000002
-Attack: 22.29138561341601
-Sight: 6.192051559282225
-Is Moving: False
-Facing: Direction.SOUTH
-X: 463.2
-Y: 604.8000000000001
-Next Coord: None
-Room Number: 16
-Direction: Direction.EAST
+Door:
+X: 770.0
+Y: 0.0
+Is Gold: True
+Rotation: 270
+Room Number: 11
+Direction: Direction.NORTH
 Level: 2
 Entities:
 Door:
-X: 981.6
+X: 1250.0
+Y: 520.0
+Is Gold: False
+Rotation: 180
+Door:
+X: 250.0
+Y: 480.0
+Is Gold: False
+Rotation: 0
+Monster:
+Monster Type: Slime
+Multiplier: 0.2896025779641113
+Health: 10.136090228743896
+Speed: 80.0
+Attack: 10.425692806708007
+Sight: 2.8960257796411133
+Is Moving: False
+Facing: Direction.SOUTH
+X: 610.0
+Y: 920.0
+Next Coord: None
+Room Number: 10
+Direction: Direction.NORTH
+Level: 2
+Entities:
+Door:
+X: 1250.0
+Y: 520.0
+Is Gold: False
+Rotation: 180
+Door:
+X: 250.0
+Y: 480.0
+Is Gold: False
+Rotation: 0
+Item:
+X: 330.0
+Y: 760.0
+Item Type: Type.Chestpiece
+Item:
+X: 930.0
+Y: 760.0
+Item Type: Type.Helmet
+Item:
+X: 490.0
+Y: 800.0
+Item Type: Type.Chestpiece
+Room Number: 9
+Direction: Direction.NW
+Level: 2
+Entities:
+Door:
+X: 770.0
 Y: 0.0
 Is Gold: False
 Rotation: 270
 Door:
-X: 938.4000000000001
-Y: 1080.0
+X: 1250.0
+Y: 520.0
+Is Gold: False
+Rotation: 180
+Item:
+X: 730.0
+Y: 600.0
+Item Type: Type.Chestpiece
+Item:
+X: 1210.0
+Y: 80.0
+Item Type: Type.Chestpiece
+Monster:
+Monster Type: Slime
+Multiplier: 0.3096025779641113
+Health: 10.836090228743895
+Speed: 80.0
+Attack: 11.145692806708006
+Sight: 3.0960257796411126
+Is Moving: False
+Facing: Direction.WEST
+X: 1010.0
+Y: 200.0
+Next Coord: 1010.0
+Monster:
+Monster Type: Slime
+Multiplier: 0.2896025779641113
+Health: 10.136090228743896
+Speed: 80.0
+Attack: 10.425692806708007
+Sight: 2.8960257796411133
+Is Moving: False
+Facing: Direction.SOUTH
+X: 770.0
+Y: 520.0
+Next Coord: None
+Room Number: 24
+Direction: Direction.WEST
+Level: 2
+Entities:
+Door:
+X: 770.0
+Y: 0.0
+Is Gold: False
+Rotation: 270
+Door:
+X: 730.0
+Y: 1000.0
 Is Gold: False
 Rotation: 90
+Item:
+X: 890.0
+Y: 280.0
+Item Type: Type.Weapon
+Item:
+X: 890.0
+Y: 0.0
+Item Type: Type.Leggings
+Item:
+X: 1170.0
+Y: 520.0
+Item Type: Type.Leggings
+Monster:
+Monster Type: Bat
+Multiplier: 0.2896025779641113
+Health: 5.068045114371948
+Speed: 240.0
+Attack: 5.212846403354003
+Sight: 4.054436091497559
+Is Moving: False
+Facing: Direction.SOUTH
+X: 250.0
+Y: 440.0
+Next Coord: None
+Monster:
+Monster Type: Bat
+Multiplier: 0.2796025779641113
+Health: 4.893045114371948
+Speed: 240.0
+Attack: 5.032846403354004
+Sight: 3.9144360914975582
+Is Moving: False
+Facing: Direction.SOUTH
+X: 730.0
+Y: 680.0
+Next Coord: None
+Room Number: 23
+Direction: Direction.WEST
+Level: 2
+Entities:
 Door:
-X: 420.0
-Y: 518.4000000000001
-Is Gold: True
+X: 770.0
+Y: 0.0
+Is Gold: False
+Rotation: 270
+Door:
+X: 730.0
+Y: 1000.0
+Is Gold: False
+Rotation: 90
+Item:
+X: 1170.0
+Y: 360.0
+Item Type: Type.Torch
+Item:
+X: 1050.0
+Y: 360.0
+Item Type: Type.Chestpiece
+Monster:
+Monster Type: Bat
+Multiplier: 0.2496025779641113
+Health: 4.368045114371948
+Speed: 240.0
+Attack: 4.492846403354004
+Sight: 3.4944360914975583
+Is Moving: False
+Facing: Direction.SOUTH
+X: 1210.0
+Y: 400.0
+Next Coord: None
+Monster:
+Monster Type: Slime
+Multiplier: 0.2396025779641113
+Health: 8.386090228743896
+Speed: 80.0
+Attack: 8.625692806708006
+Sight: 2.396025779641113
+Is Moving: False
+Facing: Direction.SOUTH
+X: 530.0
+Y: 800.0
+Next Coord: None
+Room Number: 22
+Direction: Direction.WEST
+Level: 2
+Entities:
+Door:
+X: 770.0
+Y: 0.0
+Is Gold: False
+Rotation: 270
+Door:
+X: 730.0
+Y: 1000.0
+Is Gold: False
+Rotation: 90
+Item:
+X: 490.0
+Y: 560.0
+Item Type: Type.Potion
+Monster:
+Monster Type: Slime
+Multiplier: 0.2696025779641113
+Health: 9.436090228743895
+Speed: 80.0
+Attack: 9.705692806708006
+Sight: 2.696025779641113
+Is Moving: False
+Facing: Direction.SOUTH
+X: 1170.0
+Y: 880.0
+Next Coord: None
+Room Number: 20
+Direction: Direction.SOUTH
+Level: 2
+Entities:
+Door:
+X: 1250.0
+Y: 520.0
+Is Gold: False
+Rotation: 180
+Door:
+X: 250.0
+Y: 480.0
+Is Gold: False
 Rotation: 0
+Monster:
+Monster Type: Bat
+Multiplier: 0.3096025779641113
+Health: 5.418045114371948
+Speed: 240.0
+Attack: 5.572846403354003
+Sight: 4.334436091497558
+Is Moving: False
+Facing: Direction.SOUTH
+X: 890.0
+Y: 240.0
+Next Coord: None
+Monster:
+Monster Type: Slime
+Multiplier: 0.3196025779641113
+Health: 11.186090228743895
+Speed: 80.0
+Attack: 11.505692806708007
+Sight: 3.196025779641113
+Is Moving: False
+Facing: Direction.SOUTH
+X: 250.0
+Y: 840.0
+Next Coord: None
 Corner Dictionary:
 Corners:
 Level: 1

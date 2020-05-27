@@ -11,6 +11,7 @@ curr_game = None
 idCount = 0
 
 def start_server():
+    global idCount
     server = "192.168.1.74"
     port = 5555
     
@@ -37,10 +38,11 @@ def start_server():
 
 
 def threaded_client(conn, p):
-    global idCount
+    global curr_game
     conn.send(str.encode(str(p)))
     
     player = Player(a_scale=1, given_name=('player' + str(p)), backgroundX=0, backgroundY=0, darkness=Visibility(a_scale=1))
+    print("here")
     curr_game.players.append(player)
 
     while True:

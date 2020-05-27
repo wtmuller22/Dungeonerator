@@ -88,6 +88,21 @@ class Player(Sprite):
         self.experience.scale_experience(game_scale, x_offset)
         self.player_inventory.scale_inventory(game_scale, x_offset)
         
+    def remove(self):
+        self.attack_sprite.delete()
+        for heart in self.life.life_array:
+            heart.delete()
+        for row in self.player_inventory.array:
+            for slot in row:
+                if not(slot.item is None):
+                    slot.item.cracks.delete()
+                    slot.item.rarity_img.delete()
+                    slot.item.delete()
+                slot.delete()
+        self.experience.bar.delete()
+        self.experience.exp.delete()
+        self.delete()
+        
     def add_to_inventory(self, to_add) -> bool:
         return self.player_inventory.add(obj=to_add)
                 
